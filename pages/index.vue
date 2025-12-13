@@ -41,7 +41,7 @@
         <!-- Auth навигация -->
         <template v-if="isAuth">
           <a href="/profile" class="hover:underline">Profile</a>
-          <button @click="logout" class="hover:underline">Logout</button>
+        
         </template>
 
         <template v-else>
