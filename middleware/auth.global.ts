@@ -1,7 +1,8 @@
 export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.client) {
     const token = localStorage.getItem('token')
-    if (to.path !== '/login' && !token) {
+    const userId = localStorage.getItem('userId')
+    if (to.path !== '/login' && (!token || !userId)) {
       return navigateTo('/login')
     }
   }

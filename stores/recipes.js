@@ -1,20 +1,38 @@
 // stores/recipes.js
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useRecipesStore = defineStore('recipes', () => {
-  const recipes = ref([
-    { id: 1, title: 'Плов', category: 'Ет', time: '2 сағ', calories: 650 },
-    { id: 2, title: 'Бешбармақ', category: 'Ет', time: '3 сағ', calories: 800 },
-    { id: 3, title: 'Бауырсақ', category: 'Ұн', time: '1 сағ', calories: 350 }
-  ])
-  
+  const recipes = ref([])
+  const loading = ref(false)
   const searchQuery = ref('')
   
+  // API-ден рецепттерді алу
+  const fetchRecipes = async () => {
+    try {
+      loading.value = true
+      const data = await $fetch('https://68448e3771eb5d1be033990d.mockapi.io/api/v1/recipes')
+      recipes.value = data.map(recipe => ({
+        id: recipe.idMeal,
+        title: recipe.strMeal,
+        category: recipe.strCategory,
+        image: recipe.strMealThumb,
+        instructions: recipe.strInstructions
+      }))
+    } catch (error) {
+      console.error('Рецепттерді жүктеу қатесі:', error)
+      recipes.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // Іздеу
   const searchRecipes = (query) => {
     searchQuery.value = query
   }
   
+  // Фильтрленген рецепттер
   const filteredRecipes = computed(() => {
     if (!searchQuery.value) return recipes.value
     return recipes.value.filter(recipe => 
@@ -22,5 +40,14 @@ export const useRecipesStore = defineStore('recipes', () => {
     )
   })
   
-  return { recipes: filteredRecipes, searchRecipes, searchQuery }
+  // Бастапқы жүктеу
+  fetchRecipes()
+  
+  return { 
+    recipes: filteredRecipes, 
+    loading, 
+    searchRecipes, 
+    searchQuery,
+    fetchRecipes 
+  }
 })
