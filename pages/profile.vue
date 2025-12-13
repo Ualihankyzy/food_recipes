@@ -9,110 +9,120 @@
       <h2 class="text-lg font-semibold mb-1">{{ form.firstName }} {{ form.lastName }}</h2>
       <p class="text-sm text-gray-500 mb-8">User</p>
 
-      <nav class="w-full space-y-2">
-        <button
-          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-orange-600 font-medium text-sm"
-        >
-          <span>Personal Information</span>
-        </button>
-        <button
-          class="w-full flex items-center gap-2 px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm"
-        >
-          <span>Login & Password</span>
-        </button>
-        <button
-          @click="handleLogout"
-          class="w-full flex items-center gap-2 px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm"
-        >
-          <span>Log Out</span>
-        </button>
-      </nav>
+     <nav class="w-full space-y-2">
+  <button
+    @click="activeTab = 'info'"
+    :class="[
+      'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm',
+      activeTab === 'info'
+        ? 'bg-orange-100 text-orange-600 font-medium'
+        : 'text-gray-600 hover:bg-gray-100'
+    ]"
+  >
+    Personal Information
+  </button>
+
+  <button
+    @click="activeTab = 'auth'"
+    :class="[
+      'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm',
+      activeTab === 'auth'
+        ? 'bg-orange-100 text-orange-600 font-medium'
+        : 'text-gray-600 hover:bg-gray-100'
+    ]"
+  >
+    Login & Password
+  </button>
+
+  <button
+    @click="handleLogout"
+    class="w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm text-gray-600 hover:bg-gray-100"
+  >
+    Log Out
+  </button>
+</nav>
+
     </aside>
 
     <!-- Оң жақ контент -->
-    <main class="flex-1 px-8 py-10">
-      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8">
-        <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
+   <!-- Оң жақ үлкен карточка -->
+<main class="flex-1 px-8 py-10">
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8">
 
-        <!-- Жыныс -->
-        <div class="flex gap-6 mb-6 text-sm">
-          <label class="flex items-center gap-2">
-            <input type="radio" value="male" v-model="form.gender" />
-            <span>Male</span>
-          </label>
-          <label class="flex items-center gap-2">
-            <input type="radio" value="female" v-model="form.gender" />
-            <span>Female</span>
-          </label>
-        </div>
-
-        <!-- Форма -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-          <div>
-            <label class="block mb-1 text-gray-500">First Name</label>
-            <input v-model="form.firstName" class="input" type="text" />
-          </div>
-          <div>
-            <label class="block mb-1 text-gray-500">Last Name</label>
-            <input v-model="form.lastName" class="input" type="text" />
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label class="block mb-1 text-gray-500 text-sm">Email</label>
-          <div class="flex items-center gap-2">
-            <input v-model="form.email" class="input flex-1" type="email" />
-            <span class="text-green-500 text-xs font-medium">Verified</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-          <div>
-            <label class="block mb-1 text-gray-500">Address</label>
-            <input v-model="form.address" class="input" type="text" />
-          </div>
-          <div>
-            <label class="block mb-1 text-gray-500">Date of Birth</label>
-            <input v-model="form.birthDate" class="input" type="date" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
-          <div>
-            <label class="block mb-1 text-gray-500">Phone Number</label>
-            <input v-model="form.phone" class="input" type="tel" />
-          </div>
-          <div>
-            <label class="block mb-1 text-gray-500">Location</label>
-            <input v-model="form.location" class="input" type="text" />
-          </div>
-        </div>
-
-        <!-- Төменгі батырмалар -->
-        <div class="flex justify-end gap-4">
-          <button
-            type="button"
-            @click="resetForm"
-            class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium"
-          >
-            Discard Changes
-          </button>
-          <button
-            type="button"
-            @click="saveProfile"
-            class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium"
-          >
-            Save Changes
-          </button>
-        </div>
-
-        <p v-if="success" class="mt-4 text-sm text-green-600">{{ success }}</p>
+    <!-- 1) Personal Information табы -->
+    <section v-if="activeTab === 'info'">
+      <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
+      <!-- Сенің бұрынғы аты, address, phone, location формалары осында қалады -->
+      <!-- ... -->
+      <div class="flex justify-end gap-4 mt-8">
+        <button @click="resetInfo" class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium">
+          Discard Changes
+        </button>
+        <button @click="saveInfo" class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium">
+          Save Changes
+        </button>
       </div>
-    </main>
+    </section>
+
+    <!-- 2) Login & Password табы -->
+    <section v-else-if="activeTab === 'auth'">
+      <h1 class="text-2xl font-bold mb-6">Login & Password</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+        <div class="md:col-span-2">
+          <label class="block mb-1 text-gray-500">Email</label>
+          <input
+            v-model="authForm.email"
+            type="email"
+            class="w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-1 text-gray-500">Current Password</label>
+          <input
+            v-model="authForm.currentPassword"
+            type="password"
+            class="w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+        <div>
+          <label class="block mb-1 text-gray-500">New Password</label>
+          <input
+            v-model="authForm.newPassword"
+            type="password"
+            class="w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+      </div>
+
+      <p v-if="authError" class="text-sm text-red-500 mb-4">{{ authError }}</p>
+      <p v-if="authSuccess" class="text-sm text-green-600 mb-4">{{ authSuccess }}</p>
+
+      <div class="flex justify-end gap-4">
+        <button
+          @click="resetAuth"
+          class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium"
+        >
+          Discard Changes
+        </button>
+        <button
+          @click="saveAuth"
+          class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium"
+        >
+          Save Changes
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
   </div>
 </template>
 
 <script setup>
+    const activeTab = ref<'info' | 'auth'>('info') 
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -168,6 +178,52 @@ const handleLogout = () => {
   localStorage.clear()
   router.push('/login')
 }
+
+
+const authForm = ref({
+  email: '',
+  currentPassword: '',
+  newPassword: ''
+})
+
+const authError = ref('')
+const authSuccess = ref('')
+
+onMounted(() => {
+  // Профиль ашылғанда email мен "ескі" пароль localStorage-тан оқимыз
+  authForm.value.email = localStorage.getItem('email') || ''
+})
+
+const resetAuth = () => {
+  authError.value = ''
+  authSuccess.value = ''
+  authForm.value.email = localStorage.getItem('email') || ''
+  authForm.value.currentPassword = ''
+  authForm.value.newPassword = ''
+}
+
+const saveAuth = () => {
+  authError.value = ''
+  authSuccess.value = ''
+
+  if (!authForm.value.email) {
+    authError.value = 'Email бос болмауы керек'
+    return
+  }
+
+  // Қарапайым локал өзгеріс: тек localStorage жаңартамыз
+  localStorage.setItem('email', authForm.value.email)
+
+  // Егер жаңа пароль жазса, соны сақтаймыз (реалда бекендке жіберу керек)
+  if (authForm.value.newPassword) {
+    localStorage.setItem('password', authForm.value.newPassword)
+  }
+
+  authForm.value.currentPassword = ''
+  authForm.value.newPassword = ''
+  authSuccess.value = 'Login & Password сәтті жаңартылды'
+}
+
 </script>
 
 <style scoped>
