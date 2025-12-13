@@ -70,29 +70,50 @@
   </div>
 </template>
 <script setup>
-import axios from "axios"; // ✅ 1-ШЫ ЖОЛ
-import { ref } from "vue"; // ✅ 2-ШЫ ЖОЛ
-import { useRouter } from "vue-router"; // ✅ 3-ШЫ ЖОЛ
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter(); // ✅ ROUTER
-const form = ref({ email: "", password: "" }); // ✅ FORM
-const error = ref(""); // ✅ ERROR
+const router = useRouter();
+
+const form = ref({
+  email: "",
+  password: "",
+});
+
+const error = ref("");
 
 const handleLogin = async () => {
-  // ✅ СІЗДІҢ КОДЫҢЫЗ
   try {
     const response = await axios.post(
       "https://medical-backend-54hp.onrender.com/api/auth/login",
       form.value
     );
 
-  localStorage.setItem("userId", response.data.data.user.id);
-localStorage.setItem("userName", response.data.data.user.name);
-localStorage.setItem("token", response.data.data.token);
+    localStorage.setItem("userId", response.data.data.user.id);
+    localStorage.setItem("userName", response.data.data.user.name);
+    localStorage.setItem("token", response.data.data.token);
 
-router.push("/");
+    router.push("/");
   } catch (err) {
-    error.value = err.response?.data?.message;
+    error.value = err.response?.data?.message || "Login error";
   }
 };
+
+// ✅ signup-тан келген деректермен авто login
+onMounted(() => {
+  const email = localStorage.getItem("loginEmail");
+  const password = localStorage.getItem("loginPassword");
+
+  if (email && password) {
+    form.value.email = email;
+    form.value.password = password;
+
+    // бір рет қана қолдану
+    localStorage.removeItem("loginEmail");
+    localStorage.removeItem("loginPassword");
+
+    handleLogin();
+  }
+});
 </script>

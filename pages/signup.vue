@@ -123,23 +123,23 @@ const handleSubmit = async () => {
   success.value = "";
 
   try {
-    const response = await axios.post(
+    await axios.post(
       "https://medical-backend-54hp.onrender.com/api/auth/register",
       form.value
     );
 
-    localStorage.setItem("userId", response.data.data.user.id);
-    localStorage.setItem("userName", response.data.data.user.name);
-    localStorage.setItem("token", response.data.data.token);
+    // ✅ signup-тағы деректерді login үшін сақтау
+    localStorage.setItem("loginEmail", form.value.email);
+    localStorage.setItem("loginPassword", form.value.password);
 
-    success.value = "Вы успешно зарегистрировались!";
-    form.value = { name: "", email: "", password: "" };
+    success.value = "Регистрация успешна!";
 
     setTimeout(() => {
-      router.push("/"); // ← "/login" орнына "/"
-    }, 1500);
+      router.push("/login"); // 🔥 login бетіне өтеді
+    }, 1000);
   } catch (err) {
     error.value = err.response?.data?.message || "Ошибка регистрации";
   }
 };
 </script>
+
