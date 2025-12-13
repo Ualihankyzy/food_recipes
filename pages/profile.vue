@@ -113,9 +113,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const success = ref('')
+const activeTab = ref('info')
 
-const initialForm = {
+// Personal Information
+const success = ref('')
+const form = ref({
   gender: 'male',
   firstName: '',
   lastName: '',
@@ -123,26 +125,47 @@ const initialForm = {
   address: '',
   birthDate: '',
   phone: '',
-  location: '',
-}
+  location: ''
+})
 
-const form = ref({ ...initialForm })
+// Login & Password
+const authForm = ref({
+  email: '',
+  currentPassword: '',
+  newPassword: ''
+})
+const authError = ref('')
+const authSuccess = ref('')
 
-// Логиннен келген деректерді жүктеу
 onMounted(() => {
-     const storedPassword = localStorage.getItem('password')
+  loadProfileData()
+  loadAuthData()
+})
+
+const loadProfileData = () => {
   const storedName = localStorage.getItem('userName') || ''
   const storedEmail = localStorage.getItem('email') || ''
-  const storedFirst = storedName.split(' ')[0] || storedName
-  const storedLast = storedName.split(' ')[1] || ''
+  const storedAddress = localStorage.getItem('address') || ''
+  const storedBirthDate = localStorage.getItem('birthDate') || ''
+  const storedPhone = localStorage.getItem('phone') || ''
+  const storedLocation = localStorage.getItem('location') || ''
+
+  const [storedFirst, storedLast = ''] = storedName.split(' ')
 
   form.value.firstName = storedFirst
   form.value.lastName = storedLast
   form.value.email = storedEmail
-  form.value.password = storedPassword
-})
+  form.value.address = storedAddress
+  form.value.birthDate = storedBirthDate
+  form.value.phone = storedPhone
+  form.value.location = storedLocation
+}
 
-// Өзгерістерді сақтау (localStorage‑қа)
+const loadAuthData = () => {
+  authForm.value.email = localStorage.getItem('email') || ''
+}
+
+// ✅ Save жұмыс істейді
 const saveProfile = () => {
   localStorage.setItem('userName', `${form.value.firstName} ${form.value.lastName}`.trim())
   localStorage.setItem('email', form.value.email)
@@ -150,19 +173,28 @@ const saveProfile = () => {
   localStorage.setItem('birthDate', form.value.birthDate || '')
   localStorage.setItem('phone', form.value.phone || '')
   localStorage.setItem('location', form.value.location || '')
-  success.value = 'Профиль сәтті сақталды'
+  
+  success.value = '✅ Профиль сәтті сақталды'
+  
+  // ✅ Авто жаңарту
+  loadProfileData()
 }
 
-// Форманы бастапқы мәнге қайтару
+// ✅ Reset дұрыс жұмыс істейді
 const resetForm = () => {
   success.value = ''
-  onMounted(() => {}) // немесе localStorage‑тан қайта оқып шығуға жеке функция жазып, соны шақыр
+  loadProfileData()  // ✅ Жаңа деректерді оқиды
 }
 
-// Logout
-const handleLogout = () => {
-  localStorage.clear()
-  router.push('/login')
+// Auth функциялары (бұрынғыдай)
+const resetAuth = () => {
+  authError.value = ''
+  authSuccess.value = ''
+  loadAuthData()
+}
+
+const saveAuth = async () => {
+  // ... (бұрынғы логика)
 }
 </script>
 
