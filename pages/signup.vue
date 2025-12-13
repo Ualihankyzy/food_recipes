@@ -66,18 +66,13 @@
           </div>
 
           <!-- Sign Up button -->
-          <!-- Sign Up button -->
-  <button @click="handleSubmit" class="w-full bg-[#f8961e]...">
-    Sign Up
-  </button>
-  
-  <!-- ✅ FORM ІШІНЕ! -->
-  <div v-if="error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md p-3">
-    {{ error }}
-  </div>
-  <div v-if="success" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-md p-3">
-    {{ success }}
-  </div>
+          <button
+            type="button"
+            @click="handleSubmit"
+            class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold transition-colors shadow-md"
+          >
+            Sign Up
+          </button>
         </form>
 
         <p class="mt-10 text-sm text-gray-500">
@@ -128,37 +123,23 @@ const handleSubmit = async () => {
   success.value = "";
 
   try {
-    // 1. REGISTER
-    const registerResponse = await axios.post(
-      "https://food-recipes-eight-ivory.vercel.app/signup",
+    const response = await axios.post(
+      "https://medical-backend-54hp.onrender.com/api/auth/register",
       form.value
     );
 
-    // 2. AUTO LOGIN (жаңа тіркелген email/password)
-    const loginResponse = await axios.post(
-      "https://food-recipes-eight-ivory.vercel.app/login",
-      {
-        email: form.value.email,
-        password: form.value.password
-      }
-    );
+    localStorage.setItem("userId", response.data.data.user.id);
+    localStorage.setItem("userName", response.data.data.user.name);
+    localStorage.setItem("token", response.data.data.token);
 
-    // 3. localStorage сақтау
-    localStorage.setItem("userId", loginResponse.data.data.user.id);
-    localStorage.setItem("userName", loginResponse.data.data.user.name);
-    localStorage.setItem("token", loginResponse.data.data.token);
-
-    success.value = "Вы успешно зарегистрировались и вошли!";
+    success.value = "Вы успешно зарегистрировались!";
     form.value = { name: "", email: "", password: "" };
 
-    // 4. LOGIN бетіне өту (авто-login болған соң)
     setTimeout(() => {
-      router.push("/login");
+      router.push("/"); // ← "/login" орнына "/"
     }, 1500);
-
   } catch (err) {
     error.value = err.response?.data?.message || "Ошибка регистрации";
-    console.error("Error:", err.response?.data);
   }
 };
 </script>
