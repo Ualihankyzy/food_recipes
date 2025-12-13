@@ -130,13 +130,13 @@ const handleSubmit = async () => {
   try {
     // 1. REGISTER
     const registerResponse = await axios.post(
-      "https://medical-backend-54hp.onrender.com/api/auth/register",
+      "https://food-recipes-eight-ivory.vercel.app/signup",
       form.value
     );
 
     // 2. AUTO LOGIN (жаңа тіркелген email/password)
     const loginResponse = await axios.post(
-      "https://medical-backend-54hp.onrender.com/api/auth/login",
+      "https://food-recipes-eight-ivory.vercel.app/login",
       {
         email: form.value.email,
         password: form.value.password
