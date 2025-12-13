@@ -134,6 +134,7 @@ const form = ref({ ...initialForm })
 
 // Логиннен келген деректерді жүктеу
 onMounted(() => {
+     const storedPassword = localStorage.getItem('password')
   const storedName = localStorage.getItem('userName') || ''
   const storedEmail = localStorage.getItem('email') || ''
   const storedFirst = storedName.split(' ')[0] || storedName
