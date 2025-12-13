@@ -100,20 +100,5 @@ const handleLogin = async () => {
   }
 };
 
-// ✅ signup-тан келген деректермен авто login
-onMounted(() => {
-  const email = localStorage.getItem("loginEmail");
-  const password = localStorage.getItem("loginPassword");
 
-  if (email && password) {
-    form.value.email = email;
-    form.value.password = password;
-
-    // бір рет қана қолдану
-    localStorage.removeItem("loginEmail");
-    localStorage.removeItem("loginPassword");
-
-    handleLogin();
-  }
-});
 </script>
