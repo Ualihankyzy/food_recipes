@@ -1,10 +1,6 @@
 export default defineNuxtConfig({
-  modules: [
-    '@nuxtjs/tailwindcss',
-    '@pinia/nuxt'  // ← БҰЛ ЖОЛ МІНДЕТТІ!
-  ],
+  modules: ['@nuxtjs/tailwindcss'],  
   build: {
-    transpile: ['@heroicons/vue']
-  },
-  // pinia секциясы МҮЛДЕ ҚАЖЕТ ЕМЕС, @pinia/nuxt автоматты табады
+    transpile: ['@heroicons/vue']     
+  }
 })

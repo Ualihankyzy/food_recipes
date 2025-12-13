@@ -1,4 +1,4 @@
-<template>
+i<template>
   <div class="flex min-h-screen font-sans">
     <!-- Сол жақ: full screen сурет -->
     <div class="hidden md:block w-1/2 h-screen">
@@ -144,4 +144,3 @@ localStorage.setItem("password", form.value.password);
   }
 };
 </script>
-
