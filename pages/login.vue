@@ -93,10 +93,9 @@ const handleLogin = async () => {
 
     // Дұрыс болса
     if (response.data.data?.user?.id) {
-     localStorage.setItem('token', loginResponse.data.data.token)
-localStorage.setItem('userId', loginResponse.data.data.user.id)
-localStorage.setItem('userName', loginResponse.data.data.user.name)
-localStorage.setItem('email', form.email)
+      localStorage.setItem("userId", response.data.data.user.id);
+      localStorage.setItem("userName", response.data.data.user.name);
+      localStorage.setItem("token", response.data.data.token);
 
       router.push("/"); // бірден index бетіне
     } else {
