@@ -114,21 +114,25 @@ const handleSubmit = async () => {
   try {
     const response = await axios.post(
       "https://food-recipes-eight-ivory.vercel.app/signup",
-      form.value  // ✅ ref.value
+      form.value
     )
 
-    console.log("Регистрация прошла успешно!")
-    success.value = "Вы успешно зарегистрировались!"
 
-    // Форманы тазалау
+    localStorage.setItem('userId', response.data.data.user.id)
+    localStorage.setItem('userName', response.data.data.user.name)
+    localStorage.setItem('token', response.data.data.token)
+
+    success.value = "Вы успешно зарегистрировались!"
     form.value = { name: '', email: '', password: '' }
 
+  
     setTimeout(() => {
-      router.push("/login")
+      router.push("/")  // ← "/login" орнына "/"
     }, 1500)
+
   } catch (err) {
     error.value = err.response?.data?.message || "Ошибка регистрации"
-    console.log(error.value)
   }
 }
+
 </script>
