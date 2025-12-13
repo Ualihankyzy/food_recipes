@@ -45,6 +45,7 @@
           </div>
 
           <button
+           @click="handleLogin"
             class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold hover:bg-[#f8961e] transition-colors"
           >
             Login
