@@ -61,3 +61,23 @@
     </div>
   </div>
 </template>
+<script setup>
+  const handleLogin = async () => {
+  try {
+    const response = await axios.post(
+      "https://food-recipes-eight-ivory.vercel.app/login",
+      form.value
+    )
+    
+    // ✅ userId сақтау
+    localStorage.setItem('userId', response.data.data.user.id)
+    localStorage.setItem('userName', response.data.data.user.name)
+    localStorage.setItem('token', response.data.data.token)
+    
+    router.push("/dashboard")
+  } catch (err) {
+    error.value = err.response?.data?.message
+  }
+}
+
+  </script>

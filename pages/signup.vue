@@ -28,7 +28,7 @@
               Name
             </label>
             <input
-              v-model="name"
+             v-model="form.name" 
               type="text"
               class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
               placeholder="Your name"
@@ -41,7 +41,7 @@
               Email
             </label>
             <input
-              v-model="email"
+             v-model="form.email"
               type="email"
               class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
               placeholder="you@example.com"
@@ -54,7 +54,7 @@
               Password
             </label>
             <input
-              v-model="password"
+              v-model="form.password"
               type="password"
               class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
               placeholder="Create a password"
@@ -63,8 +63,9 @@
 
           <!-- Sign Up button -->
           <button
+          
             type="button"
-            @click="register"
+           @click="handleSubmit"
             class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold  transition-colors shadow-md"
           >
             Sign Up
@@ -79,17 +80,55 @@
         </p>
       </div>
     </div>
+
+      <div v-if="error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+    {{ error }}
+  </div>
+  <div v-if="success" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+    {{ success }}
+  </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
+const router = useRouter()
 
-const register = () => {
-  console.log('SIGNUP', name.value, email.value, password.value)
+// ✅ Form ref жасап, v-model ішінде қолданыңыз
+const form = ref({
+  name: '',
+  email: '',
+  password: ''
+})
+
+const error = ref('')
+const success = ref('')
+
+const handleSubmit = async () => {
+  error.value = ""
+  success.value = ""
+
+  try {
+    const response = await axios.post(
+      "https://food-recipes-eight-ivory.vercel.app/signup",
+      form.value  // ✅ ref.value
+    )
+
+    console.log("Регистрация прошла успешно!")
+    success.value = "Вы успешно зарегистрировались!"
+
+    // Форманы тазалау
+    form.value = { name: '', email: '', password: '' }
+
+    setTimeout(() => {
+      router.push("/login")
+    }, 1500)
+  } catch (err) {
+    error.value = err.response?.data?.message || "Ошибка регистрации"
+    console.log(error.value)
+  }
 }
 </script>
