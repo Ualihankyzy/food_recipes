@@ -2,7 +2,7 @@
   <div class="flex min-h-screen font-sans">
     <!-- Сол жақ: full screen сурет -->
     <div class="hidden md:block w-1/2 h-screen">
-      <img src="../public/images/food.jpg" class="w-full h-full object-cover">
+      <img src="../public/images/food.jpg" class="w-full h-full object-cover" />
     </div>
 
     <!-- Оң жақ: Sign Up форма -->
@@ -11,9 +11,13 @@
         <div class="mb-10">
           <div class="flex items-center gap-3 mb-5">
             <div class="w-4 h-4 bg-[#f8961e] rounded-sm"></div>
-            <span class="font-semibold text-gray-800 text-base">FoodRecipes</span>
+            <span class="font-semibold text-gray-800 text-base"
+              >FoodRecipes</span
+            >
           </div>
-          <h1 class="text-3xl text-[#6a994e] md:text-5xl font-extrabold mb-4 leading-tight">
+          <h1
+            class="text-3xl text-[#6a994e] md:text-5xl font-extrabold mb-4 leading-tight"
+          >
             Create Account
           </h1>
           <p class="text-gray-500 text-base md:text-lg">
@@ -28,7 +32,7 @@
               Name
             </label>
             <input
-             v-model="form.name" 
+              v-model="form.name"
               type="text"
               class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
               placeholder="Your name"
@@ -41,7 +45,7 @@
               Email
             </label>
             <input
-             v-model="form.email"
+              v-model="form.email"
               type="email"
               class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
               placeholder="you@example.com"
@@ -63,10 +67,9 @@
 
           <!-- Sign Up button -->
           <button
-          
             type="button"
-           @click="handleSubmit"
-            class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold  transition-colors shadow-md"
+            @click="handleSubmit"
+            class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold transition-colors shadow-md"
           >
             Sign Up
           </button>
@@ -74,65 +77,69 @@
 
         <p class="mt-10 text-sm text-gray-500">
           Already have an account?
-          <NuxtLink to="/login" class="font-semibold text-[#f8961e] hover:underline">
+          <NuxtLink
+            to="/login"
+            class="font-semibold text-[#f8961e] hover:underline"
+          >
             Login
           </NuxtLink>
         </p>
       </div>
     </div>
 
-      <div v-if="error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-    {{ error }}
-  </div>
-  <div v-if="success" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-    {{ success }}
-  </div>
+    <div
+      v-if="error"
+      class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded"
+    >
+      {{ error }}
+    </div>
+    <div
+      v-if="success"
+      class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded"
+    >
+      {{ success }}
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
-// ✅ Form ref жасап, v-model ішінде қолданыңыз
 const form = ref({
-  name: '',
-  email: '',
-  password: ''
-})
+  name: "",
+  email: "",
+  password: "",
+});
 
-const error = ref('')
-const success = ref('')
+const error = ref("");
+const success = ref("");
 
 const handleSubmit = async () => {
-  error.value = ""
-  success.value = ""
+  error.value = "";
+  success.value = "";
 
   try {
     const response = await axios.post(
-      "https://food-recipes-eight-ivory.vercel.app/signup",
+      "https://medical-backend-54hp.onrender.com/api/auth/register",
       form.value
-    )
+    );
 
+    localStorage.setItem("userId", response.data.data.user.id);
+    localStorage.setItem("userName", response.data.data.user.name);
+    localStorage.setItem("token", response.data.data.token);
 
-    localStorage.setItem('userId', response.data.data.user.id)
-    localStorage.setItem('userName', response.data.data.user.name)
-    localStorage.setItem('token', response.data.data.token)
+    success.value = "Вы успешно зарегистрировались!";
+    form.value = { name: "", email: "", password: "" };
 
-    success.value = "Вы успешно зарегистрировались!"
-    form.value = { name: '', email: '', password: '' }
-
-  
     setTimeout(() => {
-      router.push("/")  // ← "/login" орнына "/"
-    }, 1500)
-
+      router.push("/"); // ← "/login" орнына "/"
+    }, 1500);
   } catch (err) {
-    error.value = err.response?.data?.message || "Ошибка регистрации"
+    error.value = err.response?.data?.message || "Ошибка регистрации";
   }
-}
-
+};
 </script>
