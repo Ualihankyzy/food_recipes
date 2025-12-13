@@ -71,7 +71,7 @@
 </template>
 <script setup>
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -84,21 +84,26 @@ const form = ref({
 const error = ref("");
 
 const handleLogin = async () => {
+  if (!form.value.email || !form.value.password) {
+    error.value = "Email және password толтырыңыз";
+    return;
+  }
+
   try {
     const response = await axios.post(
-      "https://food-recipes-eight-ivory.vercel.app/login",
+      "https://medical-backend-54hp.onrender.com/api/auth/login",
       form.value
     );
 
+    // Тек сәтті login болса ғана
     localStorage.setItem("userId", response.data.data.user.id);
     localStorage.setItem("userName", response.data.data.user.name);
     localStorage.setItem("token", response.data.data.token);
 
-    router.push("/");
+    router.push("/"); // "/" — index бетіне бағыттау
   } catch (err) {
     error.value = err.response?.data?.message || "Login error";
   }
 };
-
-
 </script>
+
