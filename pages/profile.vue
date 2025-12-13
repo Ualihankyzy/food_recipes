@@ -191,15 +191,11 @@ const resetForm = () => {
   loadProfileData()  // ✅ Жаңа деректерді оқиды
 }
 
-// Auth функциялары (бұрынғыдай)
-const resetAuth = () => {
-  authError.value = ''
-  authSuccess.value = ''
-  loadAuthData()
-}
 
-const saveAuth = async () => {
-  // ... (бұрынғы логика)
+
+const handleLogout = () => {
+  localStorage.clear()  // барлық деректерді өшіру
+  router.push('/login') // login бетіне жіберу
 }
 </script>
 
