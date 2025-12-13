@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-screen w-full relative">
-
     <!-- NAVBAR -->
-    <header class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4 ">
+    <header
+      class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4"
+    >
       <h1 class="text-2xl font-bold mr-20">Recipes</h1>
 
       <nav class="flex items-center gap-6 text-lg relative">
-
         <!-- Search Toggle Icon -->
         <svg
           @click="showSearch = !showSearch"
@@ -16,8 +16,12 @@
           stroke="currentColor"
           class="w-6 h-6 cursor-pointer hover:text-gray-300 transition"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
+          />
         </svg>
 
         <!-- Animated Search Input -->
@@ -34,13 +38,22 @@
           />
         </transition>
 
-        <a href="login" class="hover:underline">Login</a>
-        <a href="signup" class="hover:underline">Sign In</a>
+        <!-- Auth навигация -->
+        <template v-if="isAuth">
+          <span class="text-sm mr-2">Hello, {{ userName }}</span>
+          <a href="/dashboard" class="hover:underline">Profile</a>
+          <button @click="logout" class="hover:underline">Logout</button>
+        </template>
+
+        <template v-else>
+          <a href="/login" class="hover:underline">Login</a>
+          <a href="/signup" class="hover:underline">Sign In</a>
+        </template>
       </nav>
     </header>
 
     <!-- LIGHT PNG (CENTERED) -->
-    <div class="w-full flex justify-center items-center gap-6 absolute z-20 ">
+    <div class="w-full flex justify-center items-center gap-6 absolute z-20">
       <img src="../public/images/light.png" class="w-64" />
       <img src="../public/images/light.png" class="w-64" />
       <img src="../public/images/light.png" class="w-64" />
@@ -48,82 +61,74 @@
 
     <!-- BACKGROUND SECTION -->
     <section class="relative w-full min-h-screen flex justify-center items-center">
-      <img src="../public/images/pexels-catscoming-1907227 3.jpg" class="absolute top-0 left-0 w-full h-full object-cover" />
+      <img
+        src="../public/images/pexels-catscoming-1907227 3.jpg"
+        class="absolute top-0 left-0 w-full h-full object-cover"
+      />
 
       <!-- TEXT CONTENT -->
       <div class="relative z-10 text-center text-white px-4 mb-56">
-        <h2 class="text-7xl handwriting">Simple and Tasty <br> Recipes</h2>
+        <h2 class="text-7xl handwriting">
+          Simple and Tasty <br />
+          Recipes
+        </h2>
       </div>
     </section>
 
-    <div class="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <!-- CONTENT -->
+    <div
+      class="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div class="max-w-7xl mx-auto">
-
         <!-- Header -->
         <div class="text-center mb-12">
           <h1 class="text-6xl md:text-6xl font-black text-[#f8961e] mb-4 mt-8">
             Delicious Recipes
           </h1>
-
- 
-
- 
-        
         </div>
 
-          <div class="relative inline-block mb-6 ">
+        <!-- A-Z Dropdown -->
+        <div class="relative inline-block mb-6">
+          <button
+            @click="lettersOpen = !lettersOpen"
+            class="bg-[#f8961e] px-6 py-3 rounded-2xl font-bold shadow-md transition text-white"
+          >
+            A-Z
+          </button>
 
-            
+          <div
+            v-if="lettersOpen"
+            class="absolute mt-2 w-64 bg-white rounded-xl shadow-lg p-4 flex flex-wrap gap-2 z-50"
+          >
             <button
-              @click="lettersOpen = !lettersOpen"
-              class="bg-[#f8961e] px-6 py-3 rounded-2xl font-bold shadow-md  transition text-white"
+              v-for="letter in 'abcdefghijklmnopqrstuvwxyz'.split('')"
+              :key="letter"
+              @click="filterByLetter(letter)"
+              :class="[
+                'px-3 py-2 rounded-lg font-bold text-sm uppercase transition',
+                activeLetter === letter
+                  ? 'bg-blue-500 text-white scale-105'
+                  : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              ]"
             >
-              A-Z 
+              {{ letter }}
             </button>
 
-
-
-
-
-
-            <!-- Dropdown Letters -->
-            <div v-if="lettersOpen" class="absolute mt-2 w-64 bg-white rounded-xl shadow-lg p-4 flex flex-wrap gap-2 z-50">
-              <button
-                v-for="letter in 'abcdefghijklmnopqrstuvwxyz'.split('')"
-                :key="letter"
-                @click="filterByLetter(letter)"
-                :class="[
-                  'px-3 py-2 rounded-lg font-bold text-sm uppercase transition',
-                  activeLetter === letter 
-                    ? 'bg-blue-500 text-white scale-105' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-                ]"
-              >
-                {{ letter }}
-              </button>
-
-              <!-- All Button -->
-              <button
-                @click="clearFilter"
-                class="px-3 py-2 rounded-lg font-bold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
-              >
-                All
-              </button>
-            </div>
+            <button
+              @click="clearFilter"
+              class="px-3 py-2 rounded-lg font-bold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
+            >
+              All
+            </button>
           </div>
-
-
-
-
-
+        </div>
 
         <!-- Recipes Grid -->
-        <div ref="recipesSection"
-             v-if="!pending && !errorMessage && filteredRecipes.length"
-             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+        <div
+          ref="recipesSection"
+          v-if="!pending && !errorMessage && filteredRecipes.length"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
         >
-
-        
           <button
             v-for="recipe in filteredRecipes"
             :key="recipe.idMeal"
@@ -137,19 +142,27 @@
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 loading="lazy"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              ></div>
             </div>
 
             <div class="p-5 flex flex-col gap-3">
-              <h3 class="font-bold text-lg text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+              <h3
+                class="font-bold text-lg text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors"
+              >
                 {{ recipe.strMeal }}
               </h3>
 
               <div class="flex flex-wrap gap-2 text-xs">
-                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
+                <span
+                  class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
+                >
                   {{ recipe.strCategory }}
                 </span>
-                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+                <span
+                  class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
+                >
                   {{ recipe.strArea }}
                 </span>
               </div>
@@ -170,15 +183,23 @@
         <!-- Loading -->
         <div v-if="pending" class="flex justify-center py-20">
           <div class="relative w-20 h-20">
-            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-sky-400 animate-spin"></div>
-            <div class="absolute inset-3 rounded-full border-4 border-transparent border-r-red-400 animate-spin-slow"></div>
-            <div class="absolute inset-6 rounded-full border-4 border-transparent border-b-amber-400 animate-spin-slower"></div>
+            <div
+              class="absolute inset-0 rounded-full border-4 border-transparent border-t-sky-400 animate-spin"
+            ></div>
+            <div
+              class="absolute inset-3 rounded-full border-4 border-transparent border-r-red-400 animate-spin-slow"
+            ></div>
+            <div
+              class="absolute inset-6 rounded-full border-4 border-transparent border-b-amber-400 animate-spin-slower"
+            ></div>
           </div>
         </div>
 
         <!-- Error -->
         <div v-else-if="errorMessage" class="text-center py-16">
-          <p class="text-red-500 text-xl font-semibold mb-4">{{ errorMessage }}</p>
+          <p class="text-red-500 text-xl font-semibold mb-4">
+            {{ errorMessage }}
+          </p>
           <button
             @click="fetchAllRecipes"
             class="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold"
@@ -208,7 +229,9 @@
           class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           @click.self="closeModal"
         >
-          <div class="bg-white w-full max-w-md max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+          <div
+            class="bg-white w-full max-w-md max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+          >
             <div class="relative h-48 w-full">
               <img
                 :src="selectedRecipe.strMealThumb"
@@ -222,7 +245,9 @@
                 ✕
               </button>
               <div class="absolute bottom-3 left-3 right-3">
-                <h2 class="text-xl font-bold text-white drop-shadow-lg line-clamp-2">
+                <h2
+                  class="text-xl font-bold text-white drop-shadow-lg line-clamp-2"
+                >
                   {{ selectedRecipe.strMeal }}
                 </h2>
               </div>
@@ -230,33 +255,50 @@
 
             <div class="flex-1 p-5 overflow-y-auto custom-scrollbar">
               <div class="flex flex-wrap gap-2 mb-4">
-                <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                <span
+                  class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold"
+                >
                   {{ selectedRecipe.strCategory }}
                 </span>
-                <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                <span
+                  class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold"
+                >
                   {{ selectedRecipe.strArea }}
                 </span>
               </div>
 
               <div class="mb-4">
-                <h3 class="text-lg font-semibold text-slate-900 mb-3">Инструкция</h3>
-                <p class="text-slate-700 leading-relaxed text-sm whitespace-pre-line line-clamp-4 md:line-clamp-none">
+                <h3 class="text-lg font-semibold text-slate-900 mb-3">
+                  Инструкция
+                </h3>
+                <p
+                  class="text-slate-700 leading-relaxed text-sm whitespace-pre-line line-clamp-4 md:line-clamp-none"
+                >
                   {{ selectedRecipe.strInstructions }}
                 </p>
               </div>
 
               <div class="mb-4">
-                <h3 class="text-lg font-semibold text-slate-900 mb-3">Ингредиенттер</h3>
-                <ul class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar">
+                <h3 class="text-lg font-semibold text-slate-900 mb-3">
+                  Ингредиенттер
+                </h3>
+                <ul
+                  class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar"
+                >
                   <li
                     v-for="(item, index) in fullIngredients.slice(0, 12)"
                     :key="index"
                     class="flex justify-between bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
                   >
                     <span class="truncate">{{ item.ingredient }}</span>
-                    <span class="font-semibold min-w-[60px] text-right">{{ item.measure }}</span>
+                    <span class="font-semibold min-w-[60px] text-right">
+                      {{ item.measure }}
+                    </span>
                   </li>
-                  <li v-if="fullIngredients.length > 12" class="text-xs text-slate-500 text-center py-2">
+                  <li
+                    v-if="fullIngredients.length > 12"
+                    class="text-xs text-slate-500 text-center py-2"
+                  >
                     +{{ fullIngredients.length - 12 }} тағы...
                   </li>
                 </ul>
@@ -281,91 +323,115 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const recipes = ref([]);
-const pending = ref(true);
-const errorMessage = ref(null);
+const router = useRouter()
 
-const activeLetter = ref(null);
-const selectedRecipe = ref(null);
-const showSearch = ref(false);
-const searchQuery = ref("");
-const recipesSection = ref(null);
+// Recipes state
+const recipes = ref([])
+const pending = ref(true)
+const errorMessage = ref(null)
 
-// Dropdown state
-const lettersOpen = ref(false);
+const activeLetter = ref(null)
+const selectedRecipe = ref(null)
+const showSearch = ref(false)
+const searchQuery = ref('')
+const recipesSection = ref(null)
+const lettersOpen = ref(false)
+
+// Auth state
+const isAuth = ref(false)
+const userName = ref('')
 
 // Fetch all recipes by letter
 const fetchAllRecipes = async () => {
   try {
-    pending.value = true;
-    errorMessage.value = null;
+    pending.value = true
+    errorMessage.value = null
 
-    const allRecipes = [];
-    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    const allRecipes = []
+    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
 
     for (const char of letters) {
-      const res = await $fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${char}`);
-      if (res.meals) allRecipes.push(...res.meals);
-      await new Promise(r => setTimeout(r, 50));
+      const res = await $fetch(
+        `https://www.themealdb.com/api/json/v1/1/search.php?f=${char}`
+      )
+      if (res.meals) allRecipes.push(...res.meals)
+      await new Promise((r) => setTimeout(r, 50))
     }
 
-    recipes.value = allRecipes;
+    recipes.value = allRecipes
   } catch (e) {
-    errorMessage.value = 'Error loading recipes';
+    errorMessage.value = 'Error loading recipes'
   } finally {
-    pending.value = false;
+    pending.value = false
   }
-};
+}
 
 // Modal
-const openModal = recipe => selectedRecipe.value = recipe;
-const closeModal = () => selectedRecipe.value = null;
+const openModal = (recipe) => (selectedRecipe.value = recipe)
+const closeModal = () => (selectedRecipe.value = null)
 
 // Full ingredients
 const fullIngredients = computed(() => {
-  if (!selectedRecipe.value) return [];
-  const list = [];
+  if (!selectedRecipe.value) return []
+  const list = []
   for (let i = 1; i <= 20; i++) {
-    const ing = selectedRecipe.value[`strIngredient${i}`];
-    const measure = selectedRecipe.value[`strMeasure${i}`];
-    if (ing && ing.trim()) list.push({ ingredient: ing, measure: measure || '' });
+    const ing = selectedRecipe.value[`strIngredient${i}`]
+    const measure = selectedRecipe.value[`strMeasure${i}`]
+    if (ing && ing.trim()) list.push({ ingredient: ing, measure: measure || '' })
   }
-  return list;
-});
+  return list
+})
 
 // Filter functions
-const filterByLetter = letter => {
-  activeLetter.value = letter;
-  lettersOpen.value = false; // close dropdown
-};
-const clearFilter = () => activeLetter.value = null;
+const filterByLetter = (letter) => {
+  activeLetter.value = letter
+  lettersOpen.value = false
+}
+const clearFilter = () => (activeLetter.value = null)
 
 // Filtered recipes
 const filteredRecipes = computed(() => {
-  if (!activeLetter.value) return recipes.value;
-  return recipes.value.filter(r => r.strMeal.toLowerCase().startsWith(activeLetter.value));
-});
+  if (!activeLetter.value) return recipes.value
+  return recipes.value.filter((r) =>
+    r.strMeal.toLowerCase().startsWith(activeLetter.value)
+  )
+})
 
 // Scroll
 const scrollToRecipes = () => {
-  if (recipesSection.value) recipesSection.value.scrollIntoView({ behavior: "smooth" });
-};
+  if (recipesSection.value)
+    recipesSection.value.scrollIntoView({ behavior: 'smooth' })
+}
 
 // Search bar hide on scroll
 const handleScroll = () => {
-  if (window.scrollY < 100) showSearch.value = false;
-};
-onMounted(() => {
-  window.addEventListener("scroll", handleScroll);
-});
-onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
-});
+  if (window.scrollY < 100) showSearch.value = false
+}
 
-// Initial fetch
-await fetchAllRecipes();
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+
+  // Auth күйін тексеру
+  const token = localStorage.getItem('token')
+  isAuth.value = !!token
+  userName.value = localStorage.getItem('userName') || ''
+
+  await fetchAllRecipes()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+// Logout
+const logout = () => {
+  localStorage.clear()
+  isAuth.value = false
+  router.push('/login')
+}
 </script>
 
 
