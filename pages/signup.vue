@@ -131,6 +131,8 @@ const handleSubmit = async () => {
     // ✅ signup-тағы деректерді login үшін сақтау
     localStorage.setItem("loginEmail", form.value.email);
     localStorage.setItem("loginPassword", form.value.password);
+    localStorage.setItem("email", form.value.email);
+localStorage.setItem("password", form.value.password);
 
     success.value = "Регистрация успешна!";
 

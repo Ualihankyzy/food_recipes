@@ -40,8 +40,7 @@
 
         <!-- Auth навигация -->
         <template v-if="isAuth">
-          <span class="text-sm mr-2">Hello, {{ userName }}</span>
-          <a href="/dashboard" class="hover:underline">Profile</a>
+          <a href="/profile" class="hover:underline">Profile</a>
           <button @click="logout" class="hover:underline">Logout</button>
         </template>
 

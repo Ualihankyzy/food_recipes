@@ -96,6 +96,8 @@ const handleLogin = async () => {
       localStorage.setItem("userId", response.data.data.user.id);
       localStorage.setItem("userName", response.data.data.user.name);
       localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("email", form.value.email);
+localStorage.setItem("password", form.value.password); 
 
       router.push("/"); // бірден index бетіне
     } else {

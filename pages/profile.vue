@@ -142,6 +142,7 @@ onMounted(() => {
   form.value.firstName = storedFirst
   form.value.lastName = storedLast
   form.value.email = storedEmail
+  form.value.password = storedPassword
 })
 
 // Өзгерістерді сақтау (localStorage‑қа)
