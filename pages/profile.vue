@@ -11,29 +11,15 @@
 
       <nav class="w-full space-y-2">
         <button
-          @click="activeTab = 'info'"
-          :class="[
-            'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm',
-            activeTab === 'info'
-              ? 'bg-orange-100 text-orange-600 font-medium'
-              : 'text-gray-600 hover:bg-gray-100'
-          ]"
+          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-orange-600 font-medium text-sm"
         >
           <span>Personal Information</span>
         </button>
-
         <button
-          @click="activeTab = 'auth'"
-          :class="[
-            'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm',
-            activeTab === 'auth'
-              ? 'bg-orange-100 text-orange-600 font-medium'
-              : 'text-gray-600 hover:bg-gray-100'
-          ]"
+          class="w-full flex items-center gap-2 px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm"
         >
           <span>Login & Password</span>
         </button>
-
         <button
           @click="handleLogout"
           class="w-full flex items-center gap-2 px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 text-sm"
@@ -46,139 +32,81 @@
     <!-- Оң жақ контент -->
     <main class="flex-1 px-8 py-10">
       <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8">
-        
-        <!-- Personal Information табы -->
-        <section v-if="activeTab === 'info'">
-          <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
+        <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
 
-          <!-- Жыныс -->
-          <div class="flex gap-6 mb-6 text-sm">
-            <label class="flex items-center gap-2">
-              <input type="radio" value="male" v-model="form.gender" />
-              <span>Male</span>
-            </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" value="female" v-model="form.gender" />
-              <span>Female</span>
-            </label>
+        <!-- Жыныс -->
+        <div class="flex gap-6 mb-6 text-sm">
+          <label class="flex items-center gap-2">
+            <input type="radio" value="male" v-model="form.gender" />
+            <span>Male</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" value="female" v-model="form.gender" />
+            <span>Female</span>
+          </label>
+        </div>
+
+        <!-- Форма -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+          <div>
+            <label class="block mb-1 text-gray-500">First Name</label>
+            <input v-model="form.firstName" class="input" type="text" />
           </div>
-
-          <!-- Форма -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-            <div>
-              <label class="block mb-1 text-gray-500">First Name</label>
-              <input v-model="form.firstName" class="input" type="text" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-500">Last Name</label>
-              <input v-model="form.lastName" class="input" type="text" />
-            </div>
+          <div>
+            <label class="block mb-1 text-gray-500">Last Name</label>
+            <input v-model="form.lastName" class="input" type="text" />
           </div>
+        </div>
 
-          <div class="mb-4">
-            <label class="block mb-1 text-gray-500 text-sm">Email</label>
-            <div class="flex items-center gap-2">
-              <input v-model="form.email" class="input flex-1" type="email" />
-              <span class="text-green-500 text-xs font-medium">Verified</span>
-            </div>
+        <div class="mb-4">
+          <label class="block mb-1 text-gray-500 text-sm">Email</label>
+          <div class="flex items-center gap-2">
+            <input v-model="form.email" class="input flex-1" type="email" />
+            <span class="text-green-500 text-xs font-medium">Verified</span>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-            <div>
-              <label class="block mb-1 text-gray-500">Address</label>
-              <input v-model="form.address" class="input" type="text" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-500">Date of Birth</label>
-              <input v-model="form.birthDate" class="input" type="date" />
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+          <div>
+            <label class="block mb-1 text-gray-500">Address</label>
+            <input v-model="form.address" class="input" type="text" />
           </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
-            <div>
-              <label class="block mb-1 text-gray-500">Phone Number</label>
-              <input v-model="form.phone" class="input" type="tel" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-500">Location</label>
-              <input v-model="form.location" class="input" type="text" />
-            </div>
+          <div>
+            <label class="block mb-1 text-gray-500">Date of Birth</label>
+            <input v-model="form.birthDate" class="input" type="date" />
           </div>
+        </div>
 
-          <!-- Төменгі батырмалар -->
-          <div class="flex justify-end gap-4">
-            <button
-              type="button"
-              @click="resetForm"
-              class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium"
-            >
-              Discard Changes
-            </button>
-            <button
-              type="button"
-              @click="saveProfile"
-              class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium"
-            >
-              Save Changes
-            </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
+          <div>
+            <label class="block mb-1 text-gray-500">Phone Number</label>
+            <input v-model="form.phone" class="input" type="tel" />
           </div>
-
-          <p v-if="success" class="mt-4 text-sm text-green-600">{{ success }}</p>
-        </section>
-
-        <!-- Login & Password табы -->
-        <section v-else-if="activeTab === 'auth'">
-          <h1 class="text-2xl font-bold mb-6">Login & Password</h1>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
-            <div class="md:col-span-2">
-              <label class="block mb-1 text-gray-500">Email</label>
-              <input
-                v-model="authForm.email"
-                type="email"
-                class="input"
-              />
-            </div>
-
-            <div>
-              <label class="block mb-1 text-gray-500">Current Password</label>
-              <input
-                v-model="authForm.currentPassword"
-                type="password"
-                class="input"
-              />
-            </div>
-
-            <div>
-              <label class="block mb-1 text-gray-500">New Password</label>
-              <input
-                v-model="authForm.newPassword"
-                type="password"
-                class="input"
-              />
-            </div>
+          <div>
+            <label class="block mb-1 text-gray-500">Location</label>
+            <input v-model="form.location" class="input" type="text" />
           </div>
+        </div>
 
-          <p v-if="authError" class="mt-2 text-sm text-red-600">{{ authError }}</p>
-          <p v-if="authSuccess" class="mt-2 text-sm text-green-600">{{ authSuccess }}</p>
+        <!-- Төменгі батырмалар -->
+        <div class="flex justify-end gap-4">
+          <button
+            type="button"
+            @click="resetForm"
+            class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium"
+          >
+            Discard Changes
+          </button>
+          <button
+            type="button"
+            @click="saveProfile"
+            class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium"
+          >
+            Save Changes
+          </button>
+        </div>
 
-          <div class="flex justify-end gap-4 mt-6">
-            <button
-              type="button"
-              @click="resetAuth"
-              class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium"
-            >
-              Discard Changes
-            </button>
-            <button
-              type="button"
-              @click="saveAuth"
-              class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium"
-            >
-              Save Changes
-            </button>
-          </div>
-        </section>
+        <p v-if="success" class="mt-4 text-sm text-green-600">{{ success }}</p>
       </div>
     </main>
   </div>
@@ -189,12 +117,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
-// Табтарды басқару
-const activeTab = ref('info') // 'info' немесе 'auth'
-
-// Personal Information формасы
 const success = ref('')
+
 const initialForm = {
   gender: 'male',
   firstName: '',
@@ -205,44 +129,24 @@ const initialForm = {
   phone: '',
   location: '',
 }
-const form = ref({ ...initialForm })
 
-// Login & Password формасы
-const authForm = ref({
-  email: '',
-  currentPassword: '',
-  newPassword: ''
-})
-const authError = ref('')
-const authSuccess = ref('')
+const form = ref({ ...initialForm })
 
 // Логиннен келген деректерді жүктеу
 onMounted(() => {
-  const storedPassword = localStorage.getItem('password') || ''
+     const storedPassword = localStorage.getItem('password')
   const storedName = localStorage.getItem('userName') || ''
   const storedEmail = localStorage.getItem('email') || ''
-  const storedAddress = localStorage.getItem('address') || ''
-  const storedBirthDate = localStorage.getItem('birthDate') || ''
-  const storedPhone = localStorage.getItem('phone') || ''
-  const storedLocation = localStorage.getItem('location') || ''
-
   const storedFirst = storedName.split(' ')[0] || storedName
   const storedLast = storedName.split(' ')[1] || ''
 
-  // Personal Information формасына
   form.value.firstName = storedFirst
   form.value.lastName = storedLast
   form.value.email = storedEmail
-  form.value.address = storedAddress
-  form.value.birthDate = storedBirthDate
-  form.value.phone = storedPhone
-  form.value.location = storedLocation
-
-  // Login & Password формасына
-  authForm.value.email = storedEmail
+  form.value.password = storedPassword
 })
 
-// Personal Information сақтау
+// Өзгерістерді сақтау (localStorage‑қа)
 const saveProfile = () => {
   localStorage.setItem('userName', `${form.value.firstName} ${form.value.lastName}`.trim())
   localStorage.setItem('email', form.value.email)
@@ -253,56 +157,10 @@ const saveProfile = () => {
   success.value = 'Профиль сәтті сақталды'
 }
 
-// Personal Information reset
+// Форманы бастапқы мәнге қайтару
 const resetForm = () => {
   success.value = ''
-  const storedName = localStorage.getItem('userName') || ''
-  const storedEmail = localStorage.getItem('email') || ''
-  const storedAddress = localStorage.getItem('address') || ''
-  const storedBirthDate = localStorage.getItem('birthDate') || ''
-  const storedPhone = localStorage.getItem('phone') || ''
-  const storedLocation = localStorage.getItem('location') || ''
-
-  const storedFirst = storedName.split(' ')[0] || storedName
-  const storedLast = storedName.split(' ')[1] || ''
-
-  form.value.firstName = storedFirst
-  form.value.lastName = storedLast
-  form.value.email = storedEmail
-  form.value.address = storedAddress
-  form.value.birthDate = storedBirthDate
-  form.value.phone = storedPhone
-  form.value.location = storedLocation
-}
-
-// Login & Password reset
-const resetAuth = () => {
-  authError.value = ''
-  authSuccess.value = ''
-  authForm.value.email = localStorage.getItem('email') || ''
-  authForm.value.currentPassword = ''
-  authForm.value.newPassword = ''
-}
-
-// Login & Password сақтау
-const saveAuth = () => {
-  authError.value = ''
-  authSuccess.value = ''
-
-  if (!authForm.value.email) {
-    authError.value = 'Email бос болмауы керек'
-    return
-  }
-
-  localStorage.setItem('email', authForm.value.email)
-
-  if (authForm.value.newPassword) {
-    localStorage.setItem('password', authForm.value.newPassword)
-  }
-
-  authForm.value.currentPassword = ''
-  authForm.value.newPassword = ''
-  authSuccess.value = 'Login & Password сәтті жаңартылды'
+  onMounted(() => {}) // немесе localStorage‑тан қайта оқып шығуға жеке функция жазып, соны шақыр
 }
 
 // Logout
