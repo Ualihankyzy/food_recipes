@@ -25,7 +25,7 @@
       <!-- Home батырмасы -->
       <NuxtLink
         to="/"
-        class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white text-sm font-medium mb-4 hover:bg-orange-600 transition-all shadow-md"
+        class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white text-sm font-medium mb-4 hover:bg-[#a3b18a] transition-all shadow-md"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -40,8 +40,8 @@
           :class="[
             'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all',
             activeTab === 'info'
-              ? 'bg-[#588157] text-white font-medium shadow-sm'
-              : 'text-gray-600 hover:bg-gray-100 hover:shadow-sm'
+              ? 'bg-[#588157] hover:bg-[#a3b18a] text-white font-medium shadow-sm'
+              : 'text-gray-600  hover:shadow-sm'
           ]"
         >
           <svg v-if="activeTab === 'info'" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -71,7 +71,7 @@
       <div class="w-full pt-4 border-t mt-auto">
         <button
           @click="handleLogout"
-          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white hover:bg-red-100 text-sm font-medium transition-all hover:shadow-sm"
+          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white hover:bg-[#a3b18a] text-sm font-medium transition-all hover:shadow-sm"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -148,14 +148,14 @@
             <button
               type="button"
               @click="resetForm"
-              class="px-6 py-2 rounded-full border border-[#588157] text-[#588157] text-sm font-medium hover:bg-orange-50"
+              class="px-6 py-2 rounded-full border border-[#588157] text-[#588157] text-sm font-medium hover:bg-[#a3b18a]"
             >
               Discard Changes
             </button>
             <button
               type="button"
               @click="saveProfile"
-              class="px-6 py-2 rounded-full bg-[#588157] text-white text-sm font-medium hover:bg-orange-600 shadow-md"
+              class="px-6 py-2 rounded-full bg-[#588157] text-white text-sm font-medium hover:bg-[#a3b18a] shadow-md"
             >
               Save Changes
             </button>
