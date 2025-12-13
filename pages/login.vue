@@ -62,7 +62,15 @@
   </div>
 </template>
 <script setup>
-  const handleLogin = async () => {
+import axios from 'axios'           // ✅ 1-ШЫ ЖОЛ
+import { ref } from 'vue'           // ✅ 2-ШЫ ЖОЛ  
+import { useRouter } from 'vue-router' // ✅ 3-ШЫ ЖОЛ
+
+const router = useRouter()          // ✅ ROUTER
+const form = ref({ email: '', password: '' })  // ✅ FORM
+const error = ref('')               // ✅ ERROR
+
+const handleLogin = async () => {   // ✅ СІЗДІҢ КОДЫҢЫЗ
   try {
     const response = await axios.post(
       "https://food-recipes-eight-ivory.vercel.app/login",
@@ -79,5 +87,4 @@
     error.value = err.response?.data?.message
   }
 }
-
-  </script>
+</script>
