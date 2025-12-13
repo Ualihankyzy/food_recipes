@@ -86,7 +86,7 @@ const error = ref("");
 const handleLogin = async () => {
   try {
     const response = await axios.post(
-      "https://medical-backend-54hp.onrender.com/api/auth/login",
+      "https://food-recipes-eight-ivory.vercel.app/login",
       form.value
     );
 
