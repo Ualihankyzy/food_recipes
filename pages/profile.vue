@@ -1,27 +1,31 @@
 <template>
-  <div class="min-h-screen bg-[#588157] flex">
+  <div class="min-h-screen  flex">
     <!-- Сол жақ sidebar -->
     <aside class="w-full max-w-xs bg-white border-r px-6 py-8 flex flex-col items-center">
       <!-- Аватар -->
-      <div class="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 overflow-hidden mb-4 shadow-lg border-4 border-white">
-        <img 
-          v-if="avatarUrl" 
-          :src="avatarUrl" 
-          class="w-full h-full object-cover"
-          alt="Profile Avatar"
-        />
-        <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-          <span class="text-2xl font-bold text-white">{{ form.firstName?.[0] || 'U' }}</span>
+   <div class="w-24 h-24 rounded-full bg-[#588157] from-orange-400 to-orange-600 overflow-hidden mb-4 shadow-lg border-4 border-white">
+          <img 
+            v-if="avatarUrl" 
+            :src="avatarUrl" 
+            class="w-full h-full object-cover"
+            alt="Profile Avatar"
+          />
+          <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+            <span class="text-2xl font-bold text-white">
+              {{ form.firstName?.[0]?.toUpperCase() || 'U' }}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <h2 class="text-lg font-semibold mb-1">{{ form.firstName }} {{ form.lastName }}</h2>
+      <h2 class="text-lg font-semibold mb-1">
+          {{ form.firstName || 'Loading...' }} {{ form.lastName || '' }}
+        </h2>
       <p class="text-sm text-gray-500 mb-8">User</p>
 
       <!-- Home батырмасы -->
       <NuxtLink
         to="/"
-        class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 text-white text-sm font-medium mb-4 hover:bg-orange-600 transition-all shadow-md"
+        class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white text-sm font-medium mb-4 hover:bg-orange-600 transition-all shadow-md"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -36,7 +40,7 @@
           :class="[
             'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all',
             activeTab === 'info'
-              ? 'bg-orange-100 text-orange-600 font-medium shadow-sm'
+              ? 'bg-[#588157] text-white font-medium shadow-sm'
               : 'text-gray-600 hover:bg-gray-100 hover:shadow-sm'
           ]"
         >
@@ -67,7 +71,7 @@
       <div class="w-full pt-4 border-t mt-auto">
         <button
           @click="handleLogout"
-          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 text-sm font-medium transition-all hover:shadow-sm"
+          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white hover:bg-red-100 text-sm font-medium transition-all hover:shadow-sm"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -85,7 +89,7 @@
         <section v-if="activeTab === 'info'">
           <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
 
-          <!-- Жыныс -->
+          
           <div class="flex gap-6 mb-6 text-sm">
             <label class="flex items-center gap-2">
               <input type="radio" value="male" v-model="form.gender" />
@@ -144,14 +148,14 @@
             <button
               type="button"
               @click="resetForm"
-              class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-medium hover:bg-orange-50"
+              class="px-6 py-2 rounded-full border border-[#588157] text-[#588157] text-sm font-medium hover:bg-orange-50"
             >
               Discard Changes
             </button>
             <button
               type="button"
               @click="saveProfile"
-              class="px-6 py-2 rounded-full bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 shadow-md"
+              class="px-6 py-2 rounded-full bg-[#588157] text-white text-sm font-medium hover:bg-orange-600 shadow-md"
             >
               Save Changes
             </button>
@@ -160,13 +164,8 @@
           <p v-if="success" class="mt-4 text-sm text-green-600 font-medium">{{ success }}</p>
         </section>
 
-        <!-- Login & Password табы (бос, толтырсаң болады) -->
-        <section v-else-if="activeTab === 'auth'">
-          <h1 class="text-2xl font-bold mb-6">Login & Password</h1>
-          <div class="text-center py-12 text-gray-500">
-            <p>Бұл бөлімде email және парольді өзгерте аласың</p>
-          </div>
-        </section>
+      
+     
       </div>
     </main>
   </div>
@@ -179,9 +178,9 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const activeTab = ref('info')
 
-
-const avatarUrl = ref(localStorage.getItem('avatarUrl') || '')
-// Personal Information
+// Avatar URL (бастапқыда бос)
+const avatarUrl = ref('')
+// Form (бастапқыда бос)
 const success = ref('')
 const form = ref({
   gender: 'male',
@@ -194,75 +193,68 @@ const form = ref({
   location: ''
 })
 
-
-// Login & Password
-const authForm = ref({
-  email: '',
-  currentPassword: '',
-  newPassword: ''
-})
-const authError = ref('')
-const authSuccess = ref('')
-
+// ✅ ТЕК CLIENT-ТЕ (onMounted ішінде) localStorage оқу
 onMounted(() => {
   loadProfileData()
-  loadAuthData()
 })
 
 const loadProfileData = () => {
-  const storedName = localStorage.getItem('userName') || ''
-  const storedEmail = localStorage.getItem('email') || ''
-  const storedAddress = localStorage.getItem('address') || ''
-  const storedBirthDate = localStorage.getItem('birthDate') || ''
-  const storedPhone = localStorage.getItem('phone') || ''
-  const storedLocation = localStorage.getItem('location') || ''
+  // ✅ process.client тексеру (SSR-да өткізбейді)
+  if (process.client) {
+    const storedName = localStorage.getItem('userName') || ''
+    const storedEmail = localStorage.getItem('email') || ''
+    const storedAddress = localStorage.getItem('address') || ''
+    const storedBirthDate = localStorage.getItem('birthDate') || ''
+    const storedPhone = localStorage.getItem('phone') || ''
+    const storedLocation = localStorage.getItem('location') || ''
+    const storedAvatar = localStorage.getItem('avatarUrl') || ''
 
-  const [storedFirst, storedLast = ''] = storedName.split(' ')
+    const [storedFirst, storedLast = ''] = storedName.split(' ')
 
-  form.value.firstName = storedFirst
-  form.value.lastName = storedLast
-  form.value.email = storedEmail
-  form.value.address = storedAddress
-  form.value.birthDate = storedBirthDate
-  form.value.phone = storedPhone
-  form.value.location = storedLocation
+    form.value.firstName = storedFirst
+    form.value.lastName = storedLast
+    form.value.email = storedEmail
+    form.value.address = storedAddress
+    form.value.birthDate = storedBirthDate
+    form.value.phone = storedPhone
+    form.value.location = storedLocation
+    avatarUrl.value = storedAvatar
+  }
 }
 
-const loadAuthData = () => {
-  authForm.value.email = localStorage.getItem('email') || ''
-}
-
-// ✅ Save жұмыс істейді
+// Save Profile (тек клиентте)
 const saveProfile = () => {
-  localStorage.setItem('userName', `${form.value.firstName} ${form.value.lastName}`.trim())
-  localStorage.setItem('email', form.value.email)
-  localStorage.setItem('address', form.value.address || '')
-  localStorage.setItem('birthDate', form.value.birthDate || '')
-  localStorage.setItem('phone', form.value.phone || '')
-  localStorage.setItem('location', form.value.location || '')
+  if (process.client) {
+    localStorage.setItem('userName', `${form.value.firstName} ${form.value.lastName}`.trim())
+    localStorage.setItem('email', form.value.email)
+    localStorage.setItem('address', form.value.address || '')
+    localStorage.setItem('birthDate', form.value.birthDate || '')
+    localStorage.setItem('phone', form.value.phone || '')
+    localStorage.setItem('location', form.value.location || '')
+  }
   
   success.value = '✅ Профиль сәтті сақталды'
-  
-  // ✅ Авто жаңарту
   loadProfileData()
 }
 
-// ✅ Reset дұрыс жұмыс істейді
+// Reset Form
 const resetForm = () => {
   success.value = ''
-  loadProfileData()  // ✅ Жаңа деректерді оқиды
+  loadProfileData()
 }
 
-
-
+// Logout
 const handleLogout = () => {
-  localStorage.clear()  // барлық деректерді өшіру
-  router.push('/login') // login бетіне жіберу
+  if (process.client) {
+    localStorage.clear()
+  }
+  router.push('/login')
 }
 </script>
 
+
 <style scoped>
 .input {
-  @apply w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all;
+  @apply w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#588157] focus:border-transparent transition-all;
 }
 </style>
