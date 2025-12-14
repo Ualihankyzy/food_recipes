@@ -40,8 +40,8 @@
 
         <!-- Auth навигация -->
         <template v-if="isAuth">
+          <a href="/dashboard" class="hover:underline">Dashboard</a>
           <a href="/profile" class="hover:underline">Profile</a>
-        
         </template>
 
         <template v-else>
@@ -86,41 +86,7 @@
           </h1>
         </div>
 
-        <!-- A-Z Dropdown -->
-        <div class="relative inline-block mb-6">
-          <button
-            @click="lettersOpen = !lettersOpen"
-            class="bg-[#f8961e] px-6 py-3 rounded-2xl font-bold shadow-md transition text-white"
-          >
-            A-Z
-          </button>
-
-          <div
-            v-if="lettersOpen"
-            class="absolute mt-2 w-64 bg-white rounded-xl shadow-lg p-4 flex flex-wrap gap-2 z-50"
-          >
-            <button
-              v-for="letter in 'abcdefghijklmnopqrstuvwxyz'.split('')"
-              :key="letter"
-              @click="filterByLetter(letter)"
-              :class="[
-                'px-3 py-2 rounded-lg font-bold text-sm uppercase transition',
-                activeLetter === letter
-                  ? 'bg-blue-500 text-white scale-105'
-                  : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-              ]"
-            >
-              {{ letter }}
-            </button>
-
-            <button
-              @click="clearFilter"
-              class="px-3 py-2 rounded-lg font-bold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
-            >
-              All
-            </button>
-          </div>
-        </div>
+ 
 
         <!-- Recipes Grid -->
         <div
@@ -130,14 +96,14 @@
         >
           <button
             v-for="recipe in filteredRecipes"
-            :key="recipe.idMeal"
+            :key="recipe.id"
             @click="openModal(recipe)"
             class="group bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-white/50 hover:border-indigo-200 text-left"
           >
             <div class="h-52 w-full overflow-hidden relative">
               <img
-                :src="recipe.strMealThumb"
-                :alt="recipe.strMeal"
+                :src="recipe.imageUrl"
+                :alt="recipe.title"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 loading="lazy"
               />
@@ -150,31 +116,51 @@
               <h3
                 class="font-bold text-lg text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors"
               >
-                {{ recipe.strMeal }}
+                {{ recipe.title }}
               </h3>
 
               <div class="flex flex-wrap gap-2 text-xs">
                 <span
                   class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
                 >
-                  {{ recipe.strCategory }}
+                  {{ recipe.category }}
                 </span>
                 <span
                   class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
                 >
-                  {{ recipe.strArea }}
+                  {{ recipe.area }}
                 </span>
               </div>
 
-              <a
-                :href="recipe.strYoutube"
-                target="_blank"
-                rel="noopener noreferrer"
-                @click.stop
-                class="mt-2 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors"
-              >
-                Watch on YouTube
-              </a>
+              <!-- YouTube + Save Buttons -->
+              <div class="flex items-center justify-between mt-3">
+                <a
+                  v-if="recipe.youtubeUrl"
+                  :href="recipe.youtubeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  @click.stop
+                  class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors flex-1"
+                >
+                  ▶ YouTube
+                </a>
+                <div v-else class="w-20 h-8"></div>
+
+                <!-- ✅ SAVE BUTTON (тек авторизованғанда) -->
+                <button
+                  v-if="isAuth"
+                  @click.stop="toggleFavorite(recipe.id)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ml-2"
+                  :class="[
+                    isFavorite(recipe.id) 
+                      ? 'bg-red-500 text-white shadow-md hover:bg-red-600' 
+                      : 'bg-white/80 text-gray-700 border hover:bg-red-50 hover:text-red-600 hover:border-red-200'
+                  ]"
+                >
+                  💝
+                  {{ isFavorite(recipe.id) ? 'Сохранено' : 'Сақтау' }}
+                </button>
+              </div>
             </div>
           </button>
         </div>
@@ -233,8 +219,8 @@
           >
             <div class="relative h-48 w-full">
               <img
-                :src="selectedRecipe.strMealThumb"
-                :alt="selectedRecipe.strMeal"
+                :src="selectedRecipe.imageUrl"
+                :alt="selectedRecipe.title"
                 class="w-full h-full object-cover"
               />
               <button
@@ -247,7 +233,7 @@
                 <h2
                   class="text-xl font-bold text-white drop-shadow-lg line-clamp-2"
                 >
-                  {{ selectedRecipe.strMeal }}
+                  {{ selectedRecipe.title }}
                 </h2>
               </div>
             </div>
@@ -257,12 +243,12 @@
                 <span
                   class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold"
                 >
-                  {{ selectedRecipe.strCategory }}
+                  {{ selectedRecipe.category }}
                 </span>
                 <span
                   class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold"
                 >
-                  {{ selectedRecipe.strArea }}
+                  {{ selectedRecipe.area }}
                 </span>
               </div>
 
@@ -271,9 +257,9 @@
                   Инструкция
                 </h3>
                 <p
-                  class="text-slate-700 leading-relaxed text-sm whitespace-pre-line line-clamp-4 md:line-clamp-none"
+                  class="text-slate-700 leading-relaxed text-sm whitespace-pre-line"
                 >
-                  {{ selectedRecipe.strInstructions }}
+                  {{ selectedRecipe.instructions }}
                 </p>
               </div>
 
@@ -285,27 +271,25 @@
                   class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar"
                 >
                   <li
-                    v-for="(item, index) in fullIngredients.slice(0, 12)"
+                    v-for="(ingredient, index) in selectedRecipe.ingredients.slice(0, 12)"
                     :key="index"
                     class="flex justify-between bg-slate-50 rounded-lg px-2.5 py-1.5 text-xs text-slate-800"
                   >
-                    <span class="truncate">{{ item.ingredient }}</span>
-                    <span class="font-semibold min-w-[60px] text-right">
-                      {{ item.measure }}
-                    </span>
+                    <span class="truncate">{{ ingredient }}</span>
                   </li>
                   <li
-                    v-if="fullIngredients.length > 12"
+                    v-if="selectedRecipe.ingredients.length > 12"
                     class="text-xs text-slate-500 text-center py-2"
                   >
-                    +{{ fullIngredients.length - 12 }} тағы...
+                    +{{ selectedRecipe.ingredients.length - 12 }} тағы...
                   </li>
                 </ul>
               </div>
 
               <div class="pt-2 sticky bottom-0 bg-white pb-2">
                 <a
-                  :href="selectedRecipe.strYoutube"
+                  v-if="selectedRecipe.youtubeUrl"
+                  :href="selectedRecipe.youtubeUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="block w-full text-center py-3 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
@@ -322,8 +306,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useCookie } from '#app'
 
 const router = useRouter()
 
@@ -339,64 +323,101 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-// Auth state
+// Auth + Favorites state
+const userId = useCookie('userId')
 const isAuth = ref(false)
-const userName = ref('')
+const favorites = ref([])
 
-// Fetch all recipes by letter
+const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+
+// Auth күйін тексеру
+const checkAuth = () => {
+  const token = localStorage.getItem('token')
+  isAuth.value = !!token || !!userId.value
+}
+
+// Fetch MockAPI recipes
 const fetchAllRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
 
-    const allRecipes = []
-    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
-
-    for (const char of letters) {
-      const res = await $fetch(
-        `https://www.themealdb.com/api/json/v1/1/search.php?f=${char}`
-      )
-      if (res.meals) allRecipes.push(...res.meals)
-      await new Promise((r) => setTimeout(r, 50))
-    }
-
-    recipes.value = allRecipes
+    const response = await $fetch(`${MOCK_API_URL}/recipes`)
+    recipes.value = response || []
   } catch (e) {
-    errorMessage.value = 'Error loading recipes'
+    errorMessage.value = 'Error loading recipes from MockAPI'
+    console.error(e)
   } finally {
     pending.value = false
   }
 }
 
-// Modal
-const openModal = (recipe) => (selectedRecipe.value = recipe)
-const closeModal = () => (selectedRecipe.value = null)
-
-// Full ingredients
-const fullIngredients = computed(() => {
-  if (!selectedRecipe.value) return []
-  const list = []
-  for (let i = 1; i <= 20; i++) {
-    const ing = selectedRecipe.value[`strIngredient${i}`]
-    const measure = selectedRecipe.value[`strMeasure${i}`]
-    if (ing && ing.trim()) list.push({ ingredient: ing, measure: measure || '' })
+// Favorites логикасы
+const loadFavorites = async () => {
+  if (!userId.value) return
+  try {
+    const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    favorites.value = favs || []
+  } catch (e) {
+    console.error('Favorites жүктелмеді:', e)
   }
-  return list
-})
+}
+
+const toggleFavorite = async (recipeId) => {
+  if (!userId.value) {
+    alert('Алдымен кіріңіз!')
+    return
+  }
+
+  try {
+    const exists = favorites.value.find(f => f.recipeId === recipeId)
+    if (exists) {
+      // DELETE
+      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
+    } else {
+      // POST
+      await $fetch(`${MOCK_API_URL}/favorites`, {
+        method: 'POST',
+        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
+      })
+    }
+    await loadFavorites()
+  } catch (e) {
+    alert('Қате: ' + e)
+  }
+}
+
+const isFavorite = (recipeId) => {
+  return favorites.value.some(f => f.recipeId === recipeId)
+}
+
+// Modal
+const openModal = (recipe) => selectedRecipe.value = recipe
+const closeModal = () => selectedRecipe.value = null
 
 // Filter functions
 const filterByLetter = (letter) => {
   activeLetter.value = letter
   lettersOpen.value = false
 }
-const clearFilter = () => (activeLetter.value = null)
+const clearFilter = () => activeLetter.value = null
 
-// Filtered recipes
+// Filtered recipes (A-Z + Search)
 const filteredRecipes = computed(() => {
-  if (!activeLetter.value) return recipes.value
-  return recipes.value.filter((r) =>
-    r.strMeal.toLowerCase().startsWith(activeLetter.value)
-  )
+  let result = recipes.value
+
+ 
+
+  // Search filter
+  if (searchQuery.value) {
+    result = result.filter(r => 
+      r.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      r.area.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      r.category.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  }
+
+  return result
 })
 
 // Scroll
@@ -412,28 +433,21 @@ const handleScroll = () => {
 
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
-
-  // Auth күйін тексеру
-  const token = localStorage.getItem('token')
-  isAuth.value = !!token
-  userName.value = localStorage.getItem('userName') || ''
-
+  checkAuth()
+  
   await fetchAllRecipes()
+  if (isAuth.value) await loadFavorites()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
-// Logout
-const logout = () => {
-  localStorage.clear()
-  isAuth.value = false
-  router.push('/login')
-}
+// Search watch
+watch(searchQuery, () => {
+  activeLetter.value = null // A-Z фильтрін өшіру
+})
 </script>
-
-
 
 <style>
 * {
@@ -473,6 +487,12 @@ const logout = () => {
 }
 
 /* Spinner анимациялары */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
 .animate-spin-slow {
   animation: spin 1.6s linear infinite;
 }
@@ -491,5 +511,4 @@ const logout = () => {
   opacity: 0;
   transform: translateX(20px);
 }
-
 </style>

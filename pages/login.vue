@@ -27,7 +27,8 @@
             <input
               v-model="form.email"
               type="email"
-              class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
+              :disabled="loading"
+              class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent disabled:bg-gray-100"
               placeholder="you@example.com"
             />
           </div>
@@ -37,74 +38,83 @@
             <input
               v-model="form.password"
               type="password"
-              class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
+              :disabled="loading"
+              class="w-full rounded-md border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent disabled:bg-gray-100"
               placeholder="••••••••"
             />
           </div>
 
           <button
             type="submit"
-            class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold hover:bg-[#f8961e] transition-colors"
+            :disabled="loading"
+            class="w-full bg-[#f8961e] text-white py-3.5 rounded-md text-base font-semibold hover:bg-[#f8961e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Login
+            <span v-if="loading" class="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
+            <span>{{ loading ? 'Logging in...' : 'Login' }}</span>
           </button>
         </form>
 
         <p class="mt-10 text-sm text-gray-500">
-          Don’t have an account?
+          Don't have an account?
           <a href="/signup" class="font-semibold text-[#f8961e] hover:underline">Signup</a>
         </p>
 
         <!-- Хабар шығару -->
-        <p v-if="error" class="mt-4 text-red-600">{{ error }}</p>
+        <div v-if="error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+          {{ error }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import axios from "axios";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
-const router = useRouter();
+const router = useRouter()
 
 const form = ref({
   email: "",
   password: "",
-});
+})
 
-const error = ref("");
+const error = ref("")
+const loading = ref(false)
 
 const handleLogin = async () => {
-  error.value = "";
+  error.value = ""
+  loading.value = true
 
   // Бос өрістерді тексеру
   if (!form.value.email || !form.value.password) {
-    error.value = "Email және пароль толтырыңыз";
-    return;
+    error.value = "Email және пароль толтырыңыз"
+    loading.value = false
+    return
   }
 
   try {
-    const response = await axios.post(
-      "https://medical-backend-54hp.onrender.com/api/auth/login",
-      form.value
-    );
+    const response = await $fetch("https://medical-backend-54hp.onrender.com/api/auth/login", {
+      method: "POST",
+      body: form.value
+    })
 
-    // Дұрыс болса
-    if (response.data.data?.user?.id) {
-      localStorage.setItem("userId", response.data.data.user.id);
-      localStorage.setItem("userName", response.data.data.user.name);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("email", form.value.email);
-localStorage.setItem("password", form.value.password); 
-
-      router.push("/"); // бірден index бетіне
+    // ✅ Тек қажетті деректерді сақтау (password СИПТАМА!)
+    if (response.data?.data?.token) {
+      localStorage.setItem("token", response.data.data.token)
+      localStorage.setItem("userId", response.data.data.user?.id || "")
+      localStorage.setItem("userName", response.data.data.user?.name || "")
+      localStorage.setItem("email", response.data.data.user?.email || form.value.email)
+      
+      router.push("/profile") // ✅ Profile бетіне бару
     } else {
-      error.value = "Email немесе пароль дұрыс емес";
+      error.value = "Email немесе пароль дұрыс емес"
     }
   } catch (err) {
-    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
+    error.value = err.data?.message || err.message || "Email немесе пароль дұрыс емес"
+    console.error("Login error:", err)
+  } finally {
+    loading.value = false
   }
-};
+}
 </script>

@@ -20,7 +20,7 @@
       <h2 class="text-lg font-semibold mb-1">
           {{ form.firstName || 'Loading...' }} {{ form.lastName || '' }}
         </h2>
-      <p class="text-sm text-gray-500 mb-8">User</p>
+      <p class="text-sm text-gray-500 mb-8">{{ form.role || 'User' }}</p>
 
       <!-- Home батырмасы -->
       <NuxtLink
@@ -49,8 +49,6 @@
           </svg>
           <span>Personal Information</span>
         </button>
-
-
       </nav>
 
       <!-- Log Out (төменде) -->
@@ -58,11 +56,12 @@
         <button
           @click="handleLogout"
           class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white hover:bg-[#a3b18a] text-sm font-medium transition-all hover:shadow-sm"
+          :disabled="loading"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
-          <span>Log Out</span>
+          <span>{{ loading ? 'Logging out...' : 'Log Out' }}</span>
         </button>
       </div>
     </aside>
@@ -70,19 +69,22 @@
     <!-- Оң жақ контент -->
     <main class="flex-1 px-8 py-10">
       <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8">
+        <!-- Loading -->
+        <div v-if="loading" class="flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#588157]"></div>
+        </div>
         
         <!-- Personal Information табы -->
-        <section v-if="activeTab === 'info'">
+        <section v-if="activeTab === 'info' && !loading">
           <h1 class="text-2xl font-bold mb-6">Personal Information</h1>
 
-          
           <div class="flex gap-6 mb-6 text-sm">
             <label class="flex items-center gap-2">
-              <input type="radio" value="male" v-model="form.gender" />
+              <input type="radio" value="male" v-model="form.gender" :disabled="saving" />
               <span>Male</span>
             </label>
             <label class="flex items-center gap-2">
-              <input type="radio" value="female" v-model="form.gender" />
+              <input type="radio" value="female" v-model="form.gender" :disabled="saving" />
               <span>Female</span>
             </label>
           </div>
@@ -91,18 +93,18 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
             <div>
               <label class="block mb-1 text-gray-500">First Name</label>
-              <input v-model="form.firstName" class="input" type="text" />
+              <input v-model="form.firstName" class="input" type="text" :disabled="saving" />
             </div>
             <div>
               <label class="block mb-1 text-gray-500">Last Name</label>
-              <input v-model="form.lastName" class="input" type="text" />
+              <input v-model="form.lastName" class="input" type="text" :disabled="saving" />
             </div>
           </div>
 
           <div class="mb-4">
             <label class="block mb-1 text-gray-500 text-sm">Email</label>
             <div class="flex items-center gap-2">
-              <input v-model="form.email" class="input flex-1" type="email" />
+              <input v-model="form.email" class="input flex-1" type="email" :disabled="true" />
               <span class="text-green-500 text-xs font-medium">Verified</span>
             </div>
           </div>
@@ -110,22 +112,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
             <div>
               <label class="block mb-1 text-gray-500">Address</label>
-              <input v-model="form.address" class="input" type="text" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-500">Date of Birth</label>
-              <input v-model="form.birthDate" class="input" type="date" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
+              <input v-model="form.address" class="input" type="text" :disabled="saving" />
+            </div> 
             <div>
               <label class="block mb-1 text-gray-500">Phone Number</label>
-              <input v-model="form.phone" class="input" type="tel" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-500">Location</label>
-              <input v-model="form.location" class="input" type="text" />
+              <input v-model="form.phone" class="input" type="tel" :disabled="saving" />
             </div>
           </div>
 
@@ -134,6 +125,7 @@
             <button
               type="button"
               @click="resetForm"
+              :disabled="saving"
               class="px-6 py-2 rounded-full border border-[#588157] text-[#588157] text-sm font-medium hover:bg-[#a3b18a]"
             >
               Discard Changes
@@ -141,17 +133,16 @@
             <button
               type="button"
               @click="saveProfile"
+              :disabled="saving"
               class="px-6 py-2 rounded-full bg-[#588157] text-white text-sm font-medium hover:bg-[#a3b18a] shadow-md"
             >
-              Save Changes
+              {{ saving ? 'Saving...' : 'Save Changes' }}
             </button>
           </div>
 
           <p v-if="success" class="mt-4 text-sm text-green-600 font-medium">{{ success }}</p>
+          <p v-if="error" class="mt-4 text-sm text-red-600 font-medium">{{ error }}</p>
         </section>
-
-      
-     
       </div>
     </main>
   </div>
@@ -164,83 +155,159 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const activeTab = ref('info')
 
-// Avatar URL (бастапқыда бос)
+// Loading states
+const loading = ref(false)
+const saving = ref(false)
+
+// Avatar URL
 const avatarUrl = ref('')
-// Form (бастапқыда бос)
+// Messages
 const success = ref('')
+const error = ref('')
+
+// Form data
 const form = ref({
-  gender: 'male',
+  id: '',
   firstName: '',
   lastName: '',
   email: '',
-  address: '',
-  birthDate: '',
   phone: '',
-  location: ''
+  address: '',
+  gender: 'male',
+  avatarUrl: '',
+  role: '',
+  createdAt: '',
+  updatedAt: ''
 })
 
-// ✅ ТЕК CLIENT-ТЕ (onMounted ішінде) localStorage оқу
-onMounted(() => {
-  loadProfileData()
-})
+// API BASE URL
+const API_BASE = 'https://medical-backend-54hp.onrender.com/api'
 
-const loadProfileData = () => {
-  // ✅ process.client тексеру (SSR-да өткізбейді)
+// Authorization header
+const getAuthHeaders = () => {
   if (process.client) {
-    const storedName = localStorage.getItem('userName') || ''
-    const storedEmail = localStorage.getItem('email') || ''
-    const storedAddress = localStorage.getItem('address') || ''
-    const storedBirthDate = localStorage.getItem('birthDate') || ''
-    const storedPhone = localStorage.getItem('phone') || ''
-    const storedLocation = localStorage.getItem('location') || ''
-    const storedAvatar = localStorage.getItem('avatarUrl') || ''
+    const token = localStorage.getItem('token') // login кезде сақталған token
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    }
+  }
+  return { 'Content-Type': 'application/json' }
+}
 
-    const [storedFirst, storedLast = ''] = storedName.split(' ')
+// Profile data жүктеу
+const loadProfileData = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    
+    const response = await $fetch(`${API_BASE}/auth/me`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    })
 
-    form.value.firstName = storedFirst
-    form.value.lastName = storedLast
-    form.value.email = storedEmail
-    form.value.address = storedAddress
-    form.value.birthDate = storedBirthDate
-    form.value.phone = storedPhone
-    form.value.location = storedLocation
-    avatarUrl.value = storedAvatar
+    // API жауабын form-ға салу
+    form.value = {
+      id: response.id || '',
+      firstName: response.name?.split(' ')[0] || '',
+      lastName: response.name?.split(' ')[1] || '',
+      email: response.email || '',
+      phone: response.phone || '',
+      address: response.address || '',
+      gender: response.gender || 'male',
+      avatarUrl: response.avatarUrl || '',
+      role: response.role || 'User',
+      createdAt: response.createdAt || '',
+      updatedAt: response.updatedAt || ''
+    }
+    
+    avatarUrl.value = response.avatarUrl || ''
+    success.value = response.message || ''
+
+  } catch (err) {
+    error.value = 'Профильді жүктеу кезінде қате: ' + (err.data?.message || err.message)
+    console.error('Load profile error:', err)
+    
+    // Token жоқ болса login-ге бағыттау
+    if (err.statusCode === 401) {
+      handleLogout()
+    }
+  } finally {
+    loading.value = false
   }
 }
 
-// Save Profile (тек клиентте)
-const saveProfile = () => {
-  if (process.client) {
-    localStorage.setItem('userName', `${form.value.firstName} ${form.value.lastName}`.trim())
-    localStorage.setItem('email', form.value.email)
-    localStorage.setItem('address', form.value.address || '')
-    localStorage.setItem('birthDate', form.value.birthDate || '')
-    localStorage.setItem('phone', form.value.phone || '')
-    localStorage.setItem('location', form.value.location || '')
+// Profile сақтау (PATCH)
+const saveProfile = async () => {
+  try {
+    saving.value = true
+    error.value = ''
+    
+    const updateData = {
+      name: `${form.value.firstName} ${form.value.lastName}`.trim(),
+      email: form.value.email,
+      phone: form.value.phone,
+      address: form.value.address,
+      gender: form.value.gender
+    }
+
+    const response = await $fetch(`${API_BASE}/auth/me`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: updateData
+    })
+
+    success.value = response.message || response.success || '✅ Профиль сәтті сақталды!'
+    await loadProfileData() // жаңартылған деректерді қайта жүктеу
+
+  } catch (err) {
+    error.value = 'Сақтау кезінде қате: ' + (err.data?.message || err.message)
+    console.error('Save profile error:', err)
+  } finally {
+    saving.value = false
   }
-  
-  success.value = '✅ Профиль сәтті сақталды'
-  loadProfileData()
 }
 
-// Reset Form
-const resetForm = () => {
+// Reset Form (бастапқы мәндерге қайтару)
+const resetForm = async () => {
   success.value = ''
-  loadProfileData()
+  error.value = ''
+  await loadProfileData()
 }
 
 // Logout
-const handleLogout = () => {
-  if (process.client) {
-    localStorage.clear()
+const handleLogout = async () => {
+  try {
+    loading.value = true
+    
+    // API logout (міндетті емес, тек localStorage тазалау жеткілікті)
+    if (process.client) {
+      localStorage.removeItem('token')
+      localStorage.clear()
+    }
+    
+    router.push('/login')
+  } catch (err) {
+    console.error('Logout error:', err)
+    if (process.client) {
+      localStorage.clear()
+    }
+    router.push('/login')
   }
-  router.push('/login')
 }
-</script>
 
+// Component mount болғанда деректерді жүктеу
+onMounted(() => {
+  loadProfileData()
+})
+</script>
 
 <style scoped>
 .input {
   @apply w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#588157] focus:border-transparent transition-all;
+}
+
+.input:disabled {
+  @apply bg-gray-100 cursor-not-allowed;
 }
 </style>
