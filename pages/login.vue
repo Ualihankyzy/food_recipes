@@ -67,52 +67,44 @@ import axios from "axios";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-
 const router = useRouter();
 
-
 const form = ref({
-email: "",
-password: "",
+  email: "",
+  password: "",
 });
-
 
 const error = ref("");
 
-
 const handleLogin = async () => {
-error.value = "";
+  error.value = "";
 
+  // Бос өрістерді тексеру
+  if (!form.value.email || !form.value.password) {
+    error.value = "Email және пароль толтырыңыз";
+    return;
+  }
 
-// Бос өрістерді тексеру
-if (!form.value.email || !form.value.password) {
-error.value = "Email және пароль толтырыңыз";
-return;
-}
+  try {
+    const response = await axios.post(
+      "https://medical-backend-54hp.onrender.com/api/auth/login",
+      form.value
+    );
 
+    // Дұрыс болса
+    if (response.data.data?.user?.id) {
+      localStorage.setItem("userId", response.data.data.user.id);
+      localStorage.setItem("userName", response.data.data.user.name);
+      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("email", form.value.email);
+localStorage.setItem("password", form.value.password); 
 
-try {
-const response = await axios.post(
-"https://medical-backend-54hp.onrender.com/api/auth/login",
-form.value
-);
-
-
-// Дұрыс болса
-if (response.data.data?.user?.id) {
-localStorage.setItem("userId", response.data.data.user.id);
-localStorage.setItem("userName", response.data.data.user.name);
-localStorage.setItem("token", response.data.data.token);
-localStorage.setItem("email", form.value.email);
-localStorage.setItem("password", form.value.password);
-
-
-router.push("/"); // бірден index бетіне
-} else {
-error.value = "Email немесе пароль дұрыс емес";
-}
-} catch (err) {
-error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
-}
+      router.push("/"); // бірден index бетіне
+    } else {
+      error.value = "Email немесе пароль дұрыс емес";
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
+  }
 };
 </script>
