@@ -180,12 +180,32 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6">
-          <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes</h3>
-          <p class="text-center text-[#6c7570] py-10">
-            There is nothing here yet. Recipes you save on the home page will appear here.
-          </p>
-        </div>
+      <div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
+  
+  <div v-if="isLoading" class="flex items-center justify-center py-20">
+    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+  </div>
+  
+  <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm...">
+      <!-- My recipes-пен бірдей card коды -->
+      <div class="h-40 bg-[#a3b18a] overflow-hidden">
+        <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
+      </div>
+      <div class="p-4 flex-1 flex flex-col gap-2">
+        <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
+        <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
+        <!-- ... қалған код -->
+      </div>
+    </div>
+  </div>
+  
+  <p v-else class="text-center text-[#6c7570] py-10">
+    No saved recipes yet. Save some from home page! ✨
+  </p>
+</div>
+
       </section>
     </main>
 
@@ -486,10 +506,52 @@ onMounted(() => {
   }
 })
 
+onMounted(async () => {
+  // ... user info бар код
+  
+  if (userId.value) {
+    await fetchRecipes()      // ✅ Recipes ал
+    await loadSavedRecipes()  // ✅ Saved recipes ал
+    await loadUserRecipes()   // My recipes (Firebase)
+  }
+})
+
 // Cleanup
 onUnmounted(() => {
   if (unsubscribe) unsubscribe()
 })
+
+
+// 🔥 MockAPI URL (recipes.vue-ден)
+const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+
+// Saved recipes state
+const savedRecipes = ref([])
+const loadSavedRecipes = async () => {
+  if (!userId.value) return
+  
+  try {
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    // Favorites-тен recipe ID-лерін алып, recipes массивінен тауып шығарамыз
+    savedRecipes.value = favorites
+      .map(fav => recipes.value.find(r => r.id === fav.recipeId))
+      .filter(Boolean)
+  } catch (e) {
+    console.error('Saved recipes жүктелмеді:', e)
+  }
+}
+
+// recipes массивін алып келу (home page-ден)
+const recipes = ref([])
+const fetchRecipes = async () => {
+  try {
+    const response = await $fetch(`${MOCK_API_URL}/recipes`)
+    recipes.value = response || []
+  } catch (e) {
+    console.error('Recipes жүктелмеді:', e)
+  }
+}
+
 </script>
 
 
