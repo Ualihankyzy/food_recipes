@@ -111,10 +111,9 @@ const handleLogin = async () => {
       
       console.log("✅ Login сәтті! Token сақталды:", response.token.substring(0, 20) + "...")
       
-      // ✅ ИНДЕКС БЕТІНЕ БАРУ (/)
-      await router.push("/")
-      console.log("✅ Бет ауыстырылды: главная бет")
-      
+      // ✅ БЕТ АУЫСТЫРУ (router.push-ты ерте шақыру)
+      router.push("/")
+      return // ✅ finally блокқа өтпейтін ету
     } else {
       error.value = response.message || "Email немесе пароль дұрыс емес"
     }
