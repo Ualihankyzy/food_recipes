@@ -391,63 +391,51 @@ const fetchAllRecipes = async () => {
 }
 
 // 🔥 ЖАҢА: Простой Firebase favorites (query ЖОҚ!)
-const loadFavorites = async () => {
-  if (!userId.value) return
-  
-  try {
-    // ✅ Барлық favorites-ті аламыз, client-та filter
-    const snapshot = await $onSnapshot($collection($db, 'favorites'), (snap) => {
-      favorites.value = snap.docs
-        .map(doc => doc.data())
-        .filter(fav => fav.userId === userId.value)
-        .map(fav => fav.recipeId)
-    })
-  } catch (e) {
-    console.error('Favorites жүктелмеді:', e)
-    favorites.value = []
-  }
-}
+
 
 // 🔥 toggleFavorite (query ЖОҚ!)
 const toggleFavorite = async (recipeId) => {
-  console.log('💝 toggleFavorite:', { userId: userId.value, recipeId })
-  
   if (!userId.value) {
     alert('Алдымен кіріңіз!')
     return
   }
 
   try {
-    // ✅ Простой check: favorites.value-та бар ма?
-    const isSaved = favorites.value.includes(recipeId)
+    // ✅ MockAPI-ға сақтау (Firebase жоқ!)
+    const exists = favorites.value.some(f => f.recipeId == recipeId)
     
-    if (isSaved) {
-      // DELETE - барлық favorites-ті аламыз, userId+recipeId табамыз
-      const snapshot = await $onSnapshot($collection($db, 'favorites'), async (snap) => {
-        const targetDoc = snap.docs.find(doc => 
-          doc.data().userId === userId.value && doc.data().recipeId === recipeId
-        )
-        if (targetDoc) {
-          await $deleteDoc(targetDoc.ref)
-          console.log('❌ Favorite removed')
+    if (exists) {
+      // DELETE MockAPI
+      const fav = favorites.value.find(f => f.recipeId == recipeId)
+      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
+    } else {
+      // POST MockAPI
+      await $fetch(`${MOCK_API_URL}/favorites`, {
+        method: 'POST',
+        body: { 
+          recipeId, 
+          userId: userId.value,  // "6"
+          savedAt: new Date().toISOString() 
         }
       })
-    } else {
-      // ADD
-    await $addDoc($collection($db, 'favorites'), {
-  recipeId,
-  userId: userId.value,  // "6" → JWT user.id
-  savedAt: new Date().toISOString()
-})
-      console.log('✅ Favorite added')
     }
-    // Refresh
-    setTimeout(() => loadFavorites(), 100)
+    await loadFavorites()
   } catch (e) {
-    console.error('Toggle favorite қатесі:', e)
-    alert('Қате: ' + e.message)
+    console.error(e)
   }
 }
+
+const loadFavorites = async () => {
+  if (!userId.value) return
+  try {
+    // ✅ MockAPI-дан userId бойынша
+    const response = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    favorites.value = response || []
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 const isFavorite = (recipeId) => {
   return favorites.value.includes(recipeId)

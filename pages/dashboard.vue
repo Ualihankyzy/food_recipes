@@ -416,24 +416,19 @@ const loadMyRecipes = () => {
 
 // 🔥 Load Saved Recipes (Firebase favorites + MockAPI recipes)
 const loadSavedRecipes = async () => {
-  if (unsubscribeSavedRecipes) unsubscribeSavedRecipes()
-  
   if (!userId.value) return
   
-  const q = $query($collection($db, 'favorites'), $where('userId', '==', userId.value))
-  
-  unsubscribeSavedRecipes = $onSnapshot(q, async (snapshot) => {
-    const favoriteIds = snapshot.docs.map(doc => doc.data().recipeId)
-    
-    try {
-      const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
-      savedRecipes.value = recipesResponse.filter(recipe => favoriteIds.includes(recipe.id))
-    } catch (e) {
-      console.error('Saved recipes жүктелмеді:', e)
-      savedRecipes.value = []
-    }
-  })
+  try {
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
+    savedRecipes.value = recipesResponse.filter(r => 
+      favorites.some(f => f.recipeId == r.id)
+    )
+  } catch (e) {
+    console.error(e)
+  }
 }
+
 
 // 🔥 Create Recipe
 const createRecipe = async () => {
