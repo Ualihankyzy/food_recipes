@@ -434,11 +434,11 @@ const toggleFavorite = async (recipeId) => {
       })
     } else {
       // ADD
-      await $addDoc($collection($db, 'favorites'), {
-        recipeId,
-        userId: userId.value,
-        savedAt: new Date().toISOString()
-      })
+    await $addDoc($collection($db, 'favorites'), {
+  recipeId,
+  userId: userId.value,  // "6" → JWT user.id
+  savedAt: new Date().toISOString()
+})
       console.log('✅ Favorite added')
     }
     // Refresh
