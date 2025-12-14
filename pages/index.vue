@@ -397,6 +397,7 @@ const loadFavorites = async () => {
   }
 }
 
+// 🔥 Firebase favorites
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
     alert('Алдымен кіріңіз!')
@@ -404,22 +405,34 @@ const toggleFavorite = async (recipeId) => {
   }
 
   try {
-    const exists = favorites.value.find(f => f.recipeId === recipeId)
+    // Алдымен тексереміз - бар ма?
+    const q = $query(
+      $collection($db, 'favorites'),
+      $where('userId', '==', userId.value),
+      $where('recipeId', '==', recipeId)
+    )
+    
+    const snapshot = await $getDocs(q)
+    const exists = !snapshot.empty
+    
     if (exists) {
       // DELETE
-      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
+      const favDoc = snapshot.docs[0]
+      await $deleteDoc(favDoc.ref)
     } else {
-      // POST
-      await $fetch(`${MOCK_API_URL}/favorites`, {
-        method: 'POST',
-        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
+      // ADD
+      await $addDoc($collection($db, 'favorites'), {
+        recipeId,
+        userId: userId.value,
+        savedAt: new Date().toISOString()
       })
     }
-    await loadFavorites()
+    await loadFavorites() // refresh
   } catch (e) {
     alert('Қате: ' + e)
   }
 }
+
 
 const isFavorite = (recipeId) => {
   return favorites.value.some(f => f.recipeId === recipeId)

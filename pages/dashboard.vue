@@ -180,31 +180,24 @@
         </div>
 
         <!-- SAVED -->
-      <div v-else-if="activeTab === 'saved'" class="space-y-6">
-  <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
+     <div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c] mb-6">
+    Saved Recipes ({{ savedRecipes.length }})
+  </h3>
   
-  <div v-if="isLoading" class="flex items-center justify-center py-20">
-    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+  <div v-if="!savedRecipes.length" class="text-center py-20">
+    <p class="text-[#6c7570] mb-4">Сақталған рецепттер жоқ</p>
+    <p class="text-xs text-[#6c7570]">Басты беттен рецепттерді сақтаңыз ✨</p>
   </div>
   
-  <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm...">
-      <!-- My recipes-пен бірдей card коды -->
-      <div class="h-40 bg-[#a3b18a] overflow-hidden">
-        <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
-      </div>
-      <div class="p-4 flex-1 flex flex-col gap-2">
-        <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
-        <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
-        <!-- ... қалған код -->
-      </div>
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- My recipes-пен бірдей card коды, savedRecipes арқылы -->
+    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl...">
+      <!-- ... card content ... -->
     </div>
   </div>
-  
-  <p v-else class="text-center text-[#6c7570] py-10">
-    No saved recipes yet. Save some from home page! ✨
-  </p>
 </div>
+
 
       </section>
     </main>
@@ -336,47 +329,28 @@
 </template>
 
 
-
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
-// 🔥 Firebase imports
 const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where } = useNuxtApp()
 
-// tabs
+// 🔥 Constants
+const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+
+// 🔥 State
 const activeTab = ref('my-recipes')
-
-const menuItems = [
-  { key: 'home', label: 'Home', type: 'route', to: '/' },
-  { key: 'my-recipes', label: 'My recipes', type: 'tab' },
-  { key: 'saved', label: 'Saved', type: 'tab' }
-]
-
-const activeTabTitle = computed(() => {
-  if (activeTab.value === 'my-recipes') return 'My Recipes'
-  if (activeTab.value === 'saved') return 'Saved Recipes'
-  return 'Dashboard'
-})
-
-// user info
 const userId = ref('')
 const userName = ref('')
 const avatarUrl = ref('')
-const userInitial = computed(() =>
-  userName.value ? userName.value[0]?.toUpperCase() : 'U'
-)
-
-// 🔥 LOADING + RECIPES
 const isLoading = ref(false)
 const myRecipes = ref([])
-let unsubscribe = null
-const viewedRecipe = ref(null)  // 🔥 VIEWED_RECIPE ref қосылды!
-
-// create modal
+const savedRecipes = ref([])
+const viewedRecipe = ref(null)
 const showCreateModal = ref(false)
+
+// 🔥 Forms
 const form = ref({
   title: '',
   category: '',
@@ -386,60 +360,83 @@ const form = ref({
   ingredients: []
 })
 
+// 🔥 Computed
+const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
+
 const ingredientsText = computed({
   get: () => form.value.ingredients.join('\n'),
   set: v => {
-    form.value.ingredients = v
-      .split('\n')
-      .map(s => s.trim())
-      .filter(Boolean)
+    form.value.ingredients = v.split('\n').map(s => s.trim()).filter(Boolean)
   }
 })
 
-// 🔥 LOADING + Firebase: User рецепттерін жүктеу
-const loadUserRecipes = async () => {
-  if (unsubscribe) unsubscribe()
-  
-  isLoading.value = true  // 🔥 LOADING ON
-  
-  if (!userId.value) {
-    isLoading.value = false
-    return
+const menuItems = [
+  { key: 'home', label: 'Home', type: 'route', to: '/' },
+  { key: 'my-recipes', label: 'My recipes', type: 'tab' },
+  { key: 'saved', label: 'Saved', type: 'tab' }
+]
+
+// 🔥 Firebase listeners
+let unsubscribeMyRecipes = null
+let unsubscribeSavedRecipes = null
+
+// 🔥 User setup
+const setupUser = () => {
+  if (typeof window !== 'undefined') {
+    userId.value = window.localStorage.getItem('userId') || '1'
+    userName.value = window.localStorage.getItem('userName') || 'User'
+    avatarUrl.value = window.localStorage.getItem('avatarUrl') || ''
+  } else {
+    userId.value = '1'
+    userName.value = 'User'
   }
+}
+
+// 🔥 Load My Recipes (Firebase)
+const loadMyRecipes = () => {
+  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
   
-  try {
-    const q = $query(
-      $collection($db, 'recipes'), 
-      $where('userId', '==', userId.value)
-    )
-    
-    unsubscribe = $onSnapshot(q, (snapshot) => {
-      myRecipes.value = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      isLoading.value = false  // 🔥 LOADING OFF
-    })
-  } catch (error) {
+  if (!userId.value) return
+  
+  isLoading.value = true
+  
+  const q = $query($collection($db, 'recipes'), $where('userId', '==', userId.value))
+  
+  unsubscribeMyRecipes = $onSnapshot(q, (snapshot) => {
+    myRecipes.value = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    isLoading.value = false
+  }, (error) => {
     console.error('Рецепттерді жүктеу қатесі:', error)
     isLoading.value = false
-  }
+  })
 }
 
-const closeCreate = () => {
-  showCreateModal.value = false
-  form.value = {
-    title: '',
-    category: '',
-    area: '',
-    imageUrl: '',
-    instructions: '',
-    ingredients: []
-  }
+// 🔥 Load Saved Recipes (Firebase favorites + MockAPI recipes)
+const loadSavedRecipes = async () => {
+  if (unsubscribeSavedRecipes) unsubscribeSavedRecipes()
+  
+  if (!userId.value) return
+  
+  const q = $query($collection($db, 'favorites'), $where('userId', '==', userId.value))
+  
+  unsubscribeSavedRecipes = $onSnapshot(q, async (snapshot) => {
+    const favoriteIds = snapshot.docs.map(doc => doc.data().recipeId)
+    
+    try {
+      const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
+      savedRecipes.value = recipesResponse.filter(recipe => favoriteIds.includes(recipe.id))
+    } catch (e) {
+      console.error('Saved recipes жүктелмеді:', e)
+      savedRecipes.value = []
+    }
+  })
 }
 
-// 🔥 Firebase: рецепт жасау
-const createLocalRecipe = async () => {
+// 🔥 Create Recipe
+const createRecipe = async () => {
   if (!form.value.title || !userId.value) return
   
   isLoading.value = true
@@ -457,7 +454,7 @@ const createLocalRecipe = async () => {
   
   try {
     await $addDoc($collection($db, 'recipes'), recipe)
-    closeCreate()
+    closeCreateModal()
   } catch (error) {
     console.error('Рецепт сақтау қатесі:', error)
   } finally {
@@ -465,10 +462,14 @@ const createLocalRecipe = async () => {
   }
 }
 
-// 🔥 VIEW RECIPE - түзетілді!
+// 🔥 UI Actions
+const closeCreateModal = () => {
+  showCreateModal.value = false
+  form.value = { title: '', category: '', area: '', imageUrl: '', instructions: '', ingredients: [] }
+}
+
 const viewRecipe = (recipe) => {
   viewedRecipe.value = { ...recipe }
-  console.log('View recipe:', recipe)  // debug
 }
 
 const deleteUserRecipe = async (id) => {
@@ -485,73 +486,29 @@ const deleteUserRecipe = async (id) => {
 const logout = () => {
   if (typeof window !== 'undefined') {
     window.localStorage.clear()
-    if (unsubscribe) unsubscribe()
-    router.push('/login')
   }
+  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
+  if (unsubscribeSavedRecipes) unsubscribeSavedRecipes()
+  router.push('/login')
 }
 
+// 🔥 Lifecycle
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    userId.value = window.localStorage.getItem('userId') || '1'
-    userName.value = window.localStorage.getItem('userName') || 'User'
-    avatarUrl.value = window.localStorage.getItem('avatarUrl') || ''
-    
-    // 500ms күту (UX үшін)
-    setTimeout(() => {
-      loadUserRecipes()
-    }, 500)
-  } else {
-    userId.value = '1'
-    userName.value = 'User'
-  }
-})
-
-onMounted(async () => {
-  // ... user info бар код
+  setupUser()
   
   if (userId.value) {
-    await fetchRecipes()      // ✅ Recipes ал
-    await loadSavedRecipes()  // ✅ Saved recipes ал
-    await loadUserRecipes()   // My recipes (Firebase)
+    // 500ms delay for smooth UX
+    setTimeout(() => {
+      loadMyRecipes()
+      loadSavedRecipes()
+    }, 500)
   }
 })
 
-// Cleanup
 onUnmounted(() => {
-  if (unsubscribe) unsubscribe()
+  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
+  if (unsubscribeSavedRecipes) unsubscribeSavedRecipes()
 })
-
-
-// 🔥 MockAPI URL (recipes.vue-ден)
-const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
-
-// Saved recipes state
-const savedRecipes = ref([])
-const loadSavedRecipes = async () => {
-  if (!userId.value) return
-  
-  try {
-    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    // Favorites-тен recipe ID-лерін алып, recipes массивінен тауып шығарамыз
-    savedRecipes.value = favorites
-      .map(fav => recipes.value.find(r => r.id === fav.recipeId))
-      .filter(Boolean)
-  } catch (e) {
-    console.error('Saved recipes жүктелмеді:', e)
-  }
-}
-
-// recipes массивін алып келу (home page-ден)
-const recipes = ref([])
-const fetchRecipes = async () => {
-  try {
-    const response = await $fetch(`${MOCK_API_URL}/recipes`)
-    recipes.value = response || []
-  } catch (e) {
-    console.error('Recipes жүктелмеді:', e)
-  }
-}
-
 </script>
 
 
