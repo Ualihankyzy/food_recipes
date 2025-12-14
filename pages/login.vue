@@ -91,19 +91,24 @@ const handleLogin = async () => {
       form.value
     );
 
-    // Дұрыс болса
-    if (response.data.data?.user?.id) {
-      localStorage.setItem("userId", response.data.data.user.id);
-      localStorage.setItem("userName", response.data.data.user.name);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("email", form.value.email);
-localStorage.setItem("password", form.value.password); 
+    console.log("✅ Login response:", response.data); // Debug
 
-      router.push("/"); // бірден index бетіне
+    // ✅ ДҰРЫС API STRUCTURE
+    if (response.data.success && response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.user?.id || "");
+      localStorage.setItem("userName", response.data.user?.name || "");
+      localStorage.setItem("email", response.data.user?.email || form.value.email);
+      // ✅ PASSWORD СИПТАМАЙМЫЗ (қауіпсіздік үшін)
+
+      console.log("✅ Token сақталды:", response.data.token.substring(0, 20) + "...");
+      
+      router.push("/"); // Главная бетке
     } else {
-      error.value = "Email немесе пароль дұрыс емес";
+      error.value = response.data.message || "Email немесе пароль дұрыс емес";
     }
   } catch (err) {
+    console.error("❌ Login error:", err.response?.data);
     error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
   }
 };
