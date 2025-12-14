@@ -79,7 +79,6 @@ const error = ref("");
 const handleLogin = async () => {
   error.value = "";
 
-  // Бос өрістерді тексеру
   if (!form.value.email || !form.value.password) {
     error.value = "Email және пароль толтырыңыз";
     return;
@@ -91,18 +90,27 @@ const handleLogin = async () => {
       form.value
     );
 
-    // Дұрыс болса
+    console.log("✅ Response:", response.data);
+
+    // ✅ СӘТТІ → сразу главная бетке!
     if (response.data.success && response.data.token) {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userId", response.data.user?.id || "");
       localStorage.setItem("userName", response.data.user?.name || "");
       localStorage.setItem("email", response.data.user?.email || form.value.email);
-
-      router.push("/"); // бірден index бетіне
+      
+      console.log("✅ Авторизация сәтті! Бет ауысады...");
+      
+      // ✅ 100% БЕТ АУЫСЫРУ
+      window.location.href = "/";
+      return;
     } else {
-      error.value = "Email немесе пароль дұрыс емес";
+      // ❌ ҚАТЕ → дұрыс емес деп шығару
+      error.value = response.data.message || "Email немесе пароль дұрыс емес";
     }
   } catch (err) {
+    // ❌ ҚАТЕ → дұрыс емес деп шығару
+    console.error("❌ Қате:", err.response?.data);
     error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
   }
 };
