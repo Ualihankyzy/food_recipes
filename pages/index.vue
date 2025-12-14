@@ -341,41 +341,44 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRouter, useCookie } from '#app'
+import { useRouter } from '#app'
 
 const router = useRouter()
+const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where, $getDocs } = useNuxtApp()
 
-// Recipes state
+// 🔥 Constants
+const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+
+// 🔥 Recipes state
 const recipes = ref([])
 const pending = ref(true)
 const errorMessage = ref(null)
-
-const activeLetter = ref(null)
 const selectedRecipe = ref(null)
 const showSearch = ref(false)
 const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
+const activeLetter = ref(null)
 
-// Auth + Favorites state
-const userId = useCookie('userId')
+// 🔥 Auth + Favorites (Dashboard-пен бірдей!)
+const userId = ref('')
 const isAuth = ref(false)
 const favorites = ref([])
 
-const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
-
-// Auth күйін тексеру
-const checkAuth = () => {
-  const token = localStorage.getItem('token')
-  isAuth.value = !!token || !!userId.value
+// 🔥 User setup (Dashboard-пен бірдей)
+const setupUser = () => {
+  if (typeof window !== 'undefined') {
+    userId.value = window.localStorage.getItem('userId') || ''
+    const token = localStorage.getItem('token')
+    isAuth.value = !!userId.value || !!token
+  }
 }
 
-// Fetch MockAPI recipes
+// 🔥 Fetch recipes
 const fetchAllRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
-
     const response = await $fetch(`${MOCK_API_URL}/recipes`)
     recipes.value = response || []
   } catch (e) {
@@ -386,26 +389,31 @@ const fetchAllRecipes = async () => {
   }
 }
 
-// Favorites логикасы
+// 🔥 Firebase favorites (Dashboard-пен синхронды)
 const loadFavorites = async () => {
   if (!userId.value) return
+  
   try {
-    const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    favorites.value = favs || []
+    const q = $query(
+      $collection($db, 'favorites'),
+      $where('userId', '==', userId.value)
+    )
+    const snapshot = await $getDocs(q)
+    favorites.value = snapshot.docs.map(doc => doc.data())
   } catch (e) {
     console.error('Favorites жүктелмеді:', e)
+    favorites.value = []
   }
 }
 
-// 🔥 Firebase favorites
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
-    alert('Алдымен кіріңіз!')
+    alert('Алдымен кіріңіз! userId: ' + userId.value) // ✅ DEBUG
+    console.log('userId:', userId.value) // ✅ DEBUG
     return
   }
 
   try {
-    // Алдымен тексереміз - бар ма?
     const q = $query(
       $collection($db, 'favorites'),
       $where('userId', '==', userId.value),
@@ -416,45 +424,37 @@ const toggleFavorite = async (recipeId) => {
     const exists = !snapshot.empty
     
     if (exists) {
-      // DELETE
       const favDoc = snapshot.docs[0]
       await $deleteDoc(favDoc.ref)
     } else {
-      // ADD
       await $addDoc($collection($db, 'favorites'), {
         recipeId,
-        userId: userId.value,
+        userId: userId.value,  // ✅ localStorage-дан
         savedAt: new Date().toISOString()
       })
     }
-    await loadFavorites() // refresh
+    await loadFavorites()
   } catch (e) {
-    alert('Қате: ' + e)
+    console.error('Toggle favorite қатесі:', e)
+    alert('Қате: ' + e.message)
   }
 }
-
 
 const isFavorite = (recipeId) => {
   return favorites.value.some(f => f.recipeId === recipeId)
 }
 
-// Modal
-const openModal = (recipe) => selectedRecipe.value = recipe
-const closeModal = () => selectedRecipe.value = null
-
-// Filter functions
-const filterByLetter = (letter) => {
-  activeLetter.value = letter
-  lettersOpen.value = false
-}
-const clearFilter = () => activeLetter.value = null
-
-// Filtered recipes (A-Z + Search)
+// 🔥 Filters + Modal
 const filteredRecipes = computed(() => {
   let result = recipes.value
-
- 
-
+  
+  // A-Z filter
+  if (activeLetter.value) {
+    result = result.filter(r => 
+      r.title.toLowerCase().startsWith(activeLetter.value.toLowerCase())
+    )
+  }
+  
   // Search filter
   if (searchQuery.value) {
     result = result.filter(r => 
@@ -463,41 +463,48 @@ const filteredRecipes = computed(() => {
       r.category.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
-
+  
   return result
 })
 
-// Scroll
+const filterByLetter = (letter) => {
+  activeLetter.value = letter
+  lettersOpen.value = false
+}
+const clearFilter = () => activeLetter.value = null
+
+const openModal = (recipe) => selectedRecipe.value = recipe
+const closeModal = () => selectedRecipe.value = null
+
+// 🔥 Scroll + Events
 const scrollToRecipes = () => {
-  if (recipesSection.value)
-    recipesSection.value.scrollIntoView({ behavior: 'smooth' })
+  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
-// Search bar hide on scroll
 const handleScroll = () => {
   if (window.scrollY < 100) showSearch.value = false
 }
 
+watch(searchQuery, () => {
+  activeLetter.value = null
+})
+
+// 🔥 Lifecycle
 onMounted(async () => {
+  setupUser()
   window.addEventListener('scroll', handleScroll)
-  checkAuth()
   
   await fetchAllRecipes()
-  if (isAuth.value) await loadFavorites()
+  if (userId.value) {
+    await loadFavorites()
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
-
-// Search watch
-watch(searchQuery, () => {
-  activeLetter.value = null // A-Z фильтрін өшіру
-})
-
-
-
 </script>
+
 
 <style>
 * {
