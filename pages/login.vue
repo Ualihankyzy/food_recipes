@@ -76,7 +76,6 @@ const form = ref({
 
 const error = ref("");
 
-
 const handleLogin = async () => {
   error.value = "";
 
@@ -91,21 +90,26 @@ const handleLogin = async () => {
       form.value
     );
 
-    console.log("✅ FULL Response:", response.data);
+    console.log("✅ RESPONSE:", response.data); // Бұл көрінуі керек!
 
-    // ✅ ДҰРЫС ШАРТ - сіздің API-ңізге сәйкес
+    // ❌ ЕСКІ → ЖОҚПАЙДЫ
+    // if (response.data.data?.user?.id) 
+
+    // ✅ ЖАҢА → ДҰРЫС API STRUCTURE
     if (response.data.success && response.data.token) {
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userId", response.data.user?.id || "");
-      localStorage.setItem("userName", response.data.user?.name || "");
-      localStorage.setItem("email", response.data.user?.email || form.value.email);
-      
-      console.log("✅ Token:", response.data.token.substring(0, 20) + "...");
+      localStorage.setItem("userId", response.data.user.id);
+      localStorage.setItem("userName", response.data.user.name);
+      localStorage.setItem("email", response.data.user.email);
+
+      console.log("✅ Token сақталды! Profile-ге...");
       
       // ✅ 100% БЕТ АУЫСЫРУ
-      window.location.href = "/";
+     setTimeout(() => {
+      router.push("/")
+    }, 1500)
     } else {
-      error.value = response.data.message || "Email немесе пароль дұрыс емес";
+      error.value = "Email немесе пароль дұрыс емес";
     }
   } catch (err) {
     error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
