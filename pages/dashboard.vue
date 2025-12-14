@@ -255,15 +255,16 @@
 
     <!-- CREATE MODAL -->
     <transition name="fade">
-      <div
-        v-if="showCreateModal"
-        class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-        @click.self="closeCreate"
-      >
+    <div
+  v-if="showCreateModal"
+  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+  @click.self="closeCreateModal"
+>
+
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
             <h3 class="text-lg font-semibold text-[#31572c]">Create Recipe</h3>
-            <button @click="closeCreate" class="text-[#6c7570] hover:text-black">✕</button>
+            <button @click="closeCreateModal" class="text-[#6c7570] hover:text-black">✕</button>
           </div>
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
@@ -317,13 +318,13 @@
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
             <button
-              @click="closeCreate"
+              @click="closeCreateModal"
               class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white"
             >
               Cancel
             </button>
             <button
-              @click="createLocalRecipe"
+            @click="createRecipe"
               class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]"
             >
               Save
