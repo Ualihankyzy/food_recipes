@@ -112,7 +112,7 @@ const handleLogin = async () => {
       console.log("✅ Login сәтті! Token сақталды:", response.token.substring(0, 20) + "...")
       
       // Profile бетіне бару
-      router.push("/profile")
+      router.push("/")
     } else {
       error.value = response.message || "Email немесе пароль дұрыс емес"
     }
