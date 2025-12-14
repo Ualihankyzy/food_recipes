@@ -86,7 +86,41 @@
           </h1>
         </div>
 
- 
+        <!-- A-Z Dropdown -->
+        <div class="relative inline-block mb-6">
+          <button
+            @click="lettersOpen = !lettersOpen"
+            class="bg-[#f8961e] px-6 py-3 rounded-2xl font-bold shadow-md transition text-white"
+          >
+            A-Z
+          </button>
+
+          <div
+            v-if="lettersOpen"
+            class="absolute mt-2 w-64 bg-white rounded-xl shadow-lg p-4 flex flex-wrap gap-2 z-50"
+          >
+            <button
+              v-for="letter in 'abcdefghijklmnopqrstuvwxyz'.split('')"
+              :key="letter"
+              @click="filterByLetter(letter)"
+              :class="[
+                'px-3 py-2 rounded-lg font-bold text-sm uppercase transition',
+                activeLetter === letter
+                  ? 'bg-blue-500 text-white scale-105'
+                  : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              ]"
+            >
+              {{ letter }}
+            </button>
+
+            <button
+              @click="clearFilter"
+              class="px-3 py-2 rounded-lg font-bold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
+            >
+              All
+            </button>
+          </div>
+        </div>
 
         <!-- Recipes Grid -->
         <div
@@ -323,7 +357,10 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-
+// Auth + Favorites state
+const userId = useCookie('userId')
+const isAuth = ref(false)
+const favorites = ref([])
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
@@ -348,62 +385,45 @@ const fetchAllRecipes = async () => {
     pending.value = false
   }
 }
-// 🔥 Firebase қосу (Dashboard-дағыдай)
-const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where } = useNuxtApp()
 
-// userId localStorage-дан
-const userId = ref('')
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    userId.value = window.localStorage.getItem('userId') || ''
-  }
-})
-
-// 🔥 Firebase favorites
-const favorites = ref([])
-let unsubscribeFavorites = null
-
-const loadFavorites = () => {
-  if (unsubscribeFavorites) unsubscribeFavorites()
+// Favorites логикасы
+const loadFavorites = async () => {
   if (!userId.value) return
-  
-  const q = $query(
-    $collection($db, 'favorites'),
-    $where('userId', '==', userId.value)
-  )
-  unsubscribeFavorites = $onSnapshot(q, (snapshot) => {
-    favorites.value = snapshot.docs.map(doc => doc.data())
-  })
+  try {
+    const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    favorites.value = favs || []
+  } catch (e) {
+    console.error('Favorites жүктелмеді:', e)
+  }
 }
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
-    router.push('/login')
+    alert('Алдымен кіріңіз!')
     return
   }
-  
-  const exists = favorites.value.find(f => f.recipeId === recipeId)
-  
-  if (exists) {
-    // Delete
-    await $deleteDoc($doc($db, 'favorites', exists.id))
-  } else {
-    // Add
-    await $addDoc($collection($db, 'favorites'), {
-      recipeId,
-      userId: userId.value,
-      savedAt: new Date().toISOString()
-    })
+
+  try {
+    const exists = favorites.value.find(f => f.recipeId === recipeId)
+    if (exists) {
+      // DELETE
+      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
+    } else {
+      // POST
+      await $fetch(`${MOCK_API_URL}/favorites`, {
+        method: 'POST',
+        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
+      })
+    }
+    await loadFavorites()
+  } catch (e) {
+    alert('Қате: ' + e)
   }
 }
 
 const isFavorite = (recipeId) => {
   return favorites.value.some(f => f.recipeId === recipeId)
 }
-
-onMounted(() => {
-  loadFavorites()
-})
 
 // Modal
 const openModal = (recipe) => selectedRecipe.value = recipe
