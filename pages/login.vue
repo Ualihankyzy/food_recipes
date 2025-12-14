@@ -92,12 +92,11 @@ const handleLogin = async () => {
     );
 
     // Дұрыс болса
-   if (response.data.success && response.data.token) {
-      localStorage.setItem("userId", response.data.data.user.id);
-      localStorage.setItem("userName", response.data.data.user.name);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("email", form.value.email);
-localStorage.setItem("password", form.value.password); 
+    if (response.data.success && response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.user?.id || "");
+      localStorage.setItem("userName", response.data.user?.name || "");
+      localStorage.setItem("email", response.data.user?.email || form.value.email);
 
       router.push("/"); // бірден index бетіне
     } else {
