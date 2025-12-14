@@ -181,7 +181,7 @@ const form = ref({
 })
 
 // API BASE URL
-const API_BASE = 'https://medical-backend-54hp.onrender.com/api/auth/me'
+const API_BASE = 'https://medical-backend-54hp.onrender.com/api'
 
 // Authorization header
 const getAuthHeaders = () => {
