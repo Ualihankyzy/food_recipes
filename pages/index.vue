@@ -341,7 +341,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRouter } from '#app'
+import { useRouter, useCookie } from '#app'
 
 const router = useRouter()
 
@@ -357,19 +357,17 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-// 🔥 SSR SAFE AUTH + FAVORITES
-const userId = ref('')
+// Auth + Favorites state
+const userId = useCookie('userId')
 const isAuth = ref(false)
 const favorites = ref([])
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// 🔥 SSR SAFE - localStorage ТЕК client!
+// Auth күйін тексеру
 const checkAuth = () => {
-  if (process.client) {
-    userId.value = localStorage.getItem('userId') || ''
-    isAuth.value = localStorage.getItem('isAuth') === 'true'
-  }
+  const token = localStorage.getItem('token')
+  isAuth.value = !!token || !!userId.value
 }
 
 // Fetch MockAPI recipes
@@ -388,9 +386,9 @@ const fetchAllRecipes = async () => {
   }
 }
 
-// Favorites логикасы (SSR SAFE)
+// Favorites логикасы
 const loadFavorites = async () => {
-  if (!process.client || !userId.value) return
+  if (!userId.value) return
   try {
     const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
     favorites.value = favs || []
@@ -400,9 +398,8 @@ const loadFavorites = async () => {
 }
 
 const toggleFavorite = async (recipeId) => {
-  if (!process.client || !userId.value) {
+  if (!userId.value) {
     alert('Алдымен кіріңіз!')
-    router.push('/login')
     return
   }
 
@@ -415,16 +412,12 @@ const toggleFavorite = async (recipeId) => {
       // POST
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
-        body: { 
-          recipeId, 
-          userId: userId.value, 
-          savedAt: new Date().toISOString() 
-        }
+        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
       })
     }
     await loadFavorites()
   } catch (e) {
-    alert('Қате: ' + e.message)
+    alert('Қате: ' + e)
   }
 }
 
@@ -447,12 +440,7 @@ const clearFilter = () => activeLetter.value = null
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
-  // A-Z filter
-  if (activeLetter.value) {
-    result = result.filter(r => 
-      r.title.toLowerCase().startsWith(activeLetter.value)
-    )
-  }
+ 
 
   // Search filter
   if (searchQuery.value) {
@@ -474,33 +462,29 @@ const scrollToRecipes = () => {
 
 // Search bar hide on scroll
 const handleScroll = () => {
-  if (process.client && window.scrollY < 100) {
-    showSearch.value = false
-  }
+  if (window.scrollY < 100) showSearch.value = false
 }
 
 onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
   checkAuth()
+  
   await fetchAllRecipes()
   if (isAuth.value) await loadFavorites()
-  
-  if (process.client) {
-    window.addEventListener('scroll', handleScroll)
-  }
 })
 
 onUnmounted(() => {
-  if (process.client) {
-    window.removeEventListener('scroll', handleScroll)
-  }
+  window.removeEventListener('scroll', handleScroll)
 })
 
 // Search watch
 watch(searchQuery, () => {
-  activeLetter.value = null
+  activeLetter.value = null // A-Z фильтрін өшіру
 })
-</script>
 
+
+
+</script>
 
 <style>
 * {
