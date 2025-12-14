@@ -200,49 +200,49 @@ const loadProfileData = async () => {
   try {
     loading.value = true
     error.value = ''
-    
-    const response = await $fetch(`${API_BASE}/auth/me`, {
+
+    const res = await $fetch(`${API_BASE}/auth/me`, {
       method: 'GET',
       headers: getAuthHeaders()
     })
 
-    // API жауабын form-ға салу
-    form.value = {
-      id: response.id || '',
-      firstName: response.name?.split(' ')[0] || '',
-      lastName: response.name?.split(' ')[1] || '',
-      email: response.email || '',
-      phone: response.phone || '',
-      address: response.address || '',
-      gender: response.gender || 'male',
-      avatarUrl: response.avatarUrl || '',
-      role: response.role || 'User',
-      createdAt: response.createdAt || '',
-      updatedAt: response.updatedAt || ''
-    }
-    
-    avatarUrl.value = response.avatarUrl || ''
-    success.value = response.message || ''
+    // 👇 НАЗАР: нақты дерек res.data ішінде
+    const user = res.data || res // егер кейде data, кейде тікелей келсе
 
-  } catch (err) {
-    error.value = 'Профильді жүктеу кезінде қате: ' + (err.data?.message || err.message)
-    console.error('Load profile error:', err)
-    
-    // Token жоқ болса login-ге бағыттау
-    if (err.statusCode === 401) {
-      handleLogout()
+    const nameParts = (user.name || '').split(' ')
+
+    form.value = {
+      id: user.id || '',
+      firstName: nameParts[0] || '',
+      lastName: nameParts.slice(1).join(' ') || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      address: user.address || '',
+      gender: user.gender || 'male',
+      avatarUrl: user.avatar || '',
+      role: user.role || 'User',
+      createdAt: user.created_at || user.createdAt || '',
+      updatedAt: user.updated_at || user.updatedAt || ''
     }
+
+    avatarUrl.value = user.avatar || ''
+    success.value = res.message || ''
+  } catch (err) {
+    error.value = 'Профильді жүктеу кезінде қате'
+    console.error('Load profile error:', err)
+    if (err.statusCode === 401) handleLogout()
   } finally {
     loading.value = false
   }
 }
+
 
 // Profile сақтау (PATCH)
 const saveProfile = async () => {
   try {
     saving.value = true
     error.value = ''
-    
+
     const updateData = {
       name: `${form.value.firstName} ${form.value.lastName}`.trim(),
       email: form.value.email,
@@ -251,17 +251,16 @@ const saveProfile = async () => {
       gender: form.value.gender
     }
 
-    const response = await $fetch(`${API_BASE}/auth/me`, {
+    const res = await $fetch(`${API_BASE}/auth/me`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: updateData
     })
 
-    success.value = response.message || response.success || '✅ Профиль сәтті сақталды!'
-    await loadProfileData() // жаңартылған деректерді қайта жүктеу
-
+    success.value = res.message || '✅ Профиль сәтті сақталды'
+    await loadProfileData()
   } catch (err) {
-    error.value = 'Сақтау кезінде қате: ' + (err.data?.message || err.message)
+    error.value = 'Сақтау кезінде қате'
     console.error('Save profile error:', err)
   } finally {
     saving.value = false
