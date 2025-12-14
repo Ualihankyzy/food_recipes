@@ -383,15 +383,27 @@ const fetchRecipes = async () => {
 }
 
 // Favorites (MockAPI)
-const loadFavorites = async () => {
+const loadSavedRecipes = async () => {
   if (!userId.value) return
+  
   try {
-    const response = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    favorites.value = response || []
+    // ✅ 404 болса бос массив
+    let favorites = []
+    try {
+      favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    } catch (e) {
+      console.warn('Favorites бос:', e)
+    }
+    
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
+    savedRecipes.value = recipesResponse.filter(r => 
+      favorites.some(f => f.recipeId === r.id)
+    )
   } catch (e) {
-    console.error('Favorites жүктелмеді:', e)
+    savedRecipes.value = []
   }
 }
+
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {

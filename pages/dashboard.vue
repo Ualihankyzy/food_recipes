@@ -413,6 +413,7 @@ const loadMyRecipes = () => {
 }
 
 // MockAPI: Saved Recipes
+// ✅ 404 error-ды ұстап, бос массив қайтару
 const loadSavedRecipes = async () => {
   if (!userId.value) {
     savedRecipes.value = []
@@ -420,12 +421,10 @@ const loadSavedRecipes = async () => {
   }
 
   try {
-    const [favorites, allRecipes] = await Promise.all([
-      $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`),
-      $fetch(`${MOCK_API_URL}/recipes`)
-    ])
-
-    savedRecipes.value = allRecipes.filter(r =>
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(() => [])
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
+    
+    savedRecipes.value = recipesResponse.filter(r => 
       favorites.some(f => f.recipeId === r.id)
     )
   } catch (e) {
@@ -433,6 +432,7 @@ const loadSavedRecipes = async () => {
     savedRecipes.value = []
   }
 }
+
 
 // Create Recipe
 const createRecipe = async () => {
