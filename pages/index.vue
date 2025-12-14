@@ -357,18 +357,20 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-// Auth + Favorites state
-const userId = useCookie('userId')
-const isAuth = ref(false)
+
 const favorites = ref([])
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// Auth күйін тексеру
+// ❌ useCookie('userId') → ✅ localStorage
+const userId = ref(localStorage.getItem('userId') || '')
+const isAuth = computed(() => localStorage.getItem('isAuth') === 'true')
+
 const checkAuth = () => {
-  const token = localStorage.getItem('token')
-  isAuth.value = !!token || !!userId.value
+  isAuth.value = localStorage.getItem('isAuth') === 'true'
+  userId.value = localStorage.getItem('userId') || ''
 }
+
 
 // Fetch MockAPI recipes
 const fetchAllRecipes = async () => {
@@ -481,6 +483,9 @@ onUnmounted(() => {
 watch(searchQuery, () => {
   activeLetter.value = null // A-Z фильтрін өшіру
 })
+
+
+
 </script>
 
 <style>

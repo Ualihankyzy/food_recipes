@@ -180,12 +180,19 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6">
-          <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes</h3>
-          <p class="text-center text-[#6c7570] py-10">
-            There is nothing here yet. Recipes you save on the home page will appear here.
-          </p>
-        </div>
+       <div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c]">Saved Recipes ({{ savedRecipes.length }})</h3>
+  
+  <div v-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl p-6 text-center">
+      <h4>{{ recipe.title }}</h4>
+      <button @click="viewRecipe(recipe)" class="mt-4 px-4 py-2 bg-[#588157] text-white rounded-xl">View</button>
+    </div>
+  </div>
+  
+  <p v-else class="text-center text-[#6c7570] py-10">Home page-де Save басыңыз!</p>
+</div>
+
       </section>
     </main>
 
@@ -342,6 +349,7 @@ const activeTabTitle = computed(() => {
 })
 
 // user info
+const isAuth = ref(false)
 const userId = ref('')
 const userName = ref('')
 const avatarUrl = ref('')
@@ -470,26 +478,36 @@ const logout = () => {
   }
 }
 
-onMounted(() => {
-  if (typeof window !== 'undefined') {
-    userId.value = window.localStorage.getItem('userId') || '1'
-    userName.value = window.localStorage.getItem('userName') || 'User'
-    avatarUrl.value = window.localStorage.getItem('avatarUrl') || ''
-    
-    // 500ms күту (UX үшін)
-    setTimeout(() => {
-      loadUserRecipes()
-    }, 500)
-  } else {
-    userId.value = '1'
-    userName.value = 'User'
+const initAuth = () => {
+  userId.value = localStorage.getItem('userId') || ''
+  userName.value = localStorage.getItem('userName') || 'User'
+  isAuth.value = localStorage.getItem('isAuth') === 'true'
+  
+  if (isAuth.value && userId.value) {
+    loadUserRecipes()
+    loadSavedRecipes()  // 🔥 SAVED!
   }
+}
+// Cleanup
+onMounted(() => {
+  initAuth()  // 🔥 localStorage + recipes load
 })
 
-// Cleanup
-onUnmounted(() => {
-  if (unsubscribe) unsubscribe()
-})
+const savedRecipes = ref([])
+const loadSavedRecipes = async () => {
+  if (!userId.value) return
+  try {
+    // MockAPI favorites
+    savedRecipes.value = await $fetch(`https://68448e3771eb5d1be033990d.mockapi.io/api/v1/favorites?userId=${userId.value}`)
+    savedRecipes.value = savedRecipes.value.map(fav => ({
+      id: fav.recipeId,
+      title: 'Saved recipe',  // Home-дан title алу керек
+      // ... басқа fields
+    }))
+  } catch(e) {
+    console.error('Saved recipes error:', e)
+  }
+}
 </script>
 
 
