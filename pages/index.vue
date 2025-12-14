@@ -344,7 +344,17 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from '#app'
 
 const router = useRouter()
-const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where, $getDocs } = useNuxtApp()
+const { 
+  $db, 
+  $collection, 
+  $addDoc, 
+  $deleteDoc, 
+  $doc, 
+  $onSnapshot, 
+  $query, 
+  $where, 
+  $getDocs  // ✅ ҚОСЫЛДЫ!
+} = useNuxtApp()
 
 // 🔥 Constants
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
@@ -360,17 +370,18 @@ const recipesSection = ref(null)
 const lettersOpen = ref(false)
 const activeLetter = ref(null)
 
-// 🔥 Auth + Favorites (Dashboard-пен бірдей!)
+// 🔥 Auth + Favorites
 const userId = ref('')
 const isAuth = ref(false)
 const favorites = ref([])
 
-// 🔥 User setup (Dashboard-пен бірдей)
+// 🔥 User setup
 const setupUser = () => {
   if (typeof window !== 'undefined') {
     userId.value = window.localStorage.getItem('userId') || ''
     const token = localStorage.getItem('token')
     isAuth.value = !!userId.value || !!token
+    console.log('🔑 userId:', userId.value, 'isAuth:', isAuth.value) // DEBUG
   }
 }
 
@@ -389,7 +400,7 @@ const fetchAllRecipes = async () => {
   }
 }
 
-// 🔥 Firebase favorites (Dashboard-пен синхронды)
+// 🔥 Firebase favorites
 const loadFavorites = async () => {
   if (!userId.value) return
   
@@ -398,7 +409,7 @@ const loadFavorites = async () => {
       $collection($db, 'favorites'),
       $where('userId', '==', userId.value)
     )
-    const snapshot = await $getDocs(q)
+    const snapshot = await $getDocs(q)  // ✅ Енді жұмыс істейді
     favorites.value = snapshot.docs.map(doc => doc.data())
   } catch (e) {
     console.error('Favorites жүктелмеді:', e)
@@ -407,9 +418,10 @@ const loadFavorites = async () => {
 }
 
 const toggleFavorite = async (recipeId) => {
+  console.log('💝 toggleFavorite:', { userId: userId.value, recipeId }) // DEBUG
+  
   if (!userId.value) {
-    alert('Алдымен кіріңіз! userId: ' + userId.value) // ✅ DEBUG
-    console.log('userId:', userId.value) // ✅ DEBUG
+    alert('Алдымен кіріңіз! userId: ' + userId.value)
     return
   }
 
@@ -426,12 +438,14 @@ const toggleFavorite = async (recipeId) => {
     if (exists) {
       const favDoc = snapshot.docs[0]
       await $deleteDoc(favDoc.ref)
+      console.log('❌ Favorite removed')
     } else {
       await $addDoc($collection($db, 'favorites'), {
         recipeId,
-        userId: userId.value,  // ✅ localStorage-дан
+        userId: userId.value,
         savedAt: new Date().toISOString()
       })
+      console.log('✅ Favorite added')
     }
     await loadFavorites()
   } catch (e) {
@@ -444,18 +458,16 @@ const isFavorite = (recipeId) => {
   return favorites.value.some(f => f.recipeId === recipeId)
 }
 
-// 🔥 Filters + Modal
+// 🔥 Filters
 const filteredRecipes = computed(() => {
   let result = recipes.value
   
-  // A-Z filter
   if (activeLetter.value) {
     result = result.filter(r => 
       r.title.toLowerCase().startsWith(activeLetter.value.toLowerCase())
     )
   }
   
-  // Search filter
   if (searchQuery.value) {
     result = result.filter(r => 
       r.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -473,10 +485,10 @@ const filterByLetter = (letter) => {
 }
 const clearFilter = () => activeLetter.value = null
 
+// 🔥 Modal + Scroll
 const openModal = (recipe) => selectedRecipe.value = recipe
 const closeModal = () => selectedRecipe.value = null
 
-// 🔥 Scroll + Events
 const scrollToRecipes = () => {
   recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
 }
