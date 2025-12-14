@@ -51,21 +51,20 @@
       </nav>
     </header>
 
-    <!-- LIGHT PNG (CENTERED) -->
+    <!-- LIGHT PNG -->
     <div class="w-full flex justify-center items-center gap-6 absolute z-20">
       <img src="../public/images/light.png" class="w-64" />
       <img src="../public/images/light.png" class="w-64" />
       <img src="../public/images/light.png" class="w-64" />
     </div>
 
-    <!-- BACKGROUND SECTION -->
+    <!-- HERO BACKGROUND -->
     <section class="relative w-full min-h-screen flex justify-center items-center">
       <img
         src="../public/images/pexels-catscoming-1907227 3.jpg"
         class="absolute top-0 left-0 w-full h-full object-cover"
       />
 
-      <!-- TEXT CONTENT -->
       <div class="relative z-10 text-center text-white px-4 mb-56">
         <h2 class="text-7xl handwriting">
           Simple and Tasty <br />
@@ -166,7 +165,6 @@
                 </span>
               </div>
 
-              <!-- YouTube + Save Buttons -->
               <div class="flex items-center justify-between mt-3">
                 <a
                   v-if="recipe.youtubeUrl"
@@ -180,7 +178,7 @@
                 </a>
                 <div v-else class="w-20 h-8"></div>
 
-                <!-- ✅ SAVE BUTTON (тек авторизованғанда) -->
+                <!-- SAVE BUTTON -->
                 <button
                   v-if="isAuth"
                   @click.stop="toggleFavorite(recipe.id)"
@@ -220,7 +218,7 @@
             {{ errorMessage }}
           </p>
           <button
-            @click="fetchAllRecipes"
+            @click="fetchRecipes"
             class="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold"
           >
             Retry
@@ -233,7 +231,7 @@
             No recipes found
           </p>
           <button
-            @click="fetchAllRecipes"
+            @click="fetchRecipes"
             class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
           >
             Reload
@@ -344,12 +342,10 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from '#app'
 
 const router = useRouter()
-const { $db, $collection, $addDoc, $deleteDoc } = useNuxtApp()  // ✅ $getDocs ЖОҚ!
 
-// 🔥 Constants
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// 🔥 Recipes state
+// State
 const recipes = ref([])
 const pending = ref(true)
 const errorMessage = ref(null)
@@ -359,106 +355,89 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 const activeLetter = ref(null)
-
-// 🔥 Auth + Favorites (ЖАҢАСТЫРЫЛДЫ!)
 const userId = ref('')
 const isAuth = ref(false)
-const favorites = ref([])  // recipeId массиві
+const favorites = ref([])
 
-// 🔥 User setup
+// User
 const setupUser = () => {
   if (typeof window !== 'undefined') {
-    userId.value = window.localStorage.getItem('userId') || ''
+    userId.value = localStorage.getItem('userId') || ''
     const token = localStorage.getItem('token')
     isAuth.value = !!userId.value || !!token
-    console.log('🔑 userId:', userId.value, 'isAuth:', isAuth.value)
   }
 }
 
-// 🔥 Fetch recipes
-const fetchAllRecipes = async () => {
+// Recipes
+const fetchRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
-    const response = await $fetch(`${MOCK_API_URL}/recipes`)
-    recipes.value = response || []
+    recipes.value = await $fetch(`${MOCK_API_URL}/recipes`)
   } catch (e) {
-    errorMessage.value = 'Error loading recipes from MockAPI'
+    errorMessage.value = 'Recipes жүктелмеді'
     console.error(e)
   } finally {
     pending.value = false
   }
 }
 
-// 🔥 ЖАҢА: Простой Firebase favorites (query ЖОҚ!)
+// Favorites (MockAPI)
+const loadFavorites = async () => {
+  if (!userId.value) return
+  try {
+    const response = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    favorites.value = response || []
+  } catch (e) {
+    console.error('Favorites жүктелмеді:', e)
+  }
+}
 
-
-// 🔥 toggleFavorite (query ЖОҚ!)
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
-    alert('Алдымен кіріңіз!')
+    router.push('/login')
     return
   }
 
   try {
-    // ✅ MockAPI-ға сақтау (Firebase жоқ!)
-    const exists = favorites.value.some(f => f.recipeId == recipeId)
+    const exists = favorites.value.find(f => f.recipeId === recipeId)
     
     if (exists) {
-      // DELETE MockAPI
-      const fav = favorites.value.find(f => f.recipeId == recipeId)
-      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
+      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
-      // POST MockAPI
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
-        body: { 
-          recipeId, 
-          userId: userId.value,  // "6"
-          savedAt: new Date().toISOString() 
-        }
+        headers: { 'Content-Type': 'application/json' },
+        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
       })
     }
     await loadFavorites()
   } catch (e) {
-    console.error(e)
+    console.error('Favorite қатесі:', e)
   }
 }
 
-const loadFavorites = async () => {
-  if (!userId.value) return
-  try {
-    // ✅ MockAPI-дан userId бойынша
-    const response = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    favorites.value = response || []
-  } catch (e) {
-    console.error(e)
-  }
-}
+const isFavorite = (recipeId) => favorites.value.some(f => f.recipeId === recipeId)
 
-
-const isFavorite = (recipeId) => {
-  return favorites.value.includes(recipeId)
-}
-
-// 🔥 Filters + Modal (өзгермеді)
+// Filters
 const filteredRecipes = computed(() => {
   let result = recipes.value
-  
+
   if (activeLetter.value) {
-    result = result.filter(r => 
+    result = result.filter(r =>
       r.title.toLowerCase().startsWith(activeLetter.value.toLowerCase())
     )
   }
-  
+
   if (searchQuery.value) {
-    result = result.filter(r => 
-      r.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      r.area.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      r.category.toLowerCase().includes(searchQuery.value.toLowerCase())
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(r =>
+      r.title.toLowerCase().includes(q) ||
+      r.area.toLowerCase().includes(q) ||
+      r.category.toLowerCase().includes(q)
     )
   }
-  
+
   return result
 })
 
@@ -468,13 +447,12 @@ const filterByLetter = (letter) => {
 }
 const clearFilter = () => activeLetter.value = null
 
-const openModal = (recipe) => selectedRecipe.value = recipe
+// Modal & scroll
+const openModal = recipe => selectedRecipe.value = recipe
 const closeModal = () => selectedRecipe.value = null
+const scrollToRecipes = () => recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
 
-const scrollToRecipes = () => {
-  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
-}
-
+// Scroll hide
 const handleScroll = () => {
   if (window.scrollY < 100) showSearch.value = false
 }
@@ -483,15 +461,11 @@ watch(searchQuery, () => {
   activeLetter.value = null
 })
 
-// 🔥 Lifecycle
 onMounted(async () => {
   setupUser()
   window.addEventListener('scroll', handleScroll)
-  
-  await fetchAllRecipes()
-  if (userId.value) {
-    await loadFavorites()
-  }
+  await fetchRecipes()
+  if (userId.value) await loadFavorites()
 })
 
 onUnmounted(() => {
@@ -499,18 +473,14 @@ onUnmounted(() => {
 })
 </script>
 
-
 <style>
 * {
   margin: 0;
   padding: 0;
 }
-
 .handwriting {
   font-family: 'Pacifico', cursive !important;
 }
-
-/* Модал анимациясы */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -520,8 +490,6 @@ onUnmounted(() => {
   opacity: 0;
   transform: scale(0.9);
 }
-
-/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
@@ -536,8 +504,6 @@ onUnmounted(() => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-
-/* Spinner анимациялары */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
