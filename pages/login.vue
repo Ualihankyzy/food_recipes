@@ -99,7 +99,7 @@ const handleLogin = async () => {
       body: form.value
     })
 
-    console.log("✅ Login response:", response) // Debug үшін
+    console.log("✅ Login response:", response)
 
     // ✅ API response structure бойынша тексеру
     if (response.success && response.token) {
@@ -111,8 +111,10 @@ const handleLogin = async () => {
       
       console.log("✅ Login сәтті! Token сақталды:", response.token.substring(0, 20) + "...")
       
-      // Profile бетіне бару
-      router.push("/")
+      // ✅ ИНДЕКС БЕТІНЕ БАРУ (/)
+      await router.push("/")
+      console.log("✅ Бет ауыстырылды: главная бет")
+      
     } else {
       error.value = response.message || "Email немесе пароль дұрыс емес"
     }
