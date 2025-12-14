@@ -180,24 +180,31 @@
         </div>
 
         <!-- SAVED -->
-     <div v-else-if="activeTab === 'saved'" class="space-y-6">
-  <h3 class="text-xl font-semibold text-[#31572c] mb-6">
-    Saved Recipes ({{ savedRecipes.length }})
-  </h3>
+      <div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
   
-  <div v-if="!savedRecipes.length" class="text-center py-20">
-    <p class="text-[#6c7570] mb-4">Сақталған рецепттер жоқ</p>
-    <p class="text-xs text-[#6c7570]">Басты беттен рецепттерді сақтаңыз ✨</p>
+  <div v-if="isLoading" class="flex items-center justify-center py-20">
+    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
   </div>
   
-  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- My recipes-пен бірдей card коды, savedRecipes арқылы -->
-    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl...">
-      <!-- ... card content ... -->
+  <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm...">
+      <!-- My recipes-пен бірдей card коды -->
+      <div class="h-40 bg-[#a3b18a] overflow-hidden">
+        <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
+      </div>
+      <div class="p-4 flex-1 flex flex-col gap-2">
+        <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
+        <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
+        <!-- ... қалған код -->
+      </div>
     </div>
   </div>
+  
+  <p v-else class="text-center text-[#6c7570] py-10">
+    No saved recipes yet. Save some from home page! ✨
+  </p>
 </div>
-
 
       </section>
     </main>
@@ -327,6 +334,7 @@
     </transition>
   </div>
 </template>
+
 
 
 <script setup>
@@ -523,8 +531,3 @@ onUnmounted(() => {
   transform: scale(0.95);
 }
 </style>
-
-
-
-
-
