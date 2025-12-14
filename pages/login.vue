@@ -102,7 +102,7 @@ const handleLogin = async () => {
       localStorage.setItem("userName", response.data.user.name);
       localStorage.setItem("email", response.data.user.email);
 
-      console.log("✅ Token сақталды! Profile-ге...");
+     
       
       // ✅ 100% БЕТ АУЫСЫРУ
      setTimeout(() => {

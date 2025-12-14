@@ -89,42 +89,48 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { useRouter } from "vue-router"
+import axios from "axios";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
 const form = ref({
-  name: "",
   email: "",
   password: "",
-})
+});
 
-const error = ref("")
-const success = ref("")
-const loading = ref(false)
+const error = ref("");
 
-const handleSubmit = async () => {
-  error.value = ""
-  success.value = ""
-  loading.value = true
+const handleLogin = async () => {
+  error.value = "";
+
+  // Бос өрістерді тексеру
+  if (!form.value.email || !form.value.password) {
+    error.value = "Email және пароль толтырыңыз";
+    return;
+  }
 
   try {
-    const response = await $fetch("https://medical-backend-54hp.onrender.com/api/auth/register", {
-      method: "POST",
-      body: form.value
-    })
+    const response = await axios.post(
+      "https://medical-backend-54hp.onrender.com/api/auth/login",
+      form.value
+    );
 
-    success.value = "✅ Регистрация сәтті өтті! Login бетіне өтесіз..."
+    // Дұрыс болса
+    if (response.data.data?.user?.id) {
+      localStorage.setItem("userId", response.data.data.user.id);
+      localStorage.setItem("userName", response.data.data.user.name);
+      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("email", form.value.email);
+localStorage.setItem("password", form.value.password); 
 
-    setTimeout(() => {
-      router.push("/login")
-    }, 1500)
+      router.push("/"); // бірден index бетіне
+    } else {
+      error.value = "Email немесе пароль дұрыс емес";
+    }
   } catch (err) {
-    error.value = err.data?.message || err.message || "Регистрация кезінде қате"
-    console.error("Register error:", err)
-  } finally {
-    loading.value = false
+    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
   }
-}
+};
 </script>
