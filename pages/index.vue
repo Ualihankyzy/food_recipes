@@ -341,7 +341,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRouter, useCookie } from '#app'
+import { useRouter } from '#app'
 
 const router = useRouter()
 
@@ -357,20 +357,20 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-
+// 🔥 SSR SAFE AUTH + FAVORITES
+const userId = ref('')
+const isAuth = ref(false)
 const favorites = ref([])
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// ❌ useCookie('userId') → ✅ localStorage
-const userId = ref(localStorage.getItem('userId') || '')
-const isAuth = computed(() => localStorage.getItem('isAuth') === 'true')
-
+// 🔥 SSR SAFE - localStorage ТЕК client!
 const checkAuth = () => {
-  isAuth.value = localStorage.getItem('isAuth') === 'true'
-  userId.value = localStorage.getItem('userId') || ''
+  if (process.client) {
+    userId.value = localStorage.getItem('userId') || ''
+    isAuth.value = localStorage.getItem('isAuth') === 'true'
+  }
 }
-
 
 // Fetch MockAPI recipes
 const fetchAllRecipes = async () => {
@@ -388,9 +388,9 @@ const fetchAllRecipes = async () => {
   }
 }
 
-// Favorites логикасы
+// Favorites логикасы (SSR SAFE)
 const loadFavorites = async () => {
-  if (!userId.value) return
+  if (!process.client || !userId.value) return
   try {
     const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
     favorites.value = favs || []
@@ -400,8 +400,9 @@ const loadFavorites = async () => {
 }
 
 const toggleFavorite = async (recipeId) => {
-  if (!userId.value) {
+  if (!process.client || !userId.value) {
     alert('Алдымен кіріңіз!')
+    router.push('/login')
     return
   }
 
@@ -414,12 +415,16 @@ const toggleFavorite = async (recipeId) => {
       // POST
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
-        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
+        body: { 
+          recipeId, 
+          userId: userId.value, 
+          savedAt: new Date().toISOString() 
+        }
       })
     }
     await loadFavorites()
   } catch (e) {
-    alert('Қате: ' + e)
+    alert('Қате: ' + e.message)
   }
 }
 
@@ -442,7 +447,12 @@ const clearFilter = () => activeLetter.value = null
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
- 
+  // A-Z filter
+  if (activeLetter.value) {
+    result = result.filter(r => 
+      r.title.toLowerCase().startsWith(activeLetter.value)
+    )
+  }
 
   // Search filter
   if (searchQuery.value) {
@@ -464,29 +474,33 @@ const scrollToRecipes = () => {
 
 // Search bar hide on scroll
 const handleScroll = () => {
-  if (window.scrollY < 100) showSearch.value = false
+  if (process.client && window.scrollY < 100) {
+    showSearch.value = false
+  }
 }
 
 onMounted(async () => {
-  window.addEventListener('scroll', handleScroll)
   checkAuth()
-  
   await fetchAllRecipes()
   if (isAuth.value) await loadFavorites()
+  
+  if (process.client) {
+    window.addEventListener('scroll', handleScroll)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  if (process.client) {
+    window.removeEventListener('scroll', handleScroll)
+  }
 })
 
 // Search watch
 watch(searchQuery, () => {
-  activeLetter.value = null // A-Z фильтрін өшіру
+  activeLetter.value = null
 })
-
-
-
 </script>
+
 
 <style>
 * {
