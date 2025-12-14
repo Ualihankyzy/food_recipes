@@ -206,8 +206,8 @@ const loadProfileData = async () => {
       headers: getAuthHeaders()
     })
 
-    // 👇 НАЗАР: нақты дерек res.data ішінде
-    const user = res.data || res // егер кейде data, кейде тікелей келсе
+    // Нақты дерек res.data ішінде
+    const user = res.data
 
     const nameParts = (user.name || '').split(' ')
 
@@ -221,15 +221,14 @@ const loadProfileData = async () => {
       gender: user.gender || 'male',
       avatarUrl: user.avatar || '',
       role: user.role || 'User',
-      createdAt: user.created_at || user.createdAt || '',
-      updatedAt: user.updated_at || user.updatedAt || ''
+      createdAt: user.created_at || '',
+      updatedAt: user.updated_at || ''
     }
 
     avatarUrl.value = user.avatar || ''
     success.value = res.message || ''
   } catch (err) {
     error.value = 'Профильді жүктеу кезінде қате'
-    console.error('Load profile error:', err)
     if (err.statusCode === 401) handleLogout()
   } finally {
     loading.value = false
