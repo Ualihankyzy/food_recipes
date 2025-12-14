@@ -323,10 +323,7 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const lettersOpen = ref(false)
 
-// Auth + Favorites state
-const userId = useCookie('userId')
-const isAuth = ref(false)
-const favorites = ref([])
+
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
@@ -351,45 +348,62 @@ const fetchAllRecipes = async () => {
     pending.value = false
   }
 }
+// 🔥 Firebase қосу (Dashboard-дағыдай)
+const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where } = useNuxtApp()
 
-// Favorites логикасы
-const loadFavorites = async () => {
-  if (!userId.value) return
-  try {
-    const favs = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    favorites.value = favs || []
-  } catch (e) {
-    console.error('Favorites жүктелмеді:', e)
+// userId localStorage-дан
+const userId = ref('')
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    userId.value = window.localStorage.getItem('userId') || ''
   }
+})
+
+// 🔥 Firebase favorites
+const favorites = ref([])
+let unsubscribeFavorites = null
+
+const loadFavorites = () => {
+  if (unsubscribeFavorites) unsubscribeFavorites()
+  if (!userId.value) return
+  
+  const q = $query(
+    $collection($db, 'favorites'),
+    $where('userId', '==', userId.value)
+  )
+  unsubscribeFavorites = $onSnapshot(q, (snapshot) => {
+    favorites.value = snapshot.docs.map(doc => doc.data())
+  })
 }
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
-    alert('Алдымен кіріңіз!')
+    router.push('/login')
     return
   }
-
-  try {
-    const exists = favorites.value.find(f => f.recipeId === recipeId)
-    if (exists) {
-      // DELETE
-      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
-    } else {
-      // POST
-      await $fetch(`${MOCK_API_URL}/favorites`, {
-        method: 'POST',
-        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
-      })
-    }
-    await loadFavorites()
-  } catch (e) {
-    alert('Қате: ' + e)
+  
+  const exists = favorites.value.find(f => f.recipeId === recipeId)
+  
+  if (exists) {
+    // Delete
+    await $deleteDoc($doc($db, 'favorites', exists.id))
+  } else {
+    // Add
+    await $addDoc($collection($db, 'favorites'), {
+      recipeId,
+      userId: userId.value,
+      savedAt: new Date().toISOString()
+    })
   }
 }
 
 const isFavorite = (recipeId) => {
   return favorites.value.some(f => f.recipeId === recipeId)
 }
+
+onMounted(() => {
+  loadFavorites()
+})
 
 // Modal
 const openModal = (recipe) => selectedRecipe.value = recipe

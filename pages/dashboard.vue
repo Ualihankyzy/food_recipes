@@ -180,12 +180,43 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6">
-          <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes</h3>
-          <p class="text-center text-[#6c7570] py-10">
-            There is nothing here yet. Recipes you save on the home page will appear here.
-          </p>
+      <!-- SAVED TAB -->
+<div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c]">Saved Recipes</h3>
+  
+  <!-- Loading -->
+  <div v-if="!savedRecipes.length" class="text-center text-[#6c7570] py-10">
+    <p>Сақталған рецепттер жоқ</p>
+    <p class="text-sm mt-2">Home page-де "Сақтау" батырмасын басыңыз</p>
+  </div>
+  
+  <!-- Saved recipes -->
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      v-for="recipe in savedRecipes"
+      :key="recipe.id"
+      class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col"
+    >
+      <!-- Recipe card (my-recipes-дағыдай) -->
+      <div class="h-40 bg-[#a3b18a] overflow-hidden">
+        <img v-if="recipe.imageUrl" :src="recipe.imageUrl" class="w-full h-full object-cover" />
+      </div>
+      <div class="p-4 flex-1 flex flex-col gap-2">
+        <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
+        <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
+        <div class="mt-auto flex gap-2 pt-2">
+          <button @click="viewRecipe(recipe)" class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold">
+            View
+          </button>
+          <button @click="toggleFavorite(recipe.id)" class="px-3 py-2 rounded-xl bg-red-500 text-white text-xs font-semibold">
+            💝 unsave
+          </button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       </section>
     </main>
 
