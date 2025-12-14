@@ -2,15 +2,21 @@
   <div class="min-h-screen flex bg-[#588157]">
     <!-- SIDEBAR -->
     <aside class="w-64 bg-[#588157] text-white flex flex-col border-r border-white/10">
+      <!-- Brand -->
       <div class="h-20 flex items-center px-6 border-b border-white/10">
         <h1 class="text-2xl font-bold tracking-wide">Recipes</h1>
       </div>
 
+      <!-- Menu -->
       <nav class="flex-1 py-6 space-y-2">
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="item.type === 'route' ? router.push(item.to) : activeTab = item.key"
+          @click="
+            item.type === 'route'
+              ? router.push(item.to)
+              : (activeTab = item.key)
+          "
           class="relative w-full flex items-center gap-3 pl-6 pr-4 py-3 text-left text-sm font-medium
                  transition-colors duration-200"
           :class="[
@@ -19,8 +25,16 @@
               : 'text-white/80 hover:text-white'
           ]"
         >
+          <!-- Ақ pill тек табтар үшін -->
+          <span
+            v-if="item.type === 'tab'"
+            class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md
+                   transition-transform duration-200"
+            :class="activeTab === item.key ? 'translate-x-0' : '-translate-x-full'"
+          ></span>
+
           <span class="relative z-10 text-lg">
-            {{ item.icon || '•' }}
+            {{ item.icon }}
           </span>
           <span class="relative z-10">
             {{ item.label }}
@@ -28,6 +42,7 @@
         </button>
       </nav>
 
+      <!-- Bottom (Logout) -->
       <div class="p-6 border-t border-white/10 space-y-3">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">
@@ -51,63 +66,77 @@
     <!-- MAIN PANEL -->
     <main class="flex-1 bg-[#f5f6f1] flex flex-col">
       <!-- Top bar -->
-      <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
-        <button
-          class="flex items-center gap-3 group"
-          @click="router.push('/profile')"
-        >
-          <div
-            class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white"
-          >
-            <img
-              v-if="avatarUrl"
-              :src="avatarUrl"
-              class="w-full h-full object-cover"
-              alt="Profile Avatar"
-            />
-            <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-              <span class="text-sm font-bold text-white">
-                {{ userInitial }}
-              </span>
-            </div>
-          </div>
-        </button>
-      </header>
+ <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
+  <!-- Avatar ғана қалады -->
+  <button
+    class="flex items-center gap-3 group"
+    @click="router.push('/profile')"
+  >
+    <div
+      class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white"
+    >
+      <img
+        v-if="avatarUrl"
+        :src="avatarUrl"
+        class="w-full h-full object-cover"
+        alt="Profile Avatar"
+      />
+      <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+        <span class="text-sm font-bold text-white">
+          {{ userInitial }}
+        </span>
+      </div>
+    </div>
+  </button>
+</header>
+
 
       <!-- Content -->
       <section class="flex-1 p-8 overflow-y-auto">
-        <!-- MY RECIPES -->
+        <!-- MY RECIPES (default tab) -->
         <div v-if="activeTab === 'my-recipes'" class="space-y-6">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-xl font-semibold text-[#31572c]">My Recipes</h3>
+           
 
-            <button
+
+             <button
               @click="showCreateModal = true"
-              class="relative inline-flex items-center gap-2 px-8 py-3 rounded-full
-                     text-white text-sm font-medium
-                     bg-gradient-to-r from-[#588157] via-[#6aa56a] to-[#88c17f]
-                     shadow-[0_10px_25px_rgba(0,0,0,0.25)]
-                     hover:shadow-[0_14px_30px_rgba(0,0,0,0.35)]
-                     transition-all duration-300
-                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#588157]"
-            >
-              <span>Create recipe</span>
-              <span class="text-lg leading-none">→</span>
-              <span
-                class="pointer-events-none absolute inset-[2px] rounded-full
-                       bg-gradient-to-b from-white/60 via-white/10 to-transparent
-                       opacity-80"
-              ></span>
-              <span class="absolute inset-0 rounded-full mix-blend-soft-light"></span>
-            </button>
-          </div>
+    class="relative inline-flex items-center gap-2 px-8 py-3 rounded-full
+           text-white text-sm font-medium
+           bg-gradient-to-r from-[#588157] via-[#6aa56a] to-[#88c17f]
+           shadow-[0_10px_25px_rgba(0,0,0,0.25)]
+           hover:shadow-[0_14px_30px_rgba(0,0,0,0.35)]
+           transition-all duration-300
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#588157]"
+  >
+    <span>Create recipe</span>
+    <span class="text-lg leading-none">→</span>
 
-          <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 space-y-4">
-            <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
-            <p class="text-[#6c7570]">Рецепттерді жүктеу...</p>
-          </div>
+    <!-- жылтыр эффект үшін үстіне ақ градиент қабаты -->
+    <span
+      class="pointer-events-none absolute inset-[2px] rounded-full
+             bg-gradient-to-b from-white/60 via-white/10 to-transparent
+             opacity-80"
+    ></span>
 
-          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- үстіңгі контент үстіне шығу үшін -->
+    <span class="absolute inset-0 rounded-full mix-blend-soft-light"></span>
+  </button>
+
+
+          </div>
+            <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 space-y-4">
+    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+    <p class="text-[#6c7570]">Рецепттерді жүктеу... 🚀</p>
+  </div>
+
+      
+
+          <div
+            v-else
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             <div
               v-for="recipe in myRecipes"
               :key="recipe.id"
@@ -151,56 +180,25 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6">
-          <h3 class="text-xl font-semibold text-[#31572c] mb-4">
-            Saved Recipes ({{ savedRecipes.length }})
-          </h3>
+     <div v-else-if="activeTab === 'saved'" class="space-y-6">
+  <h3 class="text-xl font-semibold text-[#31572c] mb-6">
+    Saved Recipes ({{ savedRecipes.length }})
+  </h3>
+  
+  <div v-if="!savedRecipes.length" class="text-center py-20">
+    <p class="text-[#6c7570] mb-4">Сақталған рецепттер жоқ</p>
+    <p class="text-xs text-[#6c7570]">Басты беттен рецепттерді сақтаңыз ✨</p>
+  </div>
+  
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- My recipes-пен бірдей card коды, savedRecipes арқылы -->
+    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl...">
+      <!-- ... card content ... -->
+    </div>
+  </div>
+</div>
 
-          <div v-if="!savedRecipes.length" class="text-center py-20">
-            <p class="text-[#6c7570] mb-2">
-              There is nothing here yet.
-            </p>
-            <p class="text-xs text-[#6c7570]">
-              Save recipes from the home page and they will appear here.
-            </p>
-          </div>
 
-          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div
-              v-for="recipe in savedRecipes"
-              :key="recipe.id"
-              class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col"
-            >
-              <div class="h-40 bg-[#a3b18a] overflow-hidden">
-                <img
-                  v-if="recipe.imageUrl"
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <div class="p-4 flex-1 flex flex-col gap-2">
-                <h4 class="font-semibold text-[#31572c] line-clamp-2">
-                  {{ recipe.title }}
-                </h4>
-                <p class="text-xs text-[#6c7570]">
-                  {{ recipe.area }} • {{ recipe.category }}
-                </p>
-                <p class="text-xs text-[#6c7570] line-clamp-3">
-                  {{ recipe.instructions }}
-                </p>
-                <div class="mt-auto flex gap-2 pt-2">
-                  <button
-                    @click="viewRecipe(recipe)"
-                    class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-[#476747]"
-                  >
-                    View
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
 
@@ -253,12 +251,12 @@
       <div
         v-if="showCreateModal"
         class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-        @click.self="closeCreateModal"
+        @click.self="closeCreate"
       >
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
             <h3 class="text-lg font-semibold text-[#31572c]">Create Recipe</h3>
-            <button @click="closeCreateModal" class="text-[#6c7570] hover:text-black">✕</button>
+            <button @click="closeCreate" class="text-[#6c7570] hover:text-black">✕</button>
           </div>
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
@@ -312,13 +310,13 @@
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
             <button
-              @click="closeCreateModal"
+              @click="closeCreate"
               class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white"
             >
               Cancel
             </button>
             <button
-              @click="createRecipe"
+              @click="createLocalRecipe"
               class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]"
             >
               Save
@@ -329,6 +327,7 @@
     </transition>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
@@ -524,5 +523,8 @@ onUnmounted(() => {
   transform: scale(0.95);
 }
 </style>
+
+
+
 
 
