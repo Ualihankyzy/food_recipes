@@ -99,20 +99,26 @@ const handleLogin = async () => {
       body: form.value
     })
 
-    // ✅ Тек қажетті деректерді сақтау (password СИПТАМА!)
-    if (response.data?.data?.token) {
-      localStorage.setItem("token", response.data.data.token)
-      localStorage.setItem("userId", response.data.data.user?.id || "")
-      localStorage.setItem("userName", response.data.data.user?.name || "")
-      localStorage.setItem("email", response.data.data.user?.email || form.value.email)
+    console.log("✅ Login response:", response) // Debug үшін
+
+    // ✅ API response structure бойынша тексеру
+    if (response.success && response.token) {
+      // Token және user деректерін сақтау
+      localStorage.setItem("token", response.token)
+      localStorage.setItem("userId", response.user?.id || "")
+      localStorage.setItem("userName", response.user?.name || "")
+      localStorage.setItem("email", response.user?.email || form.value.email)
       
-      router.push("/profile") // ✅ Profile бетіне бару
+      console.log("✅ Login сәтті! Token сақталды:", response.token.substring(0, 20) + "...")
+      
+      // Profile бетіне бару
+      router.push("/profile")
     } else {
-      error.value = "Email немесе пароль дұрыс емес"
+      error.value = response.message || "Email немесе пароль дұрыс емес"
     }
   } catch (err) {
+    console.error("❌ Login error:", err)
     error.value = err.data?.message || err.message || "Email немесе пароль дұрыс емес"
-    console.error("Login error:", err)
   } finally {
     loading.value = false
   }
