@@ -67,53 +67,52 @@ import axios from "axios";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+
 const router = useRouter();
 
+
 const form = ref({
-  email: "",
-  password: "",
+email: "",
+password: "",
 });
+
 
 const error = ref("");
 
+
 const handleLogin = async () => {
-  error.value = "";
+error.value = "";
 
-  if (!form.value.email || !form.value.password) {
-    error.value = "Email және пароль толтырыңыз";
-    return;
-  }
 
-  try {
-    const response = await axios.post(
-      "https://medical-backend-54hp.onrender.com/api/auth/login",
-      form.value
-    );
+// Бос өрістерді тексеру
+if (!form.value.email || !form.value.password) {
+error.value = "Email және пароль толтырыңыз";
+return;
+}
 
-    console.log("✅ RESPONSE:", response.data); // Бұл көрінуі керек!
 
-    // ❌ ЕСКІ → ЖОҚПАЙДЫ
-    // if (response.data.data?.user?.id) 
+try {
+const response = await axios.post(
+"https://medical-backend-54hp.onrender.com/api/auth/login",
+form.value
+);
 
-    // ✅ ЖАҢА → ДҰРЫС API STRUCTURE
-    if (response.data.success && response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userId", response.data.user.id);
-      localStorage.setItem("userName", response.data.user.name);
-      localStorage.setItem("email", response.data.user.email);
 
-     
-      
-      // ✅ 100% БЕТ АУЫСЫРУ
-     setTimeout(() => {
-      router.push("/")
-    }, 1500)
-    } else {
-      error.value = "Email немесе пароль дұрыс емес";
-    }
-  } catch (err) {
-    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
-  }
+// Дұрыс болса
+if (response.data.data?.user?.id) {
+localStorage.setItem("userId", response.data.data.user.id);
+localStorage.setItem("userName", response.data.data.user.name);
+localStorage.setItem("token", response.data.data.token);
+localStorage.setItem("email", form.value.email);
+localStorage.setItem("password", form.value.password);
+
+
+router.push("/"); // бірден index бетіне
+} else {
+error.value = "Email немесе пароль дұрыс емес";
+}
+} catch (err) {
+error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
+}
 };
-
 </script>
