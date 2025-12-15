@@ -488,25 +488,41 @@ const createRecipe = async () => {
   isLoading.value = true
 
   const recipe = {
-    userId: userId.value,
+    id: Date.now().toString(), // MockAPI үшін id
     title: form.value.title,
     category: form.value.category,
     area: form.value.area,
     imageUrl: form.value.imageUrl,
     instructions: form.value.instructions,
     ingredients: form.value.ingredients,
-    createdAt: new Date().toISOString()
+    userId: userId.value, // Firebase үшін
+    createdAt: new Date().toISOString(),
+    // MockAPI recipes үшін қосымша field-тар (негізгі мәліметтерді толтыру)
+    isNew: true,
+    discount: null,
+    price: null,
+    youtubeUrl: null
   }
 
   try {
+    // 1️⃣ Firebase-қа My Recipes ретінде сақтау (Dashboard үшін)
     await $addDoc($collection($db, 'recipes'), recipe)
+    
+    // 2️⃣ MockAPI-ға да сақтау (Home бетінде көрсету үшін)
+    await $fetch(`${MOCK_API_URL}/recipes`, {
+      method: 'POST',
+      body: recipe
+    })
+    
     closeCreateModal()
+    console.log('✅ Recipe created in both Firebase & MockAPI!')
   } catch (error) {
-    console.error('Recipe saving error:', error)
+    console.error('Recipe creation error:', error)
   } finally {
     isLoading.value = false
   }
 }
+
 
 // UI
 const closeCreateModal = () => {
@@ -528,13 +544,18 @@ const viewRecipe = (recipe) => {
 const deleteUserRecipe = async (id) => {
   isLoading.value = true
   try {
+    // 1. Firebase-тан өшіру
     await $deleteDoc($doc($db, 'recipes', id))
+    
+    // 2. MockAPI-дан да өшіру (егер сол id болса)
+    await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' }).catch(() => {})
   } catch (error) {
     console.error('Recipe deletion error:', error)
   } finally {
     isLoading.value = false
   }
 }
+
 
 const logout = () => {
   if (typeof window !== 'undefined') {
