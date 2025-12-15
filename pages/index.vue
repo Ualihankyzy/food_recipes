@@ -189,8 +189,8 @@
                       : 'bg-white/80 text-gray-700 border hover:bg-red-50 hover:text-red-600 hover:border-red-200'
                   ]"
                 >
-                  💝
-                  {{ isFavorite(recipe.id) ? 'Сохранено' : 'Сақтау' }}
+                  
+                  {{ isFavorite(recipe.id) ? 'Сохранено' : 'Save' }}
                 </button>
               </div>
             </div>
