@@ -214,10 +214,9 @@ Loading recipes... </p>
           </a>
           <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
           <!-- DELETE батырмасы -->
-          <button @click.stop="deleteUserRecipe(recipe.id)" 
-                  class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
-            Delete
-          </button>
+         <button @click.stop="removeFromSaved(recipe.id)" class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
+  Delete
+</button>
         </div>
       </div>
     </button>
@@ -560,19 +559,20 @@ const viewRecipe = (recipe) => {
 const deleteUserRecipe = async (id) => {
   isLoading.value = true
   try {
-    // 1. Firebase-тан өшіру (My Recipes)
+    // 1. Firebase-тан өшіру
     await $deleteDoc($doc($db, 'recipes', id))
     
-    // 2. MockAPI-дан өшіру (Home/index)
-    await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' }).catch(() => {})
+    // 2. Егер favorites-та бар болса, өшіру
+    await removeFromSaved(id)
     
-    console.log('✅ Deleted from Firebase & MockAPI!')
+    console.log('✅ Fully deleted!')
   } catch (error) {
     console.error('Delete error:', error)
   } finally {
     isLoading.value = false
   }
 }
+
 
 
 
