@@ -214,7 +214,7 @@ Loading recipes... </p>
           </a>
           <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
           <!-- DELETE батырмасы -->
-          <button @click.stop="removeFromSaved(recipe.id)" 
+          <button @click.stop="deleteUserRecipe(recipe.id)" 
                   class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
             Delete
           </button>
