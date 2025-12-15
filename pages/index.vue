@@ -79,11 +79,7 @@
     >
       <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-12">
-          <h1 class="text-6xl md:text-6xl font-black text-[#f8961e] mb-4 mt-8">
-            Delicious Recipes
-          </h1>
-        </div>
+     
 
 
   
@@ -431,11 +427,7 @@ const filteredRecipes = computed(() => {
   return result
 })
 
-const filterByLetter = (letter) => {
-  activeLetter.value = letter
-  lettersOpen.value = false
-}
-const clearFilter = () => activeLetter.value = null
+
 
 // Modal & scroll
 const openModal = recipe => selectedRecipe.value = recipe

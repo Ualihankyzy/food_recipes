@@ -181,31 +181,51 @@ Loading recipes... </p>
         </div>
 
         <!-- SAVED -->
-      <div v-else-if="activeTab === 'saved'" class="space-y-6">
+<!-- SAVED (ескі кодты толық өшіріп, мынаны қой) -->
+<div v-else-if="activeTab === 'saved'" class="space-y-6">
   <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
   
-  <div v-if="isLoading" class="flex items-center justify-center py-20">
+  <!-- Loading -->
+  <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
     <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
   </div>
   
+  <!-- Home дизайнымен карточкалар -->
   <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div v-for="recipe in savedRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm...">
-      <!-- My recipes-пен бірдей card коды -->
-      <div class="h-40 bg-[#a3b18a] overflow-hidden">
-        <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
+    <button v-for="recipe in savedRecipes" :key="recipe.id" @click="viewRecipe(recipe)" class="bg-transparent text-left">
+      <!-- Home карточкасының ДӘЛ СОЛ КӨРІНІСІ -->
+      <div class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center">
+        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
+          <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
+        </div>
+        <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+          <span v-if="recipe.isNew">NEW</span>
+          <span v-else-if="recipe.discount" class="text-red-500">-{{ recipe.discount }}%</span>
+        </div>
+        <div class="mt-12 w-full text-center flex flex-col gap-2">
+          <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
+          <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
+          <p v-if="recipe.price" class="text-sm font-bold text-slate-900 mt-1">{{ recipe.price }}</p>
+        </div>
+        <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+          <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop 
+             class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947]">
+            YouTube video
+          </a>
+          <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
+          <!-- DELETE батырмасы -->
+          <button @click.stop="removeFromSaved(recipe.id)" 
+                  class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
+            Delete
+          </button>
+        </div>
       </div>
-      <div class="p-4 flex-1 flex flex-col gap-2">
-        <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
-        <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
-        <!-- ... қалған код -->
-      </div>
-    </div>
+    </button>
   </div>
   
-  <p v-else class="text-center text-[#6c7570] py-10">
-    No saved recipes yet. Save some from home page! ✨
-  </p>
+  <p v-else class="text-center text-[#6c7570] py-10">No saved recipes yet. Save some from home page! ✨</p>
 </div>
+
 
       </section>
     </main>
