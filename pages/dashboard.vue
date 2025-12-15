@@ -128,7 +128,8 @@
           </div>
             <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 space-y-4">
     <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
-    <p class="text-[#6c7570]">Рецепттерді жүктеу... 🚀</p>
+    <p class="text-[#6c7570]">
+Loading recipes... </p>
   </div>
 
       
@@ -379,9 +380,9 @@ const ingredientsText = computed({
 
 // Menu
 const menuItems = [
-  { key: 'home', label: 'Home', type: 'route', to: '/', icon: '🏠' },
-  { key: 'my-recipes', label: 'My recipes', type: 'tab', icon: '📚' },
-  { key: 'saved', label: 'Saved', type: 'tab', icon: '💾' }
+  { key: 'home', label: 'Home', type: 'route', to: '/' },
+  { key: 'my-recipes', label: 'My recipes', type: 'tab' },
+  { key: 'saved', label: 'Saved', type: 'tab'}
 ]
 
 // Listeners
@@ -415,7 +416,7 @@ const loadMyRecipes = () => {
     }))
     isLoading.value = false
   }, (error) => {
-    console.error('Рецепттерді жүктеу қатесі:', error)
+    console.error('Error loading recipes:', error)
     isLoading.value = false
   })
 }
@@ -463,7 +464,7 @@ const createRecipe = async () => {
     await $addDoc($collection($db, 'recipes'), recipe)
     closeCreateModal()
   } catch (error) {
-    console.error('Рецепт сақтау қатесі:', error)
+    console.error('Recipe saving error:', error)
   } finally {
     isLoading.value = false
   }
@@ -491,7 +492,7 @@ const deleteUserRecipe = async (id) => {
   try {
     await $deleteDoc($doc($db, 'recipes', id))
   } catch (error) {
-    console.error('Рецепт өшіру қатесі:', error)
+    console.error('Recipe deletion error:', error)
   } finally {
     isLoading.value = false
   }

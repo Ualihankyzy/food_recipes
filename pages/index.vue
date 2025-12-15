@@ -85,41 +85,8 @@
           </h1>
         </div>
 
-        <!-- A-Z Dropdown -->
-        <div class="relative inline-block mb-6">
-          <button
-            @click="lettersOpen = !lettersOpen"
-            class="bg-[#f8961e] px-6 py-3 rounded-2xl font-bold shadow-md transition text-white"
-          >
-            A-Z
-          </button>
 
-          <div
-            v-if="lettersOpen"
-            class="absolute mt-2 w-64 bg-white rounded-xl shadow-lg p-4 flex flex-wrap gap-2 z-50"
-          >
-            <button
-              v-for="letter in 'abcdefghijklmnopqrstuvwxyz'.split('')"
-              :key="letter"
-              @click="filterByLetter(letter)"
-              :class="[
-                'px-3 py-2 rounded-lg font-bold text-sm uppercase transition',
-                activeLetter === letter
-                  ? 'bg-blue-500 text-white scale-105'
-                  : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-              ]"
-            >
-              {{ letter }}
-            </button>
-
-            <button
-              @click="clearFilter"
-              class="px-3 py-2 rounded-lg font-bold text-sm bg-gray-200 text-gray-800 hover:bg-gray-300"
-            >
-              All
-            </button>
-          </div>
-        </div>
+  
 
         <!-- Recipes Grid -->
         <div
