@@ -443,24 +443,42 @@ const loadMyRecipes = () => {
 
 // MockAPI: Saved Recipes
 // ✅ 404 error-ды ұстап, бос массив қайтару
+// Saved ішінен өшіру
+const isLoadingSaved = ref(false)
+const removeFromSaved = async (recipeId) => {
+  if (!userId.value) return
+  isLoadingSaved.value = true
+  try {
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(() => [])
+    for (const fav of favorites) {
+      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
+    }
+    await loadSavedRecipes() // қайта жүктеу
+  } catch (e) {
+    console.error('Remove error:', e)
+  } finally {
+    isLoadingSaved.value = false
+  }
+}
+
+// loadSavedRecipes функциясын жаңарту (ескі бар болса)
 const loadSavedRecipes = async () => {
   if (!userId.value) {
     savedRecipes.value = []
     return
   }
-
+  isLoadingSaved.value = true
   try {
     const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(() => [])
     const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
-    
-    savedRecipes.value = recipesResponse.filter(r => 
-      favorites.some(f => f.recipeId === r.id)
-    )
+    savedRecipes.value = recipesResponse.filter(r => favorites.some(f => f.recipeId === r.id))
   } catch (e) {
-    console.error('Saved recipes қатесі:', e)
     savedRecipes.value = []
+  } finally {
+    isLoadingSaved.value = false
   }
 }
+
 
 
 // Create Recipe
@@ -540,6 +558,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribeMyRecipes) unsubscribeMyRecipes()
 })
+
+
+
 </script>
 
 <style scoped>
