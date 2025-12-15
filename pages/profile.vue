@@ -212,7 +212,7 @@ const saveProfile = async () => {
 
   try {
     const res = await fetch(
-      'https://medical-backend-54hp.onrender.com/api/auth/profile',
+      'https://medical-backend-54hp.onrender.com/api/auth/me',
       {
         method: 'PUT',
         headers: {

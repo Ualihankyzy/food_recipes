@@ -127,74 +127,85 @@
           v-if="!pending && !errorMessage && filteredRecipes.length"
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
         >
-          <button
-            v-for="recipe in filteredRecipes"
-            :key="recipe.id"
-            @click="openModal(recipe)"
-            class="group bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-white/50 hover:border-indigo-200 text-left"
-          >
-            <div class="h-52 w-full overflow-hidden relative">
-              <img
-                :src="recipe.imageUrl"
-                :alt="recipe.title"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                loading="lazy"
-              />
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              ></div>
-            </div>
+         <button
+  v-for="recipe in filteredRecipes"
+  :key="recipe.id"
+  @click="openModal(recipe)"
+  class="bg-transparent text-left"
+>
+  <div
+    class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center"
+  >
+    <!-- Дөңгелек сурет (үстінде тұратын) -->
+    <div
+      class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
+    >
+      <img
+        :src="recipe.imageUrl"
+        :alt="recipe.title"
+        class="w-full h-full object-cover"
+      />
+    </div>
 
-            <div class="p-5 flex flex-col gap-3">
-              <h3
-                class="font-bold text-lg text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors"
-              >
-                {{ recipe.title }}
-              </h3>
+    <!-- Жоғарғы сол жақта NEW / -15% сияқты бэйдж -->
+    <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+      <span v-if="recipe.isNew">NEW</span>
+      <span
+        v-else-if="recipe.discount"
+        class="text-red-500"
+      >
+        -{{ recipe.discount }}%
+      </span>
+    </div>
 
-              <div class="flex flex-wrap gap-2 text-xs">
-                <span
-                  class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
-                >
-                  {{ recipe.category }}
-                </span>
-                <span
-                  class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
-                >
-                  {{ recipe.area }}
-                </span>
-              </div>
+    <!-- Контент (атауы + баға) -->
+    <div class="mt-12 w-full text-center flex flex-col gap-2">
+      <h3 class="text-sm font-semibold text-slate-900 leading-snug">
+        {{ recipe.title }}
+      </h3>
 
-              <div class="flex items-center justify-between mt-3">
-                <a
-                  v-if="recipe.youtubeUrl"
-                  :href="recipe.youtubeUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  @click.stop
-                  class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors flex-1"
-                >
-                  ▶ YouTube
-                </a>
-                <div v-else class="w-20 h-8"></div>
+      <p class="text-[11px] text-slate-400">
+        {{ recipe.category }} • {{ recipe.area }}
+      </p>
 
-                <!-- SAVE BUTTON -->
-                <button
-                  v-if="isAuth"
-                  @click.stop="toggleFavorite(recipe.id)"
-                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ml-2"
-                  :class="[
-                    isFavorite(recipe.id) 
-                      ? 'bg-red-500 text-white shadow-md hover:bg-red-600' 
-                      : 'bg-white/80 text-gray-700 border hover:bg-red-50 hover:text-red-600 hover:border-red-200'
-                  ]"
-                >
-                  
-                  {{ isFavorite(recipe.id) ? 'Сохранено' : 'Save' }}
-                </button>
-              </div>
-            </div>
-          </button>
+      <p
+        v-if="recipe.price"
+        class="text-sm font-bold text-slate-900 mt-1"
+      >
+        {{ recipe.price }}
+      </p>
+    </div>
+
+    <!-- Төменгі толық енді жолақ -->
+    <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+      <!-- Сол жақ: YouTube video -->
+      <a
+        v-if="recipe.youtubeUrl"
+        :href="recipe.youtubeUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        @click.stop
+        class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors"
+      >
+        YouTube video
+      </a>
+      <div
+        v-else
+        class="flex-1 bg-[#588157] opacity-60"
+      ></div>
+
+      <!-- Оң жақ: Save (тек isAuth=true болса) -->
+      <button
+        v-if="isAuth"
+        @click.stop="toggleFavorite(recipe.id)"
+        class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors"
+      >
+        {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</button>
+
         </div>
 
         <!-- Loading -->
