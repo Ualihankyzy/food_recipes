@@ -335,6 +335,19 @@ Loading recipes... </p>
                 rows="4"
                 class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
               ></textarea>
+              <!-- Visibility toggle -->
+<div class="flex items-center gap-3 pt-2">
+  <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
+    <input 
+      type="checkbox" 
+      v-model="form.isPublic" 
+      class="w-4 h-4 rounded"
+    />
+    <span>Public (show on Home)</span>
+  </label>
+  <span class="text-xs text-[#6c7570]">(Only You = private)</span>
+</div>
+
             </div>
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
@@ -386,7 +399,8 @@ const form = ref({
   area: '',
   imageUrl: '',
   instructions: '',
-  ingredients: []
+  ingredients: [],
+    isPublic: true 
 })
 
 // Computed
@@ -488,40 +502,42 @@ const createRecipe = async () => {
   isLoading.value = true
 
   const recipe = {
-    id: Date.now().toString(), // MockAPI үшін id
+    id: Date.now().toString(),
     title: form.value.title,
     category: form.value.category,
     area: form.value.area,
     imageUrl: form.value.imageUrl,
     instructions: form.value.instructions,
     ingredients: form.value.ingredients,
-    userId: userId.value, // Firebase үшін
+    userId: userId.value,
     createdAt: new Date().toISOString(),
-    // MockAPI recipes үшін қосымша field-тар (негізгі мәліметтерді толтыру)
     isNew: true,
     discount: null,
     price: null,
-    youtubeUrl: null
+    youtubeUrl: null,
+    isPublic: form.value.isPublic  // ✅ Visibility
   }
 
   try {
-    // 1️⃣ Firebase-қа My Recipes ретінде сақтау (Dashboard үшін)
+    // 1️⃣ ӘРҚашан Firebase-қа сақтау (My Recipes)
     await $addDoc($collection($db, 'recipes'), recipe)
     
-    // 2️⃣ MockAPI-ға да сақтау (Home бетінде көрсету үшін)
-    await $fetch(`${MOCK_API_URL}/recipes`, {
-      method: 'POST',
-      body: recipe
-    })
+    // 2️⃣ Тек Public болса MockAPI-ға сақтау (Home)
+    if (form.value.isPublic) {
+      await $fetch(`${MOCK_API_URL}/recipes`, {
+        method: 'POST',
+        body: recipe
+      })
+    }
     
     closeCreateModal()
-    console.log('✅ Recipe created in both Firebase & MockAPI!')
   } catch (error) {
-    console.error('Recipe creation error:', error)
+    console.error('Create error:', error)
   } finally {
     isLoading.value = false
   }
 }
+
 
 
 // UI
@@ -544,17 +560,20 @@ const viewRecipe = (recipe) => {
 const deleteUserRecipe = async (id) => {
   isLoading.value = true
   try {
-    // 1. Firebase-тан өшіру
+    // 1. Firebase-тан өшіру (My Recipes)
     await $deleteDoc($doc($db, 'recipes', id))
     
-    // 2. MockAPI-дан да өшіру (егер сол id болса)
+    // 2. MockAPI-дан өшіру (Home/index)
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' }).catch(() => {})
+    
+    console.log('✅ Deleted from Firebase & MockAPI!')
   } catch (error) {
-    console.error('Recipe deletion error:', error)
+    console.error('Delete error:', error)
   } finally {
     isLoading.value = false
   }
 }
+
 
 
 const logout = () => {
