@@ -152,7 +152,7 @@
       >
         <td class="py-2 pr-4 font-medium text-slate-800">
           {{ row.userName }}
-          <span class="text-slate-500 text-[10px] ml-1">(#{{ row.userId?.slice(-6) }})</span>
+          <span class="text-slate-500 text-[10px] ml-1">(#{{ row.userId }})</span>
         </td>
         <td class="py-2 text-slate-700">
           {{ row.recipeTitle }}
@@ -160,10 +160,8 @@
       </tr>
     </tbody>
   </table>
-  <p v-if="!savedDetails.length" class="text-xs text-slate-400 mt-2 text-center py-4">
-    No saved activity yet.
-  </p>
 </div>
+
 
 
             <!-- New recipes list -->
@@ -545,12 +543,15 @@ savedDetails.value = favorites
     const recipe = recipes.find(r => r.id === f.recipeId)
     return {
       userId: f.userId,
-      userName: f.username || f.userName || f.user_name || `User #${f.userId?.slice(-4)}`,  // ← username БІРІНШІ ОҚЫЛАДЫ
+      // 👇 МІНЕ ОСЫ ЖОЛ ЕҢ МАҢЫЗДЫ
+      userName: f.username || `User #${f.userId?.slice(-4)}`,
       recipeId: f.recipeId,
       recipeTitle: recipe?.title || 'Unknown recipe'
     }
   })
   .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
+
+
 
       .sort((a, b) => {
         const aD = a.savedAt ? new Date(a.savedAt).getTime() : 0
