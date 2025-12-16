@@ -10,9 +10,6 @@
       <!-- Brand + toggle -->
       <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center text-xl font-bold">
-            R
-          </div>
           <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">
             Admin
           </span>
@@ -61,15 +58,8 @@
       <!-- Bottom user info -->
       <div class="p-4 border-t border-white/10">
         <div class="flex items-center gap-3 mb-2">
-          <div
-            class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold"
-          >
-            {{ adminInitial }}
-          </div>
-          <div v-if="isSidebarOpen" class="text-xs leading-tight">
-            <p class="font-semibold">{{ adminName }}</p>
-            <p class="text-emerald-100/80">Adminka@gmail.com</p>
-          </div>
+         
+        
         </div>
         <button
           class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
@@ -94,23 +84,21 @@
           </p>
         </div>
 
-        <div class="flex items-center gap-4">
-          <button
-            class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"
-          >
-            🔔
-          </button>
-          <div class="flex items-center gap-3">
-            <div class="text-right">
-              <p class="text-sm font-semibold text-slate-800">Admin</p>
-              <p class="text-xs text-slate-500">Adminka@gmail.com</p>
-            </div>
-            <div
-              class="w-12 h-12 rounded-full bg-[#588157] text-white flex items-center justify-center font-semibold shadow-md"
-            >
-              {{ adminInitial }}
+        <div >
+      
+     
+         
+            <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
+        <button class="flex items-center gap-3 group" @click="router.push('/profile')">
+          <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
+            <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
+            <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+              <span class="text-sm font-bold text-white">{{ userInitial }}</span>
             </div>
           </div>
+        </button>
+      </header>
+         
         </div>
       </header>
 
