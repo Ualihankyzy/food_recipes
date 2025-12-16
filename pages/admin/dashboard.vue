@@ -283,43 +283,26 @@
 
           <!-- Latest users & recipes -->
           <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- Latest users -->
-            <div class="bg-white rounded-2xl shadow-sm p-4">
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-semibold text-[#31572c]">
-                  Latest users
-                </h3>
-              </div>
-              <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
-                <li
-                  v-for="u in latestUsers"
-                  :key="u.id"
-                  class="py-2.5 flex items-center justify-between"
-                >
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold"
-                    >
-                      {{ (u.name || 'U')[0]?.toUpperCase() }}
-                    </div>
-                    <div>
-                      <p class="text-sm font-medium text-slate-900">
-                        {{ u.name || 'Unknown' }}
-                      </p>
-                      <p class="text-xs text-slate-500">
-                        {{ u.email }}
-                      </p>
-                    </div>
-                  </div>
-                  <p class="text-[11px] text-slate-400">
-                    {{ formatDate(u.created_at) }}
-                  </p>
-                </li>
-              </ul>
-              <p v-else class="text-xs text-slate-400">
-                Users list not available (no API).
-              </p>
-            </div>
+         <!-- Latest users -->
+<div class="bg-white rounded-2xl shadow-sm p-4">
+  <h3 class="text-sm font-semibold text-[#31572c] mb-3">Latest users</h3>
+  <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
+    <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold">
+          {{ (u.name || 'U')[0]?.toUpperCase() }}
+        </div>
+        <div>
+          <p class="text-sm font-medium text-slate-900">{{ u.name || 'Unknown' }}</p>
+          <p class="text-xs text-slate-500">{{ u.email }}</p>
+        </div>
+      </div>
+      <p class="text-[11px] text-slate-400">{{ formatDate(u.created_at) }}</p>
+    </li>
+  </ul>
+  <p v-else class="text-xs text-slate-400">No user activity yet.</p>
+</div>
+
 
             <!-- Latest recipes -->
             <div class="bg-white rounded-2xl shadow-sm p-4">
@@ -486,14 +469,17 @@ const loadAll = async () => {
     isLoading.value = true
     error.value = ''
 
+    // 1. Деректерді аламыз
     const [recipesRes, favoritesRes] = await Promise.all([
       $fetch(`${MOCK_API_URL}/recipes`),
       $fetch(`${MOCK_API_URL}/favorites`).catch(() => [])
     ])
 
+    // 2. Массивтерді дұрыс анықтаймыз
     const recipes = Array.isArray(recipesRes) ? recipesRes : []
-    const favorites = Array.isArray(favoritesRes) ? favoritesRes : []
+    const favorites = Array.isArray(favoritesRes) ? favoritesRes : []  // ← Бұл жол маңызды!
 
+    // 3. Stats есептейміз
     stats.totalRecipes = recipes.length
     stats.publicRecipes = recipes.filter(r => r.isPublic !== false).length
     stats.privateRecipes = recipes.filter(r => r.isPublic === false).length
@@ -505,6 +491,7 @@ const loadAll = async () => {
     favorites.forEach(f => f.userId && userIds.add(f.userId))
     stats.activeUsersApprox = userIds.size
 
+    // 4. Latest recipes
     latestRecipes.value = [...recipes]
       .sort((a, b) => {
         const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -513,6 +500,7 @@ const loadAll = async () => {
       })
       .slice(0, 5)
 
+    // 5. Most saved
     const savedCountMap = {}
     favorites.forEach(f => {
       if (!savedCountMap[f.recipeId]) savedCountMap[f.recipeId] = 0
@@ -528,7 +516,7 @@ const loadAll = async () => {
       .slice(0, 5)
     mostSaved.value = withCounts
 
-    // detail lists
+    // 6. NEW RECIPES LIST
     newRecipesList.value = recipes
       .filter(r => diffDays(r.createdAt) <= 7)
       .sort((a, b) => {
@@ -537,31 +525,51 @@ const loadAll = async () => {
         return bD - aD
       })
 
-// saved details – дұрыс userName оқу
-savedDetails.value = favorites
-  .map(f => {
-    const recipe = recipes.find(r => r.id === f.recipeId)
-    return {
-      userId: f.userId,
-      // 👇 МІНЕ ОСЫ ЖОЛ ЕҢ МАҢЫЗДЫ
-      userName: f.username || `User #${f.userId?.slice(-4)}`,
-      recipeId: f.recipeId,
-      recipeTitle: recipe?.title || 'Unknown recipe'
-    }
-  })
-  .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
-
-
-
-      .sort((a, b) => {
-        const aD = a.savedAt ? new Date(a.savedAt).getTime() : 0
-        const bD = b.savedAt ? new Date(b.savedAt).getTime() : 0
-        return bD - aD
+    // 7. SAVED DETAILS
+    savedDetails.value = favorites
+      .map(f => {
+        const recipe = recipes.find(r => r.id === f.recipeId)
+        return {
+          userId: f.userId,
+          userName: f.username || `User #${f.userId?.slice(-4)}`,
+          recipeId: f.recipeId,
+          recipeTitle: recipe?.title || 'Unknown recipe'
+        }
       })
+      .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
 
-    // users – кейін бөлек API қоссаң осы жерге fetch қоса аласың
-    stats.totalUsers = 0
-    latestUsers.value = []
+    // 8. 🔥 LATEST USERS – favorites + recipes-тен
+    const allUsers = new Map()
+
+    // Favorites-тен
+    favorites.forEach(f => {
+      if (f.username) {
+        allUsers.set(f.userId, {
+          id: f.userId,
+          name: f.username,
+          email: `${f.username.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+          created_at: f.savedAt || f.createdAt
+        })
+      }
+    })
+
+    // Recipes-тен (егер favorites-те жоқ болса)
+    recipes.forEach(r => {
+      if (r.userId && !allUsers.has(r.userId)) {
+        allUsers.set(r.userId, {
+          id: r.userId,
+          name: `User #${r.userId.slice(-4)}`,
+          email: `user${r.userId}@example.com`,
+          created_at: r.createdAt
+        })
+      }
+    })
+
+    stats.totalUsers = allUsers.size
+    latestUsers.value = Array.from(allUsers.values())
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 5)
+
   } catch (e) {
     console.error(e)
     error.value = 'Failed to load dashboard data'
@@ -569,6 +577,7 @@ savedDetails.value = favorites
     isLoading.value = false
   }
 }
+
 
 const openSavedDetails = () => {
   if (!savedDetails.value.length) return
@@ -595,27 +604,6 @@ onMounted(async () => {
   await loadAll()
 })
 
-// 🔥 LATEST USERS – favorites-тен бірегей user-ларды аламыз
-const userActivityMap = {}
-favorites.forEach(f => {
-  if (f.username && f.savedAt) {
-    if (!userActivityMap[f.userId]) {
-      userActivityMap[f.userId] = {
-        id: f.userId,
-        name: f.username,
-        email: `${f.username.toLowerCase().replace(/\s+/g, '.')}@example.com`, // fake email
-        created_at: f.savedAt  // соңғы activity уақыты
-      }
-    }
-  }
-})
-
-// ең белсенді 5 user (жаңа activity бойынша)
-latestUsers.value = Object.values(userActivityMap)
-  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-  .slice(0, 5)
-
-stats.totalUsers = Object.keys(userActivityMap).length
 
 
 const StatCard = defineComponent({
