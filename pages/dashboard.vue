@@ -393,9 +393,9 @@ const ingredientsText = computed({
 
 // Menu
 const menuItems = [
-  { key: 'home', label: '🏠 Home', type: 'route', to: '/' },
-  { key: 'my-recipes', label: '🍳 My recipes', type: 'tab', icon: '🍳' },
-  { key: 'saved', label: '❤️ Saved', type: 'tab', icon: '❤️' }
+  { key: 'home', label: ' Home', type: 'route', to: '/' },
+  { key: 'my-recipes', label: ' My recipes', type: 'tab'},
+  { key: 'saved', label: ' Saved', type: 'tab' }
 ]
 
 // User
@@ -497,7 +497,7 @@ const deleteUserRecipe = async (id) => {
   isLoading.value = true
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
-    await loadMyRecipes() // тізімді жаңарту
+    await loadMyRecipes() 
   } catch (error) {
     console.error('Delete error:', error)
   } finally {
@@ -540,6 +540,7 @@ onMounted(() => {
     }, 500)
   }
 })
+
 </script>
 
 <style scoped>
