@@ -38,7 +38,29 @@
 
         <template v-if="isAuth">
           <a href="/dashboard" class="hover:underline">Dashboard</a>
-          <a href="/profile" class="hover:underline">Profile</a>
+        <nav class="flex items-center gap-6 text-lg relative">
+  <!-- Search SVG сол күйі -->
+  <svg @click="showSearch = !showSearch" ></svg>
+  <transition name="slide-fade">...</transition>
+  
+  <!-- 🔥 Div ішіне (template орнына) -->
+  <div v-if="isAuth" class="flex items-center gap-4">
+    <a href="/dashboard" class="hover:underline">Dashboard</a>
+    
+    <!-- Аватарка - router.push ЖОҚ! -->
+    <a href="/profile" class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
+        {{ userInitial }}
+      </div>
+    </a>
+  </div>
+  
+  <div v-else class="flex items-center gap-4">
+    <a href="/login" class="hover:underline">Login</a>
+    <a href="/signup" class="hover:underline">Sign In</a>
+  </div>
+</nav>
+
         </template>
         <template v-else>
           <a href="/login" class="hover:underline">Login</a>
@@ -581,6 +603,26 @@ import { useRouter } from '#app'
 const router = useRouter()
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+
+// 🔥 SCRIPT БАСЫНА (MOCK_API_URL-ден КЕЙІН) қосыңыз
+const userName = ref('')
+const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
+
+// 🔥 onMounted-ты осылай өзгертіңіз (setupUser жоқ болса)
+onMounted(async () => {
+  // User мәліметтерін алу
+  if (typeof window !== 'undefined') {
+    userName.value = localStorage.getItem('userName') || 'User'
+    userId.value = localStorage.getItem('userId') || ''
+    const token = localStorage.getItem('token')
+    isAuth.value = !!userId.value || !!token
+  }
+  
+  window.addEventListener('scroll', handleScroll)
+  await Promise.all([fetchRecipes(), fetchPopularMeals()])
+  if (userId.value) await loadFavorites()
+})
+
 
 // State
 const recipes = ref([])
