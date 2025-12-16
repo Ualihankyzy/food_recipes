@@ -645,6 +645,32 @@ onMounted(async () => {
   await loadAll()
 })
 
+
+// 🔥 Toggle функциясы (басқанда ашылады/жабылады)
+const toggleActiveUsersList = () => {
+  showActiveUsersList.value = !showActiveUsersList.value
+}
+
+// Click outside жабу
+const handleClickOutside = (event) => {
+  if (showActiveUsersList.value && !event.target.closest('.group')) {
+    showActiveUsersList.value = false
+  }
+}
+
+onMounted(() => {
+  if (process.client) {
+    document.addEventListener('click', handleClickOutside)
+  }
+})
+
+onUnmounted(() => {
+  if (process.client) {
+    document.removeEventListener('click', handleClickOutside)
+  }
+})
+
+
 const StatCard = defineComponent({
   name: 'StatCard',
   props: {
