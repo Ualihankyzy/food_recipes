@@ -82,10 +82,19 @@
           </div>
 
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="recipe in myRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col">
-              <div class="h-40 bg-[#a3b18a] overflow-hidden">
-                <img v-if="recipe.imageUrl" :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover"/>
-              </div>
+           <div v-for="recipe in myRecipes" :key="recipe.id" 
+     class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col relative group">
+             <div v-if="isNewRecipe(recipe)" 
+       class="absolute top-3 left-3 z-20 bg-gradient-to-r from-[#ff6b35] to-[#f7931e] 
+              text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg 
+              animate-pulse border-2 border-white/80">
+    NEW
+  </div>
+
+  <div class="h-40 bg-[#a3b18a] overflow-hidden pt-2 pl-2"> <!-- padding қостым -->
+    <img v-if="recipe.imageUrl" :src="recipe.imageUrl" :alt="recipe.title" 
+         class="w-full h-full object-cover rounded-2xl"/>
+  </div>
               <div class="p-4 flex-1 flex flex-col gap-2">
                 <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
                 <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
@@ -409,6 +418,16 @@ const saveEditedRecipe = async () => {
   } catch(e){ console.error(e) }
   finally{ isLoading.value = false }
 }
+
+
+// Бұл функцияны <script setup> ішіне қосыңыз
+const isNewRecipe = (recipe) => {
+  if (!recipe.createdAt) return false
+  const createdDate = new Date(recipe.createdAt)
+  const now = new Date()
+  return (now - createdDate) < 7 * 24 * 60 * 60 * 1000 // 7 күн
+}
+
 
 // LIFECYCLE
 onMounted(()=>{
