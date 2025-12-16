@@ -306,12 +306,19 @@ const setupUser = () => {
 
 // LOAD MY RECIPES
 const loadMyRecipes = async () => {
-  if (!userId.value) return myRecipes.value=[]
-  isLoading.value=true
-  try { myRecipes.value = await $fetch(`${MOCK_API_URL}/recipes?userId=${userId.value}`) } 
-  catch(e){ myRecipes.value=[] }
-  finally{ isLoading.value=false }
+  if (!userId.value) return myRecipes.value = []
+  isLoading.value = true
+  try {
+    myRecipes.value = await $fetch(
+      `${MOCK_API_URL}/recipes?userId=${userId.value}&sortBy=createdAt&order=desc`
+    )
+  } catch (e) {
+    myRecipes.value = []
+  } finally {
+    isLoading.value = false
+  }
 }
+
 
 // LOAD SAVED RECIPES
 const loadSavedRecipes = async () => {
@@ -339,12 +346,33 @@ const removeFromSaved = async (recipeId) => {
 
 // CREATE RECIPE
 const createRecipe = async () => {
-  if(!form.value.title || !userId.value) return
-  isLoading.value=true
-  const recipe = { id:Date.now().toString(), userId:userId.value, ...form.value, createdAt:new Date().toISOString() }
-  try { await $fetch(`${MOCK_API_URL}/recipes`, { method:'POST', body: recipe }); closeCreateModal(); await loadMyRecipes() }
-  catch(e){ console.error(e) }
-  finally{ isLoading.value=false }
+  if (!form.value.title || !userId.value) return
+  isLoading.value = true
+
+  const recipe = {
+    id: Date.now().toString(),
+    userId: userId.value,
+    ...form.value,
+    createdAt: new Date().toISOString()
+  }
+
+  try {
+    // серверге жібереміз
+    await $fetch(`${MOCK_API_URL}/recipes`, {
+      method: 'POST',
+      body: recipe
+    })
+
+    // 🔥 локалды тізімнің БАСЫНА қосамыз
+    myRecipes.value.unshift(recipe)
+
+    // модалды жабу, форманы тазалау
+    closeCreateModal()
+  } catch (e) {
+    console.error(e)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // DELETE RECIPE
