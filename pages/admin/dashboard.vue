@@ -71,17 +71,17 @@
     <div class="flex-1 flex flex-col">
       <!-- Top bar -->
       <header
-        class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8"
-      >
-       
+  class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8"
+>
+  <!-- Тек оң жақтағы аватар қалады -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
+      {{ userInitial }}
+    </div>
+    <span class="text-sm font-medium text-slate-900 hidden md:inline">Admin</span>
+  </div>
+</header>
 
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
-            {{ userInitial }}
-          </div>
-        
-        </div>
-      </header>
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-y-auto">
