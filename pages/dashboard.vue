@@ -120,9 +120,9 @@
             <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
           </div>
 
-          <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-56">
+          <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
             <button v-for="recipe in savedRecipes" :key="recipe.id" @click="viewRecipe(recipe)" class="bg-transparent text-left">
-              <div class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center">
+              <div class="relative bg-white rounded-3xl shadow-md w-full pt-56 pb-4 px-4 flex flex-col items-center">
                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
                   <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
                 </div>
@@ -130,7 +130,7 @@
                   <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
                   <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
                 </div>
-                <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+                <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden ">
                   <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop
                      class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947]">
                     YouTube video
