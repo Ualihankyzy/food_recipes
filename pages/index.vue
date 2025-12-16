@@ -319,74 +319,70 @@ const router = useRouter()
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-/* =======================
-   STATE
-======================= */
+// State
 const recipes = ref([])
-const favorites = ref([])
-
 const pending = ref(true)
 const errorMessage = ref(null)
-
 const selectedRecipe = ref(null)
 const showSearch = ref(false)
 const searchQuery = ref('')
 const recipesSection = ref(null)
-
+const lettersOpen = ref(false)
 const activeLetter = ref(null)
-
 const userId = ref('')
 const isAuth = ref(false)
+const favorites = ref([])
 
-/* =======================
-   USER
-======================= */
+// User
 const setupUser = () => {
-  if (typeof window === 'undefined') return
-
-  userId.value = localStorage.getItem('userId') || ''
-  const token = localStorage.getItem('token')
-
-  isAuth.value = !!userId.value || !!token
+  if (typeof window !== 'undefined') {
+    userId.value = localStorage.getItem('userId') || ''
+    const token = localStorage.getItem('token')
+    isAuth.value = !!userId.value || !!token
+  }
 }
 
-/* =======================
-   RECIPES (PUBLIC ONLY)
-======================= */
+// Recipes
 const fetchRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
 
-    // ✅ ТЕК public рецепттер
+    // ✅ тек public рецепттер
     recipes.value = await $fetch(
       `${MOCK_API_URL}/recipes?isPublic=true`
     )
   } catch (e) {
-    console.error(e)
     errorMessage.value = 'Recipes жүктелмеді'
+    console.error(e)
   } finally {
     pending.value = false
   }
 }
 
-/* =======================
-   FAVORITES
-======================= */
-const loadFavorites = async () => {
-  if (!userId.value) {
-    favorites.value = []
-    return
-  }
 
+// Favorites (MockAPI)
+const loadSavedRecipes = async () => {
+  if (!userId.value) return
+  
   try {
-    favorites.value = await $fetch(
-      `${MOCK_API_URL}/favorites?userId=${userId.value}`
+    // ✅ 404 болса бос массив
+    let favorites = []
+    try {
+      favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
+    } catch (e) {
+      console.warn('Favorites бос:', e)
+    }
+    
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
+    savedRecipes.value = recipesResponse.filter(r => 
+      favorites.some(f => f.recipeId === r.id)
     )
   } catch (e) {
-    favorites.value = []
+    savedRecipes.value = []
   }
 }
+
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
@@ -396,34 +392,25 @@ const toggleFavorite = async (recipeId) => {
 
   try {
     const exists = favorites.value.find(f => f.recipeId === recipeId)
-
+    
     if (exists) {
-      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, {
-        method: 'DELETE'
-      })
+      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
-        body: {
-          recipeId,
-          userId: userId.value,
-          savedAt: new Date().toISOString()
-        }
+        headers: { 'Content-Type': 'application/json' },
+        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
       })
     }
-
     await loadFavorites()
   } catch (e) {
-    console.error('Favorite error:', e)
+    console.error('Favorite қатесі:', e)
   }
 }
 
-const isFavorite = (recipeId) =>
-  favorites.value.some(f => f.recipeId === recipeId)
+const isFavorite = (recipeId) => favorites.value.some(f => f.recipeId === recipeId)
 
-/* =======================
-   FILTERS
-======================= */
+// Filters
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
@@ -445,52 +432,33 @@ const filteredRecipes = computed(() => {
   return result
 })
 
-/* =======================
-   MODAL & UI
-======================= */
-const openModal = recipe => {
-  selectedRecipe.value = recipe
-}
 
-const closeModal = () => {
-  selectedRecipe.value = null
-}
 
-const scrollToRecipes = () => {
-  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
-}
+// Modal & scroll
+const openModal = recipe => selectedRecipe.value = recipe
+const closeModal = () => selectedRecipe.value = null
+const scrollToRecipes = () => recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
 
+// Scroll hide
 const handleScroll = () => {
-  if (window.scrollY < 100) {
-    showSearch.value = false
-  }
+  if (window.scrollY < 100) showSearch.value = false
 }
 
-/* =======================
-   WATCHERS
-======================= */
 watch(searchQuery, () => {
   activeLetter.value = null
 })
 
-/* =======================
-   LIFECYCLE
-======================= */
 onMounted(async () => {
   setupUser()
   window.addEventListener('scroll', handleScroll)
-
   await fetchRecipes()
-  if (userId.value) {
-    await loadFavorites()
-  }
+  if (userId.value) await loadFavorites()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
-
 
 <style>
 * {
