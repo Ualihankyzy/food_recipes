@@ -77,34 +77,41 @@ const form = ref({
 const error = ref("");
 
 const handleLogin = async () => {
-  error.value = "";
+  error.value = ""
 
-  // Бос өрістерді тексеру
   if (!form.value.email || !form.value.password) {
-    error.value = "Email және пароль толтырыңыз";
-    return;
+    error.value = "Email және пароль толтырыңыз"
+    return
   }
 
   try {
     const response = await axios.post(
       "https://medical-backend-54hp.onrender.com/api/auth/login",
       form.value
-    );
+    )
 
-    // Дұрыс болса
-    if (response.data.data?.user?.id) {
-      localStorage.setItem("userId", response.data.data.user.id);
-      localStorage.setItem("userName", response.data.data.user.name);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("email", form.value.email);
-localStorage.setItem("password", form.value.password); 
+    const user = response.data?.data?.user
+    const token = response.data?.data?.token
 
-      router.push("/"); // бірден index бетіне
+    if (user?.id && token) {
+      localStorage.setItem("userId", user.id)
+      localStorage.setItem("userName", user.name)
+      localStorage.setItem("token", token)
+      localStorage.setItem("email", user.email)
+      localStorage.setItem("role", user.role) // "admin" немесе "user"
+
+      // 🔥 РОЛЬ БОЙЫНША КАЙ ЖЕРГЕ БАРАДЫ
+      if (user.role === "admin") {
+        router.push("/admin/dashboard")
+      } else {
+        router.push("/")
+      }
     } else {
-      error.value = "Email немесе пароль дұрыс емес";
+      error.value = "Email немесе пароль дұрыс емес"
     }
   } catch (err) {
-    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес";
+    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес"
   }
-};
+}
+
 </script>
