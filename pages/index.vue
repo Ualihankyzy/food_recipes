@@ -263,10 +263,12 @@
               </div>
 
               <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                <span v-if="recipe.isNew">NEW</span>
-                <span v-else-if="recipe.discount" class="text-red-500">
-                  -{{ recipe.discount }}%
-                </span>
+                 <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
+    NEW
+  </span>
+  <span v-else-if="recipe.discount" class="text-red-500">
+    -{{ recipe.discount }}%
+  </span>
               </div>
 
               <div class="mt-12 w-full text-center flex flex-col gap-2">
@@ -635,11 +637,20 @@ const setupUser = () => {
 }
 
 // Recipes
+// 🔥 fetchRecipes ФУНКЦИЯСЫН ОSY ШЕКІЛДІ ӨЗГЕРТІҢІЗ
 const fetchRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
-    recipes.value = await $fetch(`${MOCK_API_URL}/recipes`)
+    
+    // MockAPI-ден алынған рецепттер
+    const apiRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
+    
+    // createdAt бойынша сұрыптау (жаңадан ескіге)
+    recipes.value = apiRecipes
+      .filter(recipe => recipe.isPublic !== false) // Тек public рецепттер
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Жаңадан ескіге
+    
   } catch (e) {
     errorMessage.value = 'Recipes жүктелмеді'
     console.error(e)
@@ -647,6 +658,16 @@ const fetchRecipes = async () => {
     pending.value = false
   }
 }
+
+
+
+onMounted(async () => {
+  setupUser()
+  window.addEventListener('scroll', handleScroll)
+  await Promise.all([fetchRecipes(), fetchPopularMeals()])
+  if (userId.value) await loadFavorites()
+})
+
 
 // Favorites
 const loadFavorites = async () => {
@@ -760,10 +781,19 @@ const goToPage = (page) => {
   })
 }
 
-const addUserRecipe = (newRecipe) => {
-  recipes.value.unshift(newRecipe)
-  currentPage.value = 1
+// 🔥 HOME PAGE SCRIPT-ІНЕ ҚОСЫҢЫЗ (onMounted алдында)
+const isNewRecipe = (recipe) => {
+  if (!recipe.createdAt) return false
+  const createdDate = new Date(recipe.createdAt)
+  const now = new Date()
+  const diffTime = now - createdDate
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays <= 7 // 7 күннен жаңа
 }
+
+
+
+
 </script>
 
 <style>
