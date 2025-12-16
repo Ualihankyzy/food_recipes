@@ -643,21 +643,27 @@ const fetchRecipes = async () => {
     pending.value = true
     errorMessage.value = null
     
-    // MockAPI-ден алынған рецепттер
     const apiRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
     
-    // createdAt бойынша сұрыптау (жаңадан ескіге)
+    // 🔥 LOCAL СҰРЫПТАУ - SERVER-ден БҰҢЫС!
     recipes.value = apiRecipes
-      .filter(recipe => recipe.isPublic !== false) // Тек public рецепттер
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Жаңадан ескіге
-    
+      .filter(recipe => recipe.isPublic !== false)
+      .sort((a, b) => {
+        // 1. createdAt бар жаңаларды БАСЫНА
+        const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        
+        // Жаңасы (үлкен timestamp) алда болады
+        return bDate - aDate
+      })
+      
   } catch (e) {
     errorMessage.value = 'Recipes жүктелмеді'
-    console.error(e)
   } finally {
     pending.value = false
   }
 }
+
 
 
 
