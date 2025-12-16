@@ -148,21 +148,20 @@
                 <p class="text-xs text-[#6c7570] line-clamp-3">
                   {{ recipe.instructions }}
                 </p>
-              <div class="mt-auto flex gap-2 pt-2">
-  <button
-    @click="openEditModal(recipe)"
-    class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-[#476747]"
-  >
-    Edit
-  </button>
-  <button
-    @click="deleteUserRecipe(recipe.id)"
-    class="px-3 py-2 rounded-xl bg-[#bc4749] text-white text-xs font-semibold hover:bg-[#a33a3d]"
-  >
-    Delete
-  </button>
-</div>
-
+                <div class="mt-auto flex gap-2 pt-2">
+                  <button
+                    @click="viewRecipe(recipe)"
+                    class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-[#476747]"
+                  >
+                    View
+                  </button>
+                  <button
+                    @click="deleteUserRecipe(recipe.id)"
+                    class="px-3 py-2 rounded-xl bg-[#bc4749] text-white text-xs font-semibold hover:bg-[#a33a3d]"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -332,19 +331,6 @@
                 <span class="text-xs text-[#6c7570]">(Only You = private)</span>
               </div>
             </div>
-            <div>
-  <label class="block text-xs font-semibold text-[#31572c] mb-1">
-    YouTube video link
-  </label>
-  <textarea
-    v-model="newRecipe.youtubeUrl"
-    rows="2"
-    placeholder="https://www.youtube.com/watch?v=..."
-    class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm
-           focus:outline-none focus:ring-2 focus:ring-[#588157]"
-  ></textarea>
-</div>
-
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
             <button
@@ -492,7 +478,7 @@ const createRecipe = async () => {
     isNew: true,
     discount: null,
     price: null,
-    youtubeUrl: form.value.youtubeUrl || null, // 👈 Мұнда жаздық
+    youtubeUrl: null,
     isPublic: form.value.isPublic
   }
   try {
@@ -506,13 +492,12 @@ const createRecipe = async () => {
   }
 }
 
-
 // Delete Recipe (тек MockAPI)
 const deleteUserRecipe = async (id) => {
   isLoading.value = true
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
-    await loadMyRecipes() 
+    await loadMyRecipes() // тізімді жаңарту
   } catch (error) {
     console.error('Delete error:', error)
   } finally {
@@ -555,49 +540,7 @@ onMounted(() => {
     }, 500)
   }
 })
-
-
-
-
-// Edit modal state
-const showEditModal = ref(false)
-const editForm = ref({
-  id: '',
-  title: '',
-  category: '',
-  area: '',
-  imageUrl: '',
-  instructions: '',
-  ingredients: [],
-  youtubeUrl: '',
-  isPublic: true
-})
-
-// Open edit modal
-const openEditModal = (recipe) => {
-  editForm.value = { ...recipe } // бар мәліметтерді толтыру
-  showEditModal.value = true
-}
-
-// Save changes
-const saveEditedRecipe = async () => {
-  isLoading.value = true
-  try {
-    await $fetch(`${MOCK_API_URL}/recipes/${editForm.value.id}`, {
-      method: 'PUT',
-      body: editForm.value
-    })
-    showEditModal.value = false
-    await loadMyRecipes() // тізімді жаңарту
-  } catch (error) {
-    console.error('Update error:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
 </script>
-
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
