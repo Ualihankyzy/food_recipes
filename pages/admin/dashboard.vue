@@ -136,37 +136,36 @@
             </div>
 
             <!-- Saved details table -->
-            <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
-              <table class="min-w-full text-xs">
-                <thead>
-                  <tr class="uppercase text-[10px] text-slate-400 border-b">
-                    <th class="py-2 text-left">User ID</th>
-                    <th class="py-2 text-left">Recipe</th>
-                    <th class="py-2 text-left">Saved at</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="row in savedDetails"
-                    :key="row.userId + '-' + row.recipeId + '-' + row.savedAt"
-                    class="border-b last:border-0"
-                  >
-                    <td class="py-2 pr-4 text-slate-700">
-                      {{ row.userId }}
-                    </td>
-                    <td class="py-2 pr-4 text-slate-900">
-                      {{ row.recipeTitle }}
-                    </td>
-                    <td class="py-2 text-slate-500">
-                      {{ formatDate(row.savedAt) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <p v-if="!savedDetails.length" class="text-xs text-slate-400 mt-2">
-                No saved activity yet.
-              </p>
-            </div>
+           <!-- Saved details table – userName + recipe -->
+<div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
+  <table class="min-w-full text-xs">
+    <thead>
+      <tr class="uppercase text-[10px] text-slate-400 border-b">
+        <th class="py-2 text-left w-1/2">User</th>
+        <th class="py-2 text-left w-1/2">Recipe saved</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="row in savedDetails"
+        :key="row.userId + '-' + row.recipeId"
+        class="border-b last:border-0 hover:bg-slate-50"
+      >
+        <td class="py-2 pr-4 font-medium text-slate-800">
+          {{ row.userName }}
+          <span class="text-slate-500 text-[10px] ml-1">(#{{ row.userId?.slice(-6) }})</span>
+        </td>
+        <td class="py-2 text-slate-700">
+          {{ row.recipeTitle }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p v-if="!savedDetails.length" class="text-xs text-slate-400 mt-2 text-center py-4">
+    No saved activity yet.
+  </p>
+</div>
+
 
             <!-- New recipes list -->
             <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
@@ -541,16 +540,19 @@ const loadAll = async () => {
         return bD - aD
       })
 
-    savedDetails.value = favorites
-      .map(f => {
-        const recipe = recipes.find(r => r.id === f.recipeId)
-        return {
-          userId: f.userId,
-          recipeId: f.recipeId,
-          recipeTitle: recipe?.title || 'Unknown recipe',
-          savedAt: f.savedAt || f.createdAt || f.updatedAt || ''
-        }
-      })
+   savedDetails.value = favorites
+  .map(f => {
+    const recipe = recipes.find(r => r.id === f.recipeId)
+    return {
+      userId: f.userId,
+      userName: f.userName || f.user_name || `User #${f.userId?.slice(-4)}`,  // ← userName қосылды
+      recipeId: f.recipeId,
+      recipeTitle: recipe?.title || 'Unknown recipe'
+      // savedAt-ты алып тастадым
+    }
+  })
+  .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
+
       .sort((a, b) => {
         const aD = a.savedAt ? new Date(a.savedAt).getTime() : 0
         const bD = b.savedAt ? new Date(b.savedAt).getTime() : 0

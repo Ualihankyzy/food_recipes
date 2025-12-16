@@ -696,14 +696,15 @@ const toggleFavorite = async (recipeId) => {
     if (exists) {
       await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
-      await $fetch(`${MOCK_API_URL}/favorites`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: {
-          recipeId,
-          userId: userId.value,
-          savedAt: new Date().toISOString(),
-        },
+    await $fetch(`${MOCK_API_URL}/favorites`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: {
+    recipeId,
+    userId: userId.value,
+    username: userName.value,   // 👈 МІНЕ ОСЫ
+    savedAt: new Date().toISOString(),
+  },
       })
     }
     await loadFavorites()
