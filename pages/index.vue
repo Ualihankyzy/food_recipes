@@ -347,14 +347,21 @@ const fetchRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
-    recipes.value = await $fetch(`${MOCK_API_URL}/recipes`)
+
+    // ✅ БАРЛЫҚ рецепттер
+    const allRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
+
+    // ✅ public + өзінікі
+    recipes.value = allRecipes.filter(r =>
+      r.isPublic === true || r.userId === userId.value
+    )
   } catch (e) {
     errorMessage.value = 'Recipes жүктелмеді'
-    console.error(e)
   } finally {
     pending.value = false
   }
 }
+
 
 // Favorites (MockAPI)
 const loadSavedRecipes = async () => {
