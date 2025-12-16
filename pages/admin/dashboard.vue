@@ -80,17 +80,11 @@
           </p>
         </div>
 
-        <div>
-          <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
-            <button class="flex items-center gap-3 group" @click="router.push('/profile')">
-              <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
-                <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
-                <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-                  <span class="text-sm font-bold text-white">{{ userInitial }}</span>
-                </div>
-              </div>
-            </button>
-          </header>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
+            {{ userInitial }}
+          </div>
+          <span class="text-sm font-medium text-slate-900 hidden md:inline">Admin</span>
         </div>
       </header>
 
@@ -124,7 +118,7 @@
                   New recipes – created in last 7 days
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
-                  Click “Back to overview” to return to main dashboard.
+                  Click "Back to overview" to return to main dashboard.
                 </p>
               </div>
               <button
@@ -135,34 +129,32 @@
               </button>
             </div>
 
-        <!-- Saved details table -->
-<div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
-  <table class="min-w-full text-xs">
-    <thead>
-      <tr class="uppercase text-[10px] text-slate-400 border-b">
-        <th class="py-2 text-left w-1/2">User</th>
-        <th class="py-2 text-left w-1/2">Recipe saved</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="row in savedDetails"
-        :key="row.userId + '-' + row.recipeId"
-        class="border-b last:border-0 hover:bg-slate-50"
-      >
-        <td class="py-2 pr-4 font-medium text-slate-800">
-          {{ row.userName }}
-          <span class="text-slate-500 text-[10px] ml-1">(#{{ row.userId }})</span>
-        </td>
-        <td class="py-2 text-slate-700">
-          {{ row.recipeTitle }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
+            <!-- Saved details table -->
+            <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
+              <table class="min-w-full text-xs">
+                <thead>
+                  <tr class="uppercase text-[10px] text-slate-400 border-b">
+                    <th class="py-2 text-left w-1/2">User</th>
+                    <th class="py-2 text-left w-1/2">Recipe saved</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in savedDetails"
+                    :key="row.userId + '-' + row.recipeId"
+                    class="border-b last:border-b-0 hover:bg-slate-50"
+                  >
+                    <td class="py-2 pr-4 font-medium text-slate-800">
+                      {{ row.userName }}
+                      <span class="text-slate-500 text-[10px] ml-1">(#{{ row.userId }})</span>
+                    </td>
+                    <td class="py-2 text-slate-700">
+                      {{ row.recipeTitle }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <!-- New recipes list -->
             <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
@@ -194,8 +186,6 @@
                 No new recipes in last 7 days.
               </p>
             </div>
-    
-
           </section>
 
           <!-- Stats cards -->
@@ -203,14 +193,12 @@
             <h2 class="text-base font-semibold text-[#31572c] mb-4">
               Overall statistics
             </h2>
-            <div
-              class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
-            >
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               <StatCard
                 title="Total users"
                 :value="stats.totalUsers"
                 icon="👥"
-                badge="medical backend"
+                badge="from activity"
               />
               <StatCard
                 title="Total recipes"
@@ -233,6 +221,7 @@
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+              <!-- Total saved -->
               <div
                 class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                 @click="openSavedDetails"
@@ -252,6 +241,8 @@
                   Favorites added by all users (click to see who saved what)
                 </p>
               </div>
+
+              <!-- New recipes (7 days) -->
               <div
                 class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                 @click="openNewRecipesDetails"
@@ -268,76 +259,75 @@
                   Created in the last 7 days (click to see list)
                 </p>
               </div>
-             <!-- 🔥 ACTIVE USERS – үстіне басса тізім шығады (130-жол орнына) -->
-<div class="group relative" @mouseenter="showActiveUsersList = true" @mouseleave="showActiveUsersList = false">
-  <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200">
-    <div class="flex items-center justify-between mb-2">
-      <h3 class="text-sm font-semibold text-[#31572c]">Active users (approx.)</h3>
-      <span class="text-[11px] text-slate-400">30 күнде</span>
-    </div>
-    <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
-    <p class="text-xs text-slate-500 mt-1">Users who have activity</p>
-  </div>
-  
-  <!-- Dropdown тізімі -->
-  <transition name="slide-fade">
-    <div v-if="showActiveUsersList" 
-         class="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-20">
-      <div class="p-4 border-b border-slate-100">
-        <h4 class="font-semibold text-slate-900 text-sm">Соңғы белсенді user-лар</h4>
-        <p class="text-xs text-slate-400">Соңғы 30 күн</p>
-      </div>
-      <ul class="max-h-64 overflow-y-auto">
-        <li v-for="user in latestUsers.slice(0, 8)" :key="user.id" 
-            class="px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-[#588157]/10 flex items-center justify-center text-[#588157] font-semibold text-sm">
-                {{ (user.name || 'U')[0]?.toUpperCase() }}
-              </div>
-              <div>
-                <p class="font-medium text-sm text-slate-900">{{ user.name }}</p>
-                <p class="text-xs text-slate-500 truncate max-w-[180px]">{{ user.email }}</p>
-              </div>
-            </div>
-            <p class="text-xs text-slate-400 whitespace-nowrap">
-              {{ formatDateShort(user.created_at) }}
-            </p>
-          </div>
-        </li>
-      </ul>
-      <div v-if="latestUsers.length > 8" class="px-4 py-3 text-center text-xs text-slate-400 border-t border-slate-100">
-        +{{ latestUsers.length - 8 }} басқа user
-      </div>
-    </div>
-  </transition>
-</div>
 
+              <!-- 🔥 ACTIVE USERS – үстіне басса тізім шығады -->
+              <div class="group relative" @mouseenter="showActiveUsersList = true" @mouseleave="showActiveUsersList = false">
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-semibold text-[#31572c]">Active users (approx.)</h3>
+                    <span class="text-[11px] text-slate-400">30 күнде</span>
+                  </div>
+                  <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
+                  <p class="text-xs text-slate-500 mt-1">Users who have activity</p>
+                </div>
+                
+                <!-- Dropdown тізімі -->
+                <transition name="slide-fade">
+                  <div v-if="showActiveUsersList" 
+                       class="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-20">
+                    <div class="p-4 border-b border-slate-100">
+                      <h4 class="font-semibold text-slate-900 text-sm">Соңғы белсенді user-лар</h4>
+                      <p class="text-xs text-slate-400">Соңғы 30 күн</p>
+                    </div>
+                    <ul class="max-h-64 overflow-y-auto">
+                      <li v-for="user in latestUsers.slice(0, 8)" :key="user.id" 
+                          class="px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-[#588157]/10 flex items-center justify-center text-[#588157] font-semibold text-sm">
+                              {{ (user.name || 'U')[0]?.toUpperCase() }}
+                            </div>
+                            <div>
+                              <p class="font-medium text-sm text-slate-900">{{ user.name }}</p>
+                              <p class="text-xs text-slate-500 truncate max-w-[180px]">{{ user.email }}</p>
+                            </div>
+                          </div>
+                          <p class="text-xs text-slate-400 whitespace-nowrap">
+                            {{ formatDateShort(user.created_at) }}
+                          </p>
+                        </div>
+                      </li>
+                    </ul>
+                    <div v-if="latestUsers.length > 8" class="px-4 py-3 text-center text-xs text-slate-400 border-t border-slate-100">
+                      +{{ latestUsers.length - 8 }} басқа user
+                    </div>
+                  </div>
+                </transition>
+              </div>
             </div>
           </section>
 
           <!-- Latest users & recipes -->
           <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-         <!-- Latest users -->
-<div class="bg-white rounded-2xl shadow-sm p-4">
-  <h3 class="text-sm font-semibold text-[#31572c] mb-3">Latest users</h3>
-  <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
-    <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold">
-          {{ (u.name || 'U')[0]?.toUpperCase() }}
-        </div>
-        <div>
-          <p class="text-sm font-medium text-slate-900">{{ u.name || 'Unknown' }}</p>
-          <p class="text-xs text-slate-500">{{ u.email }}</p>
-        </div>
-      </div>
-      <p class="text-[11px] text-slate-400">{{ formatDate(u.created_at) }}</p>
-    </li>
-  </ul>
-  <p v-else class="text-xs text-slate-400">No user activity yet.</p>
-</div>
-
+            <!-- Latest users -->
+            <div class="bg-white rounded-2xl shadow-sm p-4">
+              <h3 class="text-sm font-semibold text-[#31572c] mb-3">Latest users</h3>
+              <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
+                <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold">
+                      {{ (u.name || 'U')[0]?.toUpperCase() }}
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-slate-900">{{ u.name || 'Unknown' }}</p>
+                      <p class="text-xs text-slate-500">{{ u.email }}</p>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-400">{{ formatDate(u.created_at) }}</p>
+                </li>
+              </ul>
+              <p v-else class="text-xs text-slate-400">No user activity yet.</p>
+            </div>
 
             <!-- Latest recipes -->
             <div class="bg-white rounded-2xl shadow-sm p-4">
@@ -435,6 +425,10 @@
 </template>
 
 <script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
 const isSidebarOpen = ref(true)
@@ -442,6 +436,7 @@ const activeMenu = ref('dashboard')
 
 const adminName = 'Admin'
 const adminInitial = computed(() => adminName[0])
+const userInitial = computed(() => adminInitial.value)
 
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠' },
@@ -450,12 +445,6 @@ const menuItems = [
   { key: 'saved', label: 'Saved', icon: '⭐' },
   { key: 'profile', label: 'Profile', icon: '👤' }
 ]
-
-const router = useRouter()
-
-// профиль аватары үшін – егер керек болса
-const avatarUrl = ref('')
-const userInitial = computed(() => adminInitial.value)
 
 const logout = () => {
   if (process.client) {
@@ -486,6 +475,9 @@ const detailMode = ref(null) // 'saved' | 'new' | null
 const savedDetails = ref([])
 const newRecipesList = ref([])
 
+// 🔥 Active users dropdown
+const showActiveUsersList = ref(false)
+
 const diffDays = (dateStr) => {
   if (!dateStr) return 9999
   const d = new Date(dateStr)
@@ -497,6 +489,16 @@ const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const d = new Date(dateStr)
   return d.toLocaleDateString()
+}
+
+// 🔥 Date форматтау функциясы (Active users үшін)
+const formatDateShort = (dateStr) => {
+  if (!dateStr) return '—'
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('kk-KZ', { 
+    day: 'numeric', 
+    month: 'short' 
+  })
 }
 
 const loadAll = async () => {
@@ -512,7 +514,7 @@ const loadAll = async () => {
 
     // 2. Массивтерді дұрыс анықтаймыз
     const recipes = Array.isArray(recipesRes) ? recipesRes : []
-    const favorites = Array.isArray(favoritesRes) ? favoritesRes : []  // ← Бұл жол маңызды!
+    const favorites = Array.isArray(favoritesRes) ? favoritesRes : []
 
     // 3. Stats есептейміз
     stats.totalRecipes = recipes.length
@@ -613,18 +615,6 @@ const loadAll = async () => {
   }
 }
 
-const showActiveUsersList = ref(false)
-
-// Date форматтау функциясы
-const formatDateShort = (dateStr) => {
-  if (!dateStr) return '—'
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('kk-KZ', { 
-    day: 'numeric', 
-    month: 'short' 
-  })
-}
-
 const openSavedDetails = () => {
   if (!savedDetails.value.length) return
   detailMode.value = 'saved'
@@ -649,8 +639,6 @@ onMounted(async () => {
   }
   await loadAll()
 })
-
-
 
 const StatCard = defineComponent({
   name: 'StatCard',
@@ -684,7 +672,6 @@ const StatCard = defineComponent({
       </span>
     </div>
   `
-  
 })
 </script>
 
@@ -706,5 +693,4 @@ const StatCard = defineComponent({
   opacity: 0;
   transform: translateY(-10px) scale(0.95);
 }
-
 </style>
