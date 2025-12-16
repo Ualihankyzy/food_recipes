@@ -57,10 +57,6 @@
 
       <!-- Bottom user info -->
       <div class="p-4 border-t border-white/10">
-        <div class="flex items-center gap-3 mb-2">
-         
-        
-        </div>
         <button
           class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
           @click="logout"
@@ -84,21 +80,17 @@
           </p>
         </div>
 
-        <div >
-      
-     
-         
-            <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
-        <button class="flex items-center gap-3 group" @click="router.push('/profile')">
-          <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
-            <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
-            <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-              <span class="text-sm font-bold text-white">{{ userInitial }}</span>
-            </div>
-          </div>
-        </button>
-      </header>
-         
+        <div>
+          <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
+            <button class="flex items-center gap-3 group" @click="router.push('/profile')">
+              <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
+                <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
+                <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+                  <span class="text-sm font-bold text-white">{{ userInitial }}</span>
+                </div>
+              </div>
+            </button>
+          </header>
         </div>
       </header>
 
@@ -121,6 +113,93 @@
 
         <!-- DASHBOARD -->
         <section v-else class="space-y-8">
+          <!-- DETAIL VIEW (Total saved / New recipes) -->
+          <section v-if="detailMode" class="mb-6">
+            <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-semibold text-[#31572c]" v-if="detailMode === 'saved'">
+                  Saved activity – who saved which recipe
+                </h2>
+                <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'new'">
+                  New recipes – created in last 7 days
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">
+                  Click “Back to overview” to return to main dashboard.
+                </p>
+              </div>
+              <button
+                class="px-3 py-1.5 rounded-full text-xs font-semibold border border-[#588157] text-[#588157] hover:bg-[#588157] hover:text-white transition"
+                @click="backToOverview"
+              >
+                Back to overview
+              </button>
+            </div>
+
+            <!-- Saved details table -->
+            <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
+              <table class="min-w-full text-xs">
+                <thead>
+                  <tr class="uppercase text-[10px] text-slate-400 border-b">
+                    <th class="py-2 text-left">User ID</th>
+                    <th class="py-2 text-left">Recipe</th>
+                    <th class="py-2 text-left">Saved at</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in savedDetails"
+                    :key="row.userId + '-' + row.recipeId + '-' + row.savedAt"
+                    class="border-b last:border-0"
+                  >
+                    <td class="py-2 pr-4 text-slate-700">
+                      {{ row.userId }}
+                    </td>
+                    <td class="py-2 pr-4 text-slate-900">
+                      {{ row.recipeTitle }}
+                    </td>
+                    <td class="py-2 text-slate-500">
+                      {{ formatDate(row.savedAt) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p v-if="!savedDetails.length" class="text-xs text-slate-400 mt-2">
+                No saved activity yet.
+              </p>
+            </div>
+
+            <!-- New recipes list -->
+            <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
+              <ul class="divide-y divide-slate-100">
+                <li
+                  v-for="r in newRecipesList"
+                  :key="r.id"
+                  class="py-2.5 flex items-center justify-between"
+                >
+                  <div class="overflow-hidden">
+                    <p class="text-sm font-medium text-slate-900 truncate">
+                      {{ r.title }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      {{ r.area }} • {{ r.category }}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[11px] text-slate-400">
+                      {{ formatDate(r.createdAt) }}
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                      User ID: {{ r.userId || '—' }}
+                    </p>
+                  </div>
+                </li>
+              </ul>
+              <p v-if="!newRecipesList.length" class="text-xs text-slate-400 mt-2">
+                No new recipes in last 7 days.
+              </p>
+            </div>
+          </section>
+
           <!-- Stats cards -->
           <section>
             <h2 class="text-base font-semibold text-[#31572c] mb-4">
@@ -155,7 +234,10 @@
               />
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-              <div class="bg-white rounded-2xl shadow-sm p-4">
+              <div
+                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
+                @click="openSavedDetails"
+              >
                 <div class="flex items-center justify-between mb-2">
                   <h3 class="text-sm font-semibold text-[#31572c]">
                     Total saved
@@ -168,10 +250,13 @@
                   {{ stats.totalSaved }}
                 </p>
                 <p class="text-xs text-slate-500 mt-1">
-                  Favorites added by all users
+                  Favorites added by all users (click to see who saved what)
                 </p>
               </div>
-              <div class="bg-white rounded-2xl shadow-sm p-4">
+              <div
+                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
+                @click="openNewRecipesDetails"
+              >
                 <div class="flex items-center justify-between mb-2">
                   <h3 class="text-sm font-semibold text-[#31572c]">
                     New recipes (7 days)
@@ -181,7 +266,7 @@
                   {{ stats.newRecipes7d }}
                 </p>
                 <p class="text-xs text-slate-500 mt-1">
-                  Created in the last 7 days
+                  Created in the last 7 days (click to see list)
                 </p>
               </div>
               <div class="bg-white rounded-2xl shadow-sm p-4">
@@ -338,7 +423,6 @@
 <script setup>
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// sidebar / state
 const isSidebarOpen = ref(true)
 const activeMenu = ref('dashboard')
 
@@ -353,8 +437,11 @@ const menuItems = [
   { key: 'profile', label: 'Profile', icon: '👤' }
 ]
 
-// router
 const router = useRouter()
+
+// профиль аватары үшін – егер керек болса
+const avatarUrl = ref('')
+const userInitial = computed(() => adminInitial.value)
 
 const logout = () => {
   if (process.client) {
@@ -363,7 +450,6 @@ const logout = () => {
   router.push('/login')
 }
 
-// stats state
 const isLoading = ref(true)
 const error = ref('')
 
@@ -377,11 +463,15 @@ const stats = reactive({
   activeUsersApprox: 0
 })
 
-const latestUsers = ref([])        // егер /users API болмаса, бос қалады
+const latestUsers = ref([])
 const latestRecipes = ref([])
 const mostSaved = ref([])
 
-// helper
+// detail state
+const detailMode = ref(null) // 'saved' | 'new' | null
+const savedDetails = ref([])
+const newRecipesList = ref([])
+
 const diffDays = (dateStr) => {
   if (!dateStr) return 9999
   const d = new Date(dateStr)
@@ -395,13 +485,11 @@ const formatDate = (dateStr) => {
   return d.toLocaleDateString()
 }
 
-// load data
 const loadAll = async () => {
   try {
     isLoading.value = true
     error.value = ''
 
-    // recipes + favorites қатар
     const [recipesRes, favoritesRes] = await Promise.all([
       $fetch(`${MOCK_API_URL}/recipes`),
       $fetch(`${MOCK_API_URL}/favorites`).catch(() => [])
@@ -410,20 +498,17 @@ const loadAll = async () => {
     const recipes = Array.isArray(recipesRes) ? recipesRes : []
     const favorites = Array.isArray(favoritesRes) ? favoritesRes : []
 
-    // stats
     stats.totalRecipes = recipes.length
     stats.publicRecipes = recipes.filter(r => r.isPublic !== false).length
     stats.privateRecipes = recipes.filter(r => r.isPublic === false).length
     stats.totalSaved = favorites.length
     stats.newRecipes7d = recipes.filter(r => diffDays(r.createdAt) <= 7).length
 
-    // approx active users: owners of recipes or favorites
     const userIds = new Set()
     recipes.forEach(r => r.userId && userIds.add(r.userId))
     favorites.forEach(f => f.userId && userIds.add(f.userId))
     stats.activeUsersApprox = userIds.size
 
-    // latest recipes
     latestRecipes.value = [...recipes]
       .sort((a, b) => {
         const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -432,7 +517,6 @@ const loadAll = async () => {
       })
       .slice(0, 5)
 
-    // most saved
     const savedCountMap = {}
     favorites.forEach(f => {
       if (!savedCountMap[f.recipeId]) savedCountMap[f.recipeId] = 0
@@ -448,7 +532,32 @@ const loadAll = async () => {
       .slice(0, 5)
     mostSaved.value = withCounts
 
-    // users – егер кейін бөлек API қоссаң, осында fetch қоса аласың
+    // detail lists
+    newRecipesList.value = recipes
+      .filter(r => diffDays(r.createdAt) <= 7)
+      .sort((a, b) => {
+        const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bD = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bD - aD
+      })
+
+    savedDetails.value = favorites
+      .map(f => {
+        const recipe = recipes.find(r => r.id === f.recipeId)
+        return {
+          userId: f.userId,
+          recipeId: f.recipeId,
+          recipeTitle: recipe?.title || 'Unknown recipe',
+          savedAt: f.savedAt || f.createdAt || f.updatedAt || ''
+        }
+      })
+      .sort((a, b) => {
+        const aD = a.savedAt ? new Date(a.savedAt).getTime() : 0
+        const bD = b.savedAt ? new Date(b.savedAt).getTime() : 0
+        return bD - aD
+      })
+
+    // users – кейін бөлек API қоссаң осы жерге fetch қоса аласың
     stats.totalUsers = 0
     latestUsers.value = []
   } catch (e) {
@@ -459,19 +568,31 @@ const loadAll = async () => {
   }
 }
 
+const openSavedDetails = () => {
+  if (!savedDetails.value.length) return
+  detailMode.value = 'saved'
+}
+
+const openNewRecipesDetails = () => {
+  if (!newRecipesList.value.length) return
+  detailMode.value = 'new'
+}
+
+const backToOverview = () => {
+  detailMode.value = null
+}
+
 onMounted(async () => {
-  // тек admin екеніне көз жеткізу
   if (process.client) {
     const role = localStorage.getItem('role')
     if (role !== 'admin') {
-      router.push('/admin/dashboard')
+      router.push('/')
       return
     }
   }
   await loadAll()
 })
 
-// local stat card component
 const StatCard = defineComponent({
   name: 'StatCard',
   props: {
@@ -481,9 +602,7 @@ const StatCard = defineComponent({
     badge: String
   },
   setup(props) {
-    return {
-      props
-    }
+    return { props }
   },
   template: `
     <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between">
@@ -507,7 +626,6 @@ const StatCard = defineComponent({
     </div>
   `
 })
-
 </script>
 
 <style scoped>
