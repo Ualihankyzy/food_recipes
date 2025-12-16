@@ -113,10 +113,10 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6 mt-28">
+        <div v-else-if="activeTab === 'saved'" class="space-y-6 ">
           <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
 
-          <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
+          <div v-if="isLoadingSaved" class="flex items-center justify-center py-20 mt-28">
             <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
           </div>
 
