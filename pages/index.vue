@@ -37,11 +37,11 @@
         </transition>
 
         <template v-if="isAuth">
-          <a href="/dashboard" class="hover:underline">Dashboard</a>
+       
         <nav class="flex items-center gap-6 text-lg relative">
   <!-- Search SVG сол күйі -->
   <svg @click="showSearch = !showSearch" ></svg>
-  <transition name="slide-fade">...</transition>
+ 
   
   <!-- 🔥 Div ішіне (template орнына) -->
   <div v-if="isAuth" class="flex items-center gap-4">
