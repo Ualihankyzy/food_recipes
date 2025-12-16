@@ -38,7 +38,6 @@
           />
         </transition>
 
-        <!-- Auth навигация -->
         <template v-if="isAuth">
           <a href="/dashboard" class="hover:underline">Dashboard</a>
           <a href="/profile" class="hover:underline">Profile</a>
@@ -64,7 +63,6 @@
         src="../public/images/pexels-catscoming-1907227 3.jpg"
         class="absolute top-0 left-0 w-full h-full object-cover"
       />
-
       <div class="relative z-10 text-center text-white px-4 mb-56">
         <h2 class="text-7xl handwriting">
           Simple and Tasty <br />
@@ -78,97 +76,89 @@
       class="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8"
     >
       <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-     
-
-
-  
-
         <!-- Recipes Grid -->
         <div
           ref="recipesSection"
-          v-if="!pending && !errorMessage && filteredRecipes.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          v-if="!pending && !errorMessage && paginatedRecipes.length"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
         >
-         <button
-  v-for="recipe in filteredRecipes"
-  :key="recipe.id"
-  @click="openModal(recipe)"
-  class="bg-transparent text-left"
->
-  <div
-    class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center"
-  >
-    <!-- Дөңгелек сурет (үстінде тұратын) -->
-    <div
-      class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
-    >
-      <img
-        :src="recipe.imageUrl"
-        :alt="recipe.title"
-        class="w-full h-full object-cover"
-      />
-    </div>
+          <!-- 1 қатарда 4 карточка, 2 қатар = 8 карточка -->
+          <button
+            v-for="recipe in paginatedRecipes"
+            :key="recipe.id"
+            @click="openModal(recipe)"
+            class="bg-transparent text-left"
+          >
+            <div
+              class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center"
+            >
+              <!-- Дөңгелек сурет -->
+              <div
+                class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
+              >
+                <img
+                  :src="recipe.imageUrl"
+                  :alt="recipe.title"
+                  class="w-full h-full object-cover"
+                />
+              </div>
 
-    <!-- Жоғарғы сол жақта NEW / -15% сияқты бэйдж -->
-    <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-      <span v-if="recipe.isNew">NEW</span>
-      <span
-        v-else-if="recipe.discount"
-        class="text-red-500"
-      >
-        -{{ recipe.discount }}%
-      </span>
-    </div>
+              <!-- Бэйдж -->
+              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+                <span v-if="recipe.isNew">NEW</span>
+                <span
+                  v-else-if="recipe.discount"
+                  class="text-red-500"
+                >
+                  -{{ recipe.discount }}%
+                </span>
+              </div>
 
-    <!-- Контент (атауы + баға) -->
-    <div class="mt-12 w-full text-center flex flex-col gap-2">
-      <h3 class="text-sm font-semibold text-slate-900 leading-snug">
-        {{ recipe.title }}
-      </h3>
+              <!-- Контент -->
+              <div class="mt-12 w-full text-center flex flex-col gap-2">
+                <h3 class="text-sm font-semibold text-slate-900 leading-snug">
+                  {{ recipe.title }}
+                </h3>
 
-      <p class="text-[11px] text-slate-400">
-        {{ recipe.category }} • {{ recipe.area }}
-      </p>
+                <p class="text-[11px] text-slate-400">
+                  {{ recipe.category }} • {{ recipe.area }}
+                </p>
 
-      <p
-        v-if="recipe.price"
-        class="text-sm font-bold text-slate-900 mt-1"
-      >
-        {{ recipe.price }}
-      </p>
-    </div>
+                <p
+                  v-if="recipe.price"
+                  class="text-sm font-bold text-slate-900 mt-1"
+                >
+                  {{ recipe.price }}
+                </p>
+              </div>
 
-    <!-- Төменгі толық енді жолақ -->
-    <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
-      <!-- Сол жақ: YouTube video -->
-      <a
-        v-if="recipe.youtubeUrl"
-        :href="recipe.youtubeUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        @click.stop
-        class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors"
-      >
-        YouTube video
-      </a>
-      <div
-        v-else
-        class="flex-1 bg-[#588157] opacity-60"
-      ></div>
+              <!-- Төменгі жолақ -->
+              <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+                <a
+                  v-if="recipe.youtubeUrl"
+                  :href="recipe.youtubeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  @click.stop
+                  class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors"
+                >
+                  YouTube video
+                </a>
+                <div
+                  v-else
+                  class="flex-1 bg-[#588157] opacity-60"
+                ></div>
 
-      <!-- Оң жақ: Save (тек isAuth=true болса) -->
-      <button
-        v-if="isAuth"
-        @click.stop="toggleFavorite(recipe.id)"
-        class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors"
-      >
-        {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
-      </button>
-    </div>
-  </div>
-</button>
-
+                <button
+                  v-if="isAuth"
+                  @click.stop="toggleFavorite(recipe.id)"
+                  class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors"
+                >
+                  {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
+                </button>
+              </div>
+            </div>
+          </button>
         </div>
 
         <!-- Loading -->
@@ -200,7 +190,7 @@
         </div>
 
         <!-- Empty -->
-        <div v-else-if="!filteredRecipes.length" class="text-center py-16">
+        <div v-else-if="!paginatedRecipes.length" class="text-center py-16">
           <p class="text-slate-600 text-xl font-semibold mb-2">
             No recipes found
           </p>
@@ -209,6 +199,42 @@
             class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
           >
             Reload
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div
+          v-if="totalPages > 1"
+          class="mt-10 flex items-center justify-center gap-4 text-sm font-medium text-slate-700"
+        >
+          <button
+            class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            :disabled="currentPage === 1"
+            @click="goToPage(currentPage - 1)"
+          >
+            ‹ Previous
+          </button>
+
+          <div class="flex items-center gap-2">
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              @click="goToPage(page)"
+              class="w-10 h-10 rounded-full flex items-center justify-center border text-sm"
+              :class="page === currentPage
+                ? 'bg-amber-400 text-black border-transparent'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'"
+            >
+              {{ page.toString().padStart(2, '0') }}
+            </button>
+          </div>
+
+          <button
+            class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            :disabled="currentPage === totalPages"
+            @click="goToPage(currentPage + 1)"
+          >
+            Next ›
           </button>
         </div>
       </div>
@@ -312,7 +338,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from '#app'
 
 const router = useRouter()
@@ -356,28 +382,17 @@ const fetchRecipes = async () => {
   }
 }
 
-// Favorites (MockAPI)
-const loadSavedRecipes = async () => {
+// Favorites
+const loadFavorites = async () => {
   if (!userId.value) return
-  
   try {
-    // ✅ 404 болса бос массив
-    let favorites = []
-    try {
-      favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-    } catch (e) {
-      console.warn('Favorites бос:', e)
-    }
-    
-    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
-    savedRecipes.value = recipesResponse.filter(r => 
-      favorites.some(f => f.recipeId === r.id)
+    favorites.value = await $fetch(
+      `${MOCK_API_URL}/favorites?userId=${userId.value}`
     )
   } catch (e) {
-    savedRecipes.value = []
+    favorites.value = []
   }
 }
-
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
@@ -386,15 +401,19 @@ const toggleFavorite = async (recipeId) => {
   }
 
   try {
-    const exists = favorites.value.find(f => f.recipeId === recipeId)
-    
+    const exists = favorites.value.find((f) => f.recipeId === recipeId)
+
     if (exists) {
       await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
+        body: {
+          recipeId,
+          userId: userId.value,
+          savedAt: new Date().toISOString(),
+        },
       })
     }
     await loadFavorites()
@@ -403,36 +422,37 @@ const toggleFavorite = async (recipeId) => {
   }
 }
 
-const isFavorite = (recipeId) => favorites.value.some(f => f.recipeId === recipeId)
+const isFavorite = (recipeId) =>
+  favorites.value.some((f) => f.recipeId === recipeId)
 
 // Filters
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
   if (activeLetter.value) {
-    result = result.filter(r =>
+    result = result.filter((r) =>
       r.title.toLowerCase().startsWith(activeLetter.value.toLowerCase())
     )
   }
 
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
-    result = result.filter(r =>
-      r.title.toLowerCase().includes(q) ||
-      r.area.toLowerCase().includes(q) ||
-      r.category.toLowerCase().includes(q)
+    result = result.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) ||
+        r.area.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q)
     )
   }
 
   return result
 })
 
-
-
 // Modal & scroll
-const openModal = recipe => selectedRecipe.value = recipe
-const closeModal = () => selectedRecipe.value = null
-const scrollToRecipes = () => recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
+const openModal = (recipe) => (selectedRecipe.value = recipe)
+const closeModal = () => (selectedRecipe.value = null)
+const scrollToRecipes = () =>
+  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
 
 // Scroll hide
 const handleScroll = () => {
@@ -453,7 +473,37 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
+// Пагинация
+const currentPage = ref(1)
+const pageSize = 8
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize))
+)
+
+const paginatedRecipes = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return filteredRecipes.value.slice(start, start + pageSize)
+})
+
+const goToPage = (page) => {
+  if (page < 1 || page > totalPages.value) return
+  currentPage.value = page
+  nextTick(() => {
+    if (recipesSection.value) {
+      recipesSection.value.scrollIntoView({ behavior: 'smooth' })
+    }
+  })
+}
+
+// Егер user жаңа рецепт қосса, оны массивтің басына салу үшін осы функцияны қолдан
+const addUserRecipe = (newRecipe) => {
+  recipes.value.unshift(newRecipe)
+  currentPage.value = 1
+}
 </script>
+
 
 <style>
 * {
