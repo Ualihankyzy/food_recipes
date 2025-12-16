@@ -259,51 +259,56 @@
                   Created in the last 7 days (click to see list)
                 </p>
               </div>
-
-              <!-- 🔥 ACTIVE USERS – үстіне басса тізім шығады -->
-              <div class="group relative" @mouseenter="showActiveUsersList = true" @mouseleave="showActiveUsersList = false">
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-200">
-                  <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-sm font-semibold text-[#31572c]">Active users (approx.)</h3>
-                    <span class="text-[11px] text-slate-400">30 күнде</span>
-                  </div>
-                  <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
-                  <p class="text-xs text-slate-500 mt-1">Users who have activity</p>
-                </div>
-                
-                <!-- Dropdown тізімі -->
-                <transition name="slide-fade">
-                  <div v-if="showActiveUsersList" 
-                       class="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-20">
-                    <div class="p-4 border-b border-slate-100">
-                      <h4 class="font-semibold text-slate-900 text-sm">Соңғы белсенді user-лар</h4>
-                      <p class="text-xs text-slate-400">Соңғы 30 күн</p>
-                    </div>
-                    <ul class="max-h-64 overflow-y-auto">
-                      <li v-for="user in latestUsers.slice(0, 8)" :key="user.id" 
-                          class="px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-                        <div class="flex items-center justify-between">
-                          <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#588157]/10 flex items-center justify-center text-[#588157] font-semibold text-sm">
-                              {{ (user.name || 'U')[0]?.toUpperCase() }}
-                            </div>
-                            <div>
-                              <p class="font-medium text-sm text-slate-900">{{ user.name }}</p>
-                              <p class="text-xs text-slate-500 truncate max-w-[180px]">{{ user.email }}</p>
-                            </div>
-                          </div>
-                          <p class="text-xs text-slate-400 whitespace-nowrap">
-                            {{ formatDateShort(user.created_at) }}
-                          </p>
-                        </div>
-                      </li>
-                    </ul>
-                    <div v-if="latestUsers.length > 8" class="px-4 py-3 text-center text-xs text-slate-400 border-t border-slate-100">
-                      +{{ latestUsers.length - 8 }} басқа user
-                    </div>
-                  </div>
-                </transition>
+<!-- 🔥 ACTIVE USERS – БАСҚАНДА ашылады (New recipes сияқты) -->
+<div class="relative">
+  <div
+    class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition-all duration-200 group"
+    @click="toggleActiveUsersList"
+  >
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-semibold text-[#31572c]">Active users (approx.)</h3>
+      <span class="text-[11px] text-slate-400 group-hover:text-slate-600 transition">
+        {{ showActiveUsersList ? '▲' : '▼' }}
+      </span>
+    </div>
+    <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
+    <p class="text-xs text-slate-500 mt-1">Users who have activity (click to expand)</p>
+  </div>
+  
+  <!-- Dropdown тізімі (басқанда шығады) -->
+  <transition name="slide-fade">
+    <div v-if="showActiveUsersList" 
+         class="mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100">
+      <div class="p-4 border-b border-slate-100">
+        <h4 class="font-semibold text-slate-900 text-sm">Соңғы белсенді user-лар</h4>
+        <p class="text-xs text-slate-400">Соңғы 30 күн ({{ latestUsers.length }} та)</p>
+      </div>
+      <ul class="max-h-64 overflow-y-auto">
+        <li v-for="user in latestUsers.slice(0, 8)" :key="user.id" 
+            class="px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-[#588157]/10 flex items-center justify-center text-[#588157] font-semibold text-sm">
+                {{ (user.name || 'U')[0]?.toUpperCase() }}
               </div>
+              <div>
+                <p class="font-medium text-sm text-slate-900">{{ user.name }}</p>
+                <p class="text-xs text-slate-500 truncate max-w-[180px]">{{ user.email }}</p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 whitespace-nowrap">
+              {{ formatDateShort(user.created_at) }}
+            </p>
+          </div>
+        </li>
+      </ul>
+      <div v-if="latestUsers.length > 8" class="px-4 py-3 text-center text-xs text-slate-400 border-t border-slate-100">
+        +{{ latestUsers.length - 8 }} басқа user
+      </div>
+    </div>
+  </transition>
+</div>
+
             </div>
           </section>
 
