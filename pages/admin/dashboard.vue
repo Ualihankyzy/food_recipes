@@ -220,32 +220,73 @@
             <h2 class="text-base font-semibold text-[#31572c] mb-4">
               Overall statistics
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-              <StatCard
-                title="Total users"
-                :value="stats.totalUsers"
-                icon="👥"
-                badge="from activity"
-              />
-              <StatCard
-                title="Total recipes"
-                :value="stats.totalRecipes"
-                icon="📖"
-                badge="mockapi"
-              />
-              <StatCard
-                title="Public recipes"
-                :value="stats.publicRecipes"
-                icon="🌍"
-                badge="visible on home"
-              />
-              <StatCard
-                title="Private recipes"
-                :value="stats.privateRecipes"
-                icon="🔒"
-                badge="only owner"
-              />
-            </div>
+           <!-- Grid ішіндегі StatCard-ты мынадай алмастыр: -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+  <!-- Total users -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/users')">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <p class="text-xs text-slate-500 mb-1">Total users</p>
+        <p class="text-2xl font-semibold text-slate-900">{{ stats.totalUsers }}</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+        <span>👥</span>
+      </div>
+    </div>
+    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+      from activity
+    </span>
+  </div>
+
+  <!-- Total recipes -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/recipes')">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <p class="text-xs text-slate-500 mb-1">Total recipes</p>
+        <p class="text-2xl font-semibold text-slate-900">{{ stats.totalRecipes }}</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+        <span>📖</span>
+      </div>
+    </div>
+    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+      mockapi
+    </span>
+  </div>
+
+  <!-- Public recipes -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <p class="text-xs text-slate-500 mb-1">Public recipes</p>
+        <p class="text-2xl font-semibold text-slate-900">{{ stats.publicRecipes }}</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+        <span>🌍</span>
+      </div>
+    </div>
+    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">
+      visible on home
+    </span>
+  </div>
+
+  <!-- Private recipes -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <p class="text-xs text-slate-500 mb-1">Private recipes</p>
+        <p class="text-2xl font-semibold text-slate-900">{{ stats.privateRecipes }}</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+        <span>🔒</span>
+      </div>
+    </div>
+    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+      only owner
+    </span>
+  </div>
+</div>
+
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
               <!-- Total saved -->
