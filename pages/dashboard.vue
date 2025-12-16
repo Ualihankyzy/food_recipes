@@ -331,6 +331,19 @@
                 <span class="text-xs text-[#6c7570]">(Only You = private)</span>
               </div>
             </div>
+            <div>
+  <label class="block text-xs font-semibold text-[#31572c] mb-1">
+    YouTube video link
+  </label>
+  <textarea
+    v-model="newRecipe.youtubeUrl"
+    rows="2"
+    placeholder="https://www.youtube.com/watch?v=..."
+    class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm
+           focus:outline-none focus:ring-2 focus:ring-[#588157]"
+  ></textarea>
+</div>
+
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
             <button
@@ -478,7 +491,7 @@ const createRecipe = async () => {
     isNew: true,
     discount: null,
     price: null,
-    youtubeUrl: null,
+    youtubeUrl: form.value.youtubeUrl || null, // 👈 Мұнда жаздық
     isPublic: form.value.isPublic
   }
   try {
@@ -491,6 +504,7 @@ const createRecipe = async () => {
     isLoading.value = false
   }
 }
+
 
 // Delete Recipe (тек MockAPI)
 const deleteUserRecipe = async (id) => {
