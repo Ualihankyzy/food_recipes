@@ -1,73 +1,38 @@
 <template>
   <div class="min-h-screen w-full relative">
     <!-- NAVBAR -->
-    <header
-      class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4"
-    >
-      <h1 class="text-2xl font-bold mr-20">Recipes</h1>
+  <header class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4">
+  <h1 class="text-2xl font-bold mr-20">Recipes</h1>
 
-      <nav class="flex items-center gap-6 text-lg relative">
-        <svg
-          @click="showSearch = !showSearch"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="w-6 h-6 cursor-pointer hover:text-gray-300 transition"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
-          />
-        </svg>
+  <nav class="flex items-center gap-6 text-lg relative">
+    <!-- 🔥 1. Search SVG -->
+    <svg @click="showSearch = !showSearch" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 cursor-pointer hover:text-gray-300 transition">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 0 006.15-3.35z"/>
+    </svg>
 
-        <transition name="slide-fade">
-          <input
-            v-if="showSearch"
-            v-model="searchQuery"
-            @keyup.enter="scrollToRecipes"
-            type="text"
-            placeholder="Search..."
-            class="absolute right-20 top-1/2 -translate-y-1/2 w-48 px-3 py-1.5
-                   bg-white/90 text-black rounded-xl shadow-lg border outline-none
-                   focus:ring-2 focus:ring-indigo-400 transition"
-          />
-        </transition>
+    <!-- 🔥 2. Search input -->
+    <transition name="slide-fade">
+      <input v-if="showSearch" v-model="searchQuery" @keyup.enter="scrollToRecipes" type="text" placeholder="Search..." class="absolute right-32 top-1/2 -translate-y-1/2 w-48 px-3 py-1.5 bg-white/90 text-black rounded-xl shadow-lg border outline-none focus:ring-2 focus:ring-indigo-400 transition"/>
+    </transition>
 
-        <template v-if="isAuth">
-       
-        <nav class="flex items-center gap-6 text-lg relative">
-  <!-- Search SVG сол күйі -->
-  <svg @click="showSearch = !showSearch" ></svg>
- 
-  
-  <!-- 🔥 Div ішіне (template орнына) -->
-  <div v-if="isAuth" class="flex items-center gap-4">
-    <a href="/dashboard" class="hover:underline">Dashboard</a>
+    <!-- 🔥 3. Auth/Guest логикасы (template ЖОҚ!) -->
+    <div v-if="isAuth" class="flex items-center gap-4 ml-4">
+      <a href="/dashboard" class="hover:underline">Dashboard</a>
+      <!-- Аватарка -->
+      <a href="/profile" class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
+          {{ userInitial }}
+        </div>
+      </a>
+    </div>
     
-    <!-- Аватарка - router.push ЖОҚ! -->
-    <a href="/profile" class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition">
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
-        {{ userInitial }}
-      </div>
-    </a>
-  </div>
-  
-  <div v-else class="flex items-center gap-4">
-    <a href="/login" class="hover:underline">Login</a>
-    <a href="/signup" class="hover:underline">Sign In</a>
-  </div>
-</nav>
+    <div v-else class="flex items-center gap-4">
+      <a href="/login" class="hover:underline">Login</a>
+      <a href="/signup" class="hover:underline">Sign In</a>
+    </div>
+  </nav>
+</header>
 
-        </template>
-        <template v-else>
-          <a href="/login" class="hover:underline">Login</a>
-          <a href="/signup" class="hover:underline">Sign In</a>
-        </template>
-      </nav>
-    </header>
 
     <!-- LIGHT PNG -->
     <div class="w-full flex justify-center items-center gap-6 absolute z-20">
