@@ -102,7 +102,7 @@ const handleLogin = async () => {
 
       // 🔥 РОЛЬ БОЙЫНША КАЙ ЖЕРГЕ БАРАДЫ
       if (user.role === "admin") {
-        router.push("/admin/")
+        router.push("/admin/dashboard")
       } else {
         router.push("/")
       }
