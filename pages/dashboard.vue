@@ -12,33 +12,14 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="
-            item.type === 'route'
-              ? router.push(item.to)
-              : (activeTab = item.key)
-          "
-          class="relative w-full flex items-center gap-3 pl-6 pr-4 py-3 text-left text-sm font-medium
-                 transition-colors duration-200"
-          :class="[
-            item.type === 'tab' && activeTab === item.key
-              ? 'text-[#31572c]'
-              : 'text-white/80 hover:text-white'
-          ]"
+          @click="item.type === 'route' ? router.push(item.to) : (activeTab = item.key)"
+          class="relative w-full flex items-center gap-3 pl-6 pr-4 py-3 text-left text-sm font-medium transition-colors duration-200"
+          :class="[item.type === 'tab' && activeTab === item.key ? 'text-[#31572c]' : 'text-white/80 hover:text-white']"
         >
-          <!-- Ақ pill тек табтар үшін -->
-          <span
-            v-if="item.type === 'tab'"
-            class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md
-                   transition-transform duration-200"
-            :class="activeTab === item.key ? 'translate-x-0' : '-translate-x-full'"
-          ></span>
-
-          <span class="relative z-10 text-lg">
-            {{ item.icon }}
-          </span>
-          <span class="relative z-10">
-            {{ item.label }}
-          </span>
+          <span v-if="item.type === 'tab'" class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
+            :class="activeTab === item.key ? 'translate-x-0' : '-translate-x-full'"></span>
+          <span class="relative z-10 text-lg">{{ item.icon }}</span>
+          <span class="relative z-10">{{ item.label }}</span>
         </button>
       </nav>
 
@@ -53,10 +34,7 @@
             <p class="text-emerald-100/80 text-xs">Logged in</p>
           </div>
         </div>
-        <button
-          @click="logout"
-          class="w-full mt-2 flex items-center gap-2 text-sm text-emerald-50 hover:text-white"
-        >
+        <button @click="logout" class="w-full mt-2 flex items-center gap-2 text-sm text-emerald-50 hover:text-white">
           <span>⏻</span>
           <span>Logout</span>
         </button>
@@ -67,23 +45,11 @@
     <main class="flex-1 bg-[#f5f6f1] flex flex-col">
       <!-- Top bar -->
       <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
-        <button
-          class="flex items-center gap-3 group"
-          @click="router.push('/profile')"
-        >
-          <div
-            class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white"
-          >
-            <img
-              v-if="avatarUrl"
-              :src="avatarUrl"
-              class="w-full h-full object-cover"
-              alt="Profile Avatar"
-            />
+        <button class="flex items-center gap-3 group" @click="router.push('/profile')">
+          <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
+            <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
             <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-              <span class="text-sm font-bold text-white">
-                {{ userInitial }}
-              </span>
+              <span class="text-sm font-bold text-white">{{ userInitial }}</span>
             </div>
           </div>
         </button>
@@ -91,7 +57,7 @@
 
       <!-- Content -->
       <section class="flex-1 p-8 overflow-y-auto">
-        <!-- MY RECIPES (default tab) -->
+        <!-- MY RECIPES -->
         <div v-if="activeTab === 'my-recipes'" class="space-y-6">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-xl font-semibold text-[#31572c]">My Recipes</h3>
@@ -107,12 +73,6 @@
             >
               <span>Create recipe</span>
               <span class="text-lg leading-none">→</span>
-              <span
-                class="pointer-events-none absolute inset-[2px] rounded-full
-                       bg-gradient-to-b from-white/60 via-white/10 to-transparent
-                       opacity-80"
-              ></span>
-              <span class="absolute inset-0 rounded-full mix-blend-soft-light"></span>
             </button>
           </div>
 
@@ -121,44 +81,20 @@
             <p class="text-[#6c7570]">Loading recipes...</p>
           </div>
 
-          <div
-            v-else
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            <div
-              v-for="recipe in myRecipes"
-              :key="recipe.id"
-              class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col"
-            >
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="recipe in myRecipes" :key="recipe.id" class="bg-white rounded-3xl shadow-sm border border-[#d0d3c8] overflow-hidden flex flex-col">
               <div class="h-40 bg-[#a3b18a] overflow-hidden">
-                <img
-                  v-if="recipe.imageUrl"
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover"
-                />
+                <img v-if="recipe.imageUrl" :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover"/>
               </div>
               <div class="p-4 flex-1 flex flex-col gap-2">
-                <h4 class="font-semibold text-[#31572c] line-clamp-2">
-                  {{ recipe.title }}
-                </h4>
-                <p class="text-xs text-[#6c7570]">
-                  {{ recipe.area }} • {{ recipe.category }}
-                </p>
-                <p class="text-xs text-[#6c7570] line-clamp-3">
-                  {{ recipe.instructions }}
-                </p>
+                <h4 class="font-semibold text-[#31572c] line-clamp-2">{{ recipe.title }}</h4>
+                <p class="text-xs text-[#6c7570]">{{ recipe.area }} • {{ recipe.category }}</p>
+                <p class="text-xs text-[#6c7570] line-clamp-3">{{ recipe.instructions }}</p>
                 <div class="mt-auto flex gap-2 pt-2">
-                  <button
-                    @click="viewRecipe(recipe)"
-                    class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-[#476747]"
-                  >
-                    View
+                  <button @click="openEditModal(recipe)" class="flex-1 px-3 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-[#476747]">
+                    Edit
                   </button>
-                  <button
-                    @click="deleteUserRecipe(recipe.id)"
-                    class="px-3 py-2 rounded-xl bg-[#bc4749] text-white text-xs font-semibold hover:bg-[#a33a3d]"
-                  >
+                  <button @click="deleteUserRecipe(recipe.id)" class="px-3 py-2 rounded-xl bg-[#bc4749] text-white text-xs font-semibold hover:bg-[#a33a3d]">
                     Delete
                   </button>
                 </div>
@@ -169,9 +105,7 @@
 
         <!-- SAVED -->
         <div v-else-if="activeTab === 'saved'" class="space-y-6">
-          <h3 class="text-xl font-semibold text-[#31572c] mb-2">
-            Saved Recipes ({{ savedRecipes.length }})
-          </h3>
+          <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
 
           <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
             <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
@@ -183,22 +117,17 @@
                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
                   <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
                 </div>
-                <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                  <span v-if="recipe.isNew">NEW</span>
-                  <span v-else-if="recipe.discount" class="text-red-500">-{{ recipe.discount }}%</span>
-                </div>
                 <div class="mt-12 w-full text-center flex flex-col gap-2">
                   <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
                   <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
-                  <p v-if="recipe.price" class="text-sm font-bold text-slate-900 mt-1">{{ recipe.price }}</p>
                 </div>
                 <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
-                  <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop 
+                  <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop
                      class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947]">
                     YouTube video
                   </a>
                   <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
-                  <button @click.stop="removeFromSaved(recipe.id)" 
+                  <button @click.stop="removeFromSaved(recipe.id)"
                           class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
                     Delete
                   </button>
@@ -214,57 +143,9 @@
       </section>
     </main>
 
-    <!-- VIEW MODAL -->
-    <transition name="fade">
-      <div
-        v-if="viewedRecipe"
-        class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-        @click.self="viewedRecipe = null"
-      >
-        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
-          <div class="relative h-48 bg-[#a3b18a]">
-            <img
-              v-if="viewedRecipe.imageUrl"
-              :src="viewedRecipe.imageUrl"
-              :alt="viewedRecipe.title"
-              class="w-full h-full object-cover"
-            />
-            <button
-              class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/70 text-white flex items-center justify-center"
-              @click="viewedRecipe = null"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="p-5 overflow-y-auto">
-            <h3 class="text-xl font-bold text-[#31572c] mb-2">
-              {{ viewedRecipe.title }}
-            </h3>
-            <p class="text-xs text-[#6c7570] mb-4">
-              {{ viewedRecipe.area }} • {{ viewedRecipe.category }}
-            </p>
-            <h4 class="font-semibold text-[#31572c] mb-2">Instructions</h4>
-            <p class="text-sm text-[#6c7570] whitespace-pre-line mb-4">
-              {{ viewedRecipe.instructions }}
-            </p>
-            <h4 class="font-semibold text-[#31572c] mb-2">Ingredients</h4>
-            <ul class="list-disc list-inside text-sm text-[#6c7570] space-y-1">
-              <li v-for="(ing, i) in viewedRecipe.ingredients || []" :key="i">
-                {{ ing }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </transition>
-
     <!-- CREATE MODAL -->
     <transition name="fade">
-      <div
-        v-if="showCreateModal"
-        class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-        @click.self="closeCreateModal"
-      >
+      <div v-if="showCreateModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeCreateModal">
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
             <h3 class="text-lg font-semibold text-[#31572c]">Create Recipe</h3>
@@ -273,78 +154,100 @@
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Title</label>
-              <input
-                v-model="form.title"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              />
+              <input v-model="form.title" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="block text-xs font-semibold text-[#31572c] mb-1">Category</label>
-                <input
-                  v-model="form.category"
-                  class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-                  placeholder="e.g. Beef"
-                />
+                <input v-model="form.category" placeholder="e.g. Beef" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
               </div>
               <div>
                 <label class="block text-xs font-semibold text-[#31572c] mb-1">Area</label>
-                <input
-                  v-model="form.area"
-                  class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-                  placeholder="e.g. Italian"
-                />
+                <input v-model="form.area" placeholder="e.g. Italian" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
               </div>
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Image URL</label>
-              <input
-                v-model="form.imageUrl"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              />
+              <input v-model="form.imageUrl" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Ingredients (one per line)</label>
-              <textarea
-                v-model="ingredientsText"
-                rows="3"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              ></textarea>
+              <textarea v-model="ingredientsText" rows="3" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"></textarea>
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Instructions</label>
-              <textarea
-                v-model="form.instructions"
-                rows="4"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              ></textarea>
-              <!-- Visibility toggle -->
-              <div class="flex items-center gap-3 pt-2">
-                <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
-                  <input 
-                    type="checkbox" 
-                    v-model="form.isPublic" 
-                    class="w-4 h-4 rounded"
-                  />
-                  <span>Public (show on Home)</span>
-                </label>
-                <span class="text-xs text-[#6c7570]">(Only You = private)</span>
-              </div>
+              <textarea v-model="form.instructions" rows="4" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">YouTube Link</label>
+              <input v-model="form.youtubeUrl" placeholder="https://youtube.com/..." class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+              <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
+                <input type="checkbox" v-model="form.isPublic" class="w-4 h-4 rounded"/>
+                <span>Public (show on Home)</span>
+              </label>
+              <span class="text-xs text-[#6c7570]">(Only You = private)</span>
             </div>
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
-            <button
-              @click="closeCreateModal"
-              class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white"
-            >
-              Cancel
-            </button>
-            <button
-              @click="createRecipe"
-              class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]"
-            >
-              Save
-            </button>
+            <button @click="closeCreateModal" class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white">Cancel</button>
+            <button @click="createRecipe" class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]">Save</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- EDIT MODAL -->
+    <transition name="fade">
+      <div v-if="showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="showEditModal = false">
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
+            <h3 class="text-lg font-semibold text-[#31572c]">Edit Recipe</h3>
+            <button @click="showEditModal = false" class="text-[#6c7570] hover:text-black">✕</button>
+          </div>
+          <div class="p-6 space-y-4 overflow-y-auto">
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Title</label>
+              <input v-model="editForm.title" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-[#31572c] mb-1">Category</label>
+                <input v-model="editForm.category" placeholder="e.g. Beef" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#31572c] mb-1">Area</label>
+                <input v-model="editForm.area" placeholder="e.g. Italian" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Image URL</label>
+              <input v-model="editForm.imageUrl" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Ingredients (one per line)</label>
+              <textarea v-model="editIngredientsText" rows="3" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Instructions</label>
+              <textarea v-model="editForm.instructions" rows="4" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">YouTube Link</label>
+              <input v-model="editForm.youtubeUrl" placeholder="https://youtube.com/..." class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+              <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
+                <input type="checkbox" v-model="editForm.isPublic" class="w-4 h-4 rounded"/>
+                <span>Public (show on Home)</span>
+              </label>
+              <span class="text-xs text-[#6c7570]">(Only You = private)</span>
+            </div>
+          </div>
+          <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
+            <button @click="showEditModal = false" class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white">Cancel</button>
+            <button @click="saveEditedRecipe" class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]">Save</button>
           </div>
         </div>
       </div>
@@ -359,7 +262,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// State
+// STATE
 const activeTab = ref('my-recipes')
 const userId = ref('')
 const userName = ref('')
@@ -368,37 +271,31 @@ const isLoading = ref(false)
 const isLoadingSaved = ref(false)
 const myRecipes = ref([])
 const savedRecipes = ref([])
-const viewedRecipe = ref(null)
-const showCreateModal = ref(false)
 
-// Form
-const form = ref({
-  title: '',
-  category: '',
-  area: '',
-  imageUrl: '',
-  instructions: '',
-  ingredients: [],
-  isPublic: true 
-})
+// FORM STATE
+const form = ref({ title:'', category:'', area:'', imageUrl:'', instructions:'', ingredients:[], youtubeUrl:'', isPublic:true })
+const editForm = ref({ id:'', title:'', category:'', area:'', imageUrl:'', instructions:'', ingredients:[], youtubeUrl:'', isPublic:true })
 
-// Computed
-const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
 const ingredientsText = computed({
   get: () => form.value.ingredients.join('\n'),
-  set: v => {
-    form.value.ingredients = v.split('\n').map(s => s.trim()).filter(Boolean)
-  }
+  set: v => form.value.ingredients = v.split('\n').map(s => s.trim()).filter(Boolean)
 })
 
-// Menu
+const editIngredientsText = ref('')
+
+const showCreateModal = ref(false)
+const showEditModal = ref(false)
+const viewedRecipe = ref(null)
+
+const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
+
 const menuItems = [
   { key: 'home', label: ' Home', type: 'route', to: '/' },
   { key: 'my-recipes', label: ' My recipes', type: 'tab'},
   { key: 'saved', label: ' Saved', type: 'tab' }
 ]
 
-// User
+// SETUP USER
 const setupUser = () => {
   if (typeof window !== 'undefined') {
     userId.value = localStorage.getItem('userId') || ''
@@ -407,140 +304,91 @@ const setupUser = () => {
   }
 }
 
-// MockAPI: My Recipes (userId бойынша)
+// LOAD MY RECIPES
 const loadMyRecipes = async () => {
-  if (!userId.value) {
-    myRecipes.value = []
-    return
-  }
-  isLoading.value = true
-  try {
-    const recipes = await $fetch(`${MOCK_API_URL}/recipes?userId=${userId.value}`)
-    myRecipes.value = recipes || []
-  } catch (e) {
-    myRecipes.value = []
-  } finally {
-    isLoading.value = false
-  }
+  if (!userId.value) return myRecipes.value=[]
+  isLoading.value=true
+  try { myRecipes.value = await $fetch(`${MOCK_API_URL}/recipes?userId=${userId.value}`) } 
+  catch(e){ myRecipes.value=[] }
+  finally{ isLoading.value=false }
 }
 
-// MockAPI: Saved Recipes
+// LOAD SAVED RECIPES
 const loadSavedRecipes = async () => {
-  if (!userId.value) {
-    savedRecipes.value = []
-    return
-  }
-  isLoadingSaved.value = true
+  if(!userId.value) return savedRecipes.value=[]
+  isLoadingSaved.value=true
   try {
-    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(() => [])
-    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`).catch(() => [])
-    savedRecipes.value = recipesResponse.filter(r => 
-      favorites.some(f => f.recipeId === r.id)
-    )
-  } catch (e) {
-    savedRecipes.value = []
-  } finally {
-    isLoadingSaved.value = false
-  }
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(()=>[])
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`).catch(()=>[])
+    savedRecipes.value = recipesResponse.filter(r => favorites.some(f => f.recipeId === r.id))
+  } catch(e){ savedRecipes.value=[] }
+  finally{ isLoadingSaved.value=false }
 }
 
-// Saved ішінен өшіру
+// REMOVE SAVED
 const removeFromSaved = async (recipeId) => {
-  if (!userId.value) return
-  isLoadingSaved.value = true
+  if(!userId.value) return
+  isLoadingSaved.value=true
   try {
-    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(() => [])
-    for (const fav of favorites) {
-      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
-    }
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(()=>[])
+    for(const fav of favorites) await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method:'DELETE' })
     await loadSavedRecipes()
-  } catch (e) {
-    console.error('Remove error:', e)
-  } finally {
-    isLoadingSaved.value = false
-  }
+  } catch(e){ console.error(e) }
+  finally{ isLoadingSaved.value=false }
 }
 
-// Create Recipe (тек MockAPI)
+// CREATE RECIPE
 const createRecipe = async () => {
-  if (!form.value.title || !userId.value) return
-  isLoading.value = true
-  const recipe = {
-    id: Date.now().toString(),
-    userId: userId.value,
-    title: form.value.title,
-    category: form.value.category,
-    area: form.value.area,
-    imageUrl: form.value.imageUrl,
-    instructions: form.value.instructions,
-    ingredients: form.value.ingredients,
-    createdAt: new Date().toISOString(),
-    isNew: true,
-    discount: null,
-    price: null,
-    youtubeUrl: null,
-    isPublic: form.value.isPublic
-  }
-  try {
-    await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: recipe })
-    closeCreateModal()
-    await loadMyRecipes() // тізімді жаңарту
-  } catch (error) {
-    console.error('Create error:', error)
-  } finally {
-    isLoading.value = false
-  }
+  if(!form.value.title || !userId.value) return
+  isLoading.value=true
+  const recipe = { id:Date.now().toString(), userId:userId.value, ...form.value, createdAt:new Date().toISOString() }
+  try { await $fetch(`${MOCK_API_URL}/recipes`, { method:'POST', body: recipe }); closeCreateModal(); await loadMyRecipes() }
+  catch(e){ console.error(e) }
+  finally{ isLoading.value=false }
 }
 
-// Delete Recipe (тек MockAPI)
+// DELETE RECIPE
 const deleteUserRecipe = async (id) => {
+  isLoading.value=true
+  try { await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method:'DELETE' }); await loadMyRecipes() }
+  catch(e){ console.error(e) }
+  finally{ isLoading.value=false }
+}
+
+// VIEW RECIPE
+const viewRecipe = (recipe) => { viewedRecipe.value = { ...recipe } }
+
+// CLOSE CREATE MODAL
+const closeCreateModal = () => { showCreateModal.value=false; form.value={ title:'', category:'', area:'', imageUrl:'', instructions:'', ingredients:[], youtubeUrl:'', isPublic:true } }
+
+// LOGOUT
+const logout = () => { if(typeof window!=='undefined') localStorage.clear(); router.push('/login') }
+
+// EDIT RECIPE
+const openEditModal = (recipe) => {
+  editForm.value = { ...recipe }
+  editIngredientsText.value = (recipe.ingredients || []).join('\n')
+  showEditModal.value = true
+}
+
+const saveEditedRecipe = async () => {
+  editForm.value.ingredients = editIngredientsText.value.split('\n').map(s=>s.trim()).filter(Boolean)
   isLoading.value = true
   try {
-    await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
-    await loadMyRecipes() // тізімді жаңарту
-  } catch (error) {
-    console.error('Delete error:', error)
-  } finally {
-    isLoading.value = false
-  }
+    await $fetch(`${MOCK_API_URL}/recipes/${editForm.value.id}`, { method:'PUT', body: editForm.value })
+    showEditModal.value = false
+    await loadMyRecipes()
+  } catch(e){ console.error(e) }
+  finally{ isLoading.value = false }
 }
 
-// UI
-const closeCreateModal = () => {
-  showCreateModal.value = false
-  form.value = {
-    title: '',
-    category: '',
-    area: '',
-    imageUrl: '',
-    instructions: '',
-    ingredients: [],
-    isPublic: true
-  }
-}
-
-const viewRecipe = (recipe) => {
-  viewedRecipe.value = { ...recipe }
-}
-
-const logout = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.clear()
-  }
-  router.push('/login')
-}
-
-// Lifecycle
-onMounted(() => {
+// LIFECYCLE
+onMounted(()=>{
   setupUser()
-  if (userId.value) {
-    setTimeout(() => {
-      loadMyRecipes()
-      loadSavedRecipes()
-    }, 500)
-  }
+  if(userId.value){ setTimeout(()=>{ loadMyRecipes(); loadSavedRecipes() }, 500) }
 })
 </script>
+
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
