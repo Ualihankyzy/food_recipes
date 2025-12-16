@@ -1,386 +1,260 @@
 <template>
-  <div class="min-h-screen w-full relative">
-    <!-- NAVBAR -->
-    <header class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4">
-      <h1 class="text-2xl font-bold mr-20">Recipes</h1>
-
-      <nav class="flex items-center gap-6 text-lg relative">
-        <!-- Auth/Guest логикасы -->
-        <div v-if="isAuth" class="flex items-center gap-4 ml-4">
-          <a href="/dashboard" class="hover:underline">Dashboard</a>
-          <a href="/profile" class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
-              {{ userInitial }}
-            </div>
-          </a>
-        </div>
-        
-        <div v-else class="flex items-center gap-4">
-          <a href="/login" class="hover:underline">Login</a>
-          <a href="/signup" class="hover:underline">Register</a>
-        </div>
-      </nav>
-    </header>
-
-    <!-- LIGHT PNG -->
-    <div class="w-full flex justify-center items-center gap-6 absolute z-20">
-      <img src="../public/images/light.png" class="w-64" />
-      <img src="../public/images/light.png" class="w-64" />
-      <img src="../public/images/light.png" class="w-64" />
-    </div>
-
-    <!-- HERO -->
-    <section class="relative w-full min-h-screen flex justify-center items-center">
-      <img src="../public/images/pexels-catscoming-1907227 3.jpg" class="absolute top-0 left-0 w-full h-full object-cover" />
-      <div class="relative z-10 text-center text-white px-4 mb-56">
-        <h2 class="text-7xl handwriting">
-          Simple and Tasty <br />
-          Recipes
-        </h2>
-      </div>
-    </section>
-
-    <!-- POPULAR RECIPES -->
-    <section class="w-full bg-slate-50 py-14 px-4 sm:px-8 lg:px-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-2xl font-semibold text-slate-900">Популярные рецепты</h3>
-          <button type="button" class="text-sm text-sky-700 hover:text-sky-900 hover:underline" @click="scrollToRecipes">
-            Смотреть все →
-          </button>
-        </div>
-
-        <div class="grid gap-4 md:grid-cols-3">
-          <!-- Сол жақ: үлкен + екі кіші -->
-          <div class="grid gap-4 md:col-span-2">
-            <button v-if="topMeals[0]" type="button" class="relative rounded-[26px] overflow-hidden h-64 w-full group" @click="openPopularModal(topMeals[0])">
-              <img :src="topMeals[0].strMealThumb" :alt="topMeals[0].strMeal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-4 py-1.5 rounded-full bg-black/70 text-white text-sm font-medium flex items-center gap-2">
-                {{ topMeals[0].strMeal }}
-                <span class="text-base">View →</span>
-              </span>
-            </button>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <button v-for="(meal, idx) in topMeals.slice(1, 3)" :key="'small-left-' + (meal?.idMeal || idx)" type="button" class="relative rounded-[22px] overflow-hidden h-44 w-full group" @click="openPopularModal(meal)">
-                <img :src="meal.strMealThumb" :alt="meal.strMeal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                <span class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-black/70 text-white text-xs font-medium flex items-center gap-2">
-                  {{ meal.strMeal }}
-                  <span class="text-sm">View →</span>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Оң жақ -->
-          <div>
-            <button v-if="topMeals[3]" type="button" class="relative rounded-[30px] overflow-hidden h-full min-h-[280px] w-full group" @click="openPopularModal(topMeals[3])">
-              <img :src="topMeals[3].strMealThumb" :alt="topMeals[3].strMeal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-4 py-1.5 rounded-full bg-black/70 text-white text-sm font-medium flex items-center gap-2">
-                {{ topMeals[3].strMeal }}
-                <span class="text-base">View →</span>
-              </span>
-            </button>
-
-            <button v-if="topMeals[4]" type="button" class="relative rounded-[22px] overflow-hidden h-40 w-full mt-4 group" @click="openPopularModal(topMeals[4])">
-              <img :src="topMeals[4].strMealThumb" :alt="topMeals[4].strMeal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-              <span class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-black/70 text-white text-xs font-medium flex items-center gap-2">
-                {{ topMeals[4].strMeal }}
-                <span class="text-sm">View →</span>
-              </span>
-            </button>
-          </div>
+  <div class="min-h-screen flex">
+    <!-- Сол жақ sidebar -->
+    <aside class="w-full max-w-xs bg-white border-r px-6 py-8 flex flex-col items-center">
+      <!-- Аватар -->
+      <div class="w-24 h-24 rounded-full bg-[#588157] overflow-hidden mb-4 shadow-lg border-4 border-white">
+        <img 
+          v-if="avatarUrl" 
+          :src="avatarUrl" 
+          class="w-full h-full object-cover"
+          alt="Profile Avatar"
+        />
+        <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+          <span class="text-2xl font-bold text-white">
+            {{ form.firstName?.[0]?.toUpperCase() || 'U' }}
+          </span>
         </div>
       </div>
-    </section>
 
-    <!-- 🔥 РЕЦЕПТТЕР БӨЛІМІ (PROFILE СТИЛІНДЕГІ LOADING) -->
-    <div class="min-h-screen w-full bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Search -->
-      <div class="w-full ml-12 mb-10">
-        <div class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z" />
+      <h2 class="text-lg font-semibold mb-1">
+        {{ form.firstName || (isLoading ? 'Loading...' : 'User') }} {{ form.lastName || '' }}
+      </h2>
+      <p class="text-sm text-gray-500 mb-8">User</p>
+
+      <!-- Home батырмасы -->
+      <NuxtLink
+        to="/"
+        class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white text-sm font-medium mb-4 hover:bg-[#a3b18a] transition-all shadow-md"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span>Home</span>
+      </NuxtLink>
+
+      <nav class="w-full space-y-2 flex-1">
+        <!-- Personal Information (бірінші) -->
+        <button
+          @click="activeTab = 'info'"
+          :class="[
+            'w-full flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all',
+            activeTab === 'info'
+              ? 'bg-[#588157] hover:bg-[#a3b18a] text-white font-medium shadow-sm'
+              : 'text-gray-600 hover:shadow-sm'
+          ]"
+        >
+          <svg v-if="activeTab === 'info'" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
           </svg>
-          <input v-model="searchQuery" type="text" placeholder="Іздеу..." class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400" @keyup.enter="scrollToRecipes" />
-          <button type="button" class="hidden sm:inline-flex px-4 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-slate-800 transition" @click="scrollToRecipes">
-            Search
-          </button>
-        </div>
+          <span>Personal Information</span>
+        </button>
+      </nav>
+
+      <!-- Log Out (төменде) -->
+      <div class="w-full pt-4 border-t mt-auto">
+        <button
+          @click="handleLogout"
+          class="w-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#588157] text-white hover:bg-[#a3b18a] text-sm font-medium transition-all hover:shadow-sm"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          <span>Log Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Оң жақ контент -->
+    <main class="flex-1 px-8 py-10">
+      <!-- 🔥 LOADING SPINNER -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[500px] space-y-6">
+        <div class="w-20 h-20 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin shadow-lg"></div>
+        <p class="text-xl font-semibold text-[#588157] tracking-wide">Loading profile...</p>
       </div>
 
-      <div class="max-w-7xl mx-auto mt-16">
-        <!-- 🔥 PROFILE СТИЛІНДЕГІ LOADING SPINNER -->
-        <div v-if="pending" class="flex flex-col items-center justify-center min-h-[500px] space-y-6">
-          <div class="w-20 h-20 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin shadow-lg"></div>
-          <p class="text-xl font-semibold text-[#588157] tracking-wide">Loading recipes...</p>
-        </div>
+      <!-- 🔥 MAIN CONTENT (loading жоқ болса) -->
+      <div v-else class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8">
+        <!-- Personal Information табы -->
+        <section v-if="activeTab === 'info'">
+          <h1 class="text-2xl font-bold mb-6 text-[#588157]">Personal Information</h1>
 
-        <!-- MAIN RECIPES -->
-        <div v-else-if="!errorMessage && paginatedRecipes.length" ref="recipesSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <button v-for="recipe in paginatedRecipes" :key="recipe.id" @click="openModal(recipe)" class="bg-transparent text-left">
-            <div class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center">
-              <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
-                <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
-              </div>
+          <div class="flex gap-6 mb-6 text-sm">
+            <label class="flex items-center gap-2">
+              <input type="radio" value="male" v-model="form.gender" />
+              <span>Male</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" value="female" v-model="form.gender" />
+              <span>Female</span>
+            </label>
+          </div>
 
-              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">NEW</span>
-                <span v-else-if="recipe.discount" class="text-red-500">-{{ recipe.discount }}%</span>
-              </div>
-
-              <div class="mt-12 w-full text-center flex flex-col gap-2">
-                <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
-                <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
-                <p v-if="recipe.price" class="text-sm font-bold text-slate-900 mt-1">{{ recipe.price }}</p>
-              </div>
-
-              <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
-                <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors">
-                  YouTube video
-                </a>
-                <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
-
-                <button v-if="isAuth" @click.stop="toggleFavorite(recipe.id)" class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors">
-                  {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
-                </button>
-              </div>
+          <!-- Форма -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+            <div>
+              <label class="block mb-1 text-gray-500 font-medium">First Name</label>
+              <input v-model="form.firstName" class="input" type="text" />
             </div>
-          </button>
-        </div>
+            <div>
+              <label class="block mb-1 text-gray-500 font-medium">Last Name</label>
+              <input v-model="form.lastName" class="input" type="text" />
+            </div>
+          </div>
 
-        <!-- ERROR -->
-        <div v-else-if="errorMessage" class="text-center py-16">
-          <p class="text-red-500 text-xl font-semibold mb-4">{{ errorMessage }}</p>
-          <button @click="fetchRecipes" class="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold">Retry</button>
-        </div>
+          <div class="mb-4">
+            <label class="block mb-1 text-gray-500 font-medium text-sm">Email</label>
+            <div class="flex items-center gap-2">
+              <input v-model="form.email" class="input flex-1" type="email" />
+              <span class="text-green-500 text-xs font-medium bg-green-100 px-2 py-1 rounded-full">Verified ✓</span>
+            </div>
+          </div>
 
-        <!-- EMPTY -->
-        <div v-else-if="!paginatedRecipes.length" class="text-center py-16">
-          <p class="text-slate-600 text-xl font-semibold mb-2">No recipes found</p>
-          <button @click="fetchRecipes" class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold">Reload</button>
-        </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+            <div>
+              <label class="block mb-1 text-gray-500 font-medium">Address</label>
+              <input v-model="form.address" class="input" type="text" />
+            </div>
+            <div>
+              <label class="block mb-1 text-gray-500 font-medium">Phone Number</label>
+              <input v-model="form.phone" class="input" type="tel" />
+            </div>
+          </div>
 
-        <!-- PAGINATION -->
-        <div v-if="totalPages > 1" class="mt-10 flex items-center justify-center gap-4 text-sm font-medium text-slate-700">
-          <button class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">
-            ‹ Previous
-          </button>
-
-          <div class="flex items-center gap-2">
-            <button v-for="page in totalPages" :key="page" @click="goToPage(page)" class="w-10 h-10 rounded-full flex items-center justify-center border text-sm" :class="page === currentPage ? 'bg-amber-400 text-black border-transparent' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'">
-              {{ page.toString().padStart(2, '0') }}
+          <!-- Төменгі батырмалар -->
+          <div class="flex justify-end gap-4 pt-4 border-t">
+            <button
+              type="button"
+              @click="resetForm"
+              class="px-8 py-2.5 rounded-full border-2 border-[#588157] text-[#588157] text-sm font-semibold hover:bg-[#588157] hover:text-white transition-all shadow-sm"
+            >
+              Discard Changes
+            </button>
+            <button
+              type="button"
+              @click="saveProfile"
+              class="px-8 py-2.5 rounded-full bg-[#588157] text-white text-sm font-semibold hover:bg-[#a3b18a] shadow-lg transform hover:-translate-y-0.5 transition-all"
+            >
+              Save Changes
             </button>
           </div>
 
-          <button class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">
-            Next ›
-          </button>
-        </div>
+          <p v-if="success" class="mt-6 text-sm text-green-600 font-medium bg-green-50 p-3 rounded-xl border border-green-200 text-center">
+            {{ success }}
+          </p>
+        </section>
       </div>
-
-      <!-- MODALS (сол күйі) -->
-      <!-- Local Recipes Modal -->
-      <transition name="fade">
-        <div v-if="selectedRecipe" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click.self="closeModal">
-          <!-- Modal content сол күйі -->
-        </div>
-      </transition>
-
-      <!-- Popular Modal -->
-      <transition name="fade">
-        <div v-if="popularSelected" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click.self="popularSelected = null">
-          <!-- Modal content сол күйі -->
-        </div>
-      </transition>
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { useRouter } from '#app'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+const activeTab = ref('info')
 
-// User
-const userName = ref('')
-const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
-const userId = ref('')
-const isAuth = ref(false)
+// 🔥 LOADING STATE
+const isLoading = ref(true)
 
-// State
-const recipes = ref([])
-const pending = ref(true)
-const errorMessage = ref(null)
-const selectedRecipe = ref(null)
-const searchQuery = ref('')
-const recipesSection = ref(null)
-const favorites = ref([])
-
-// Popular
-const topMeals = ref([])
-const popularSelected = ref(null)
-
-// onMounted
-onMounted(async () => {
-  if (typeof window !== 'undefined') {
-    userName.value = localStorage.getItem('userName') || 'User'
-    userId.value = localStorage.getItem('userId') || ''
-    const token = localStorage.getItem('token')
-    isAuth.value = !!userId.value || !!token
-  }
-  
-  window.addEventListener('scroll', handleScroll)
-  await Promise.all([fetchRecipes(), fetchPopularMeals()])
-  if (userId.value) await loadFavorites()
+// Avatar URL
+const avatarUrl = ref('')
+const success = ref('')
+const form = ref({
+  gender: 'male',
+  firstName: '',
+  lastName: '',
+  email: '',
+  address: '',
+  birthDate: '',
+  phone: '',
+  location: ''
 })
 
-// Fetch Recipes (pending дұрыс басқарылады)
-const fetchRecipes = async () => {
+onMounted(() => {
+  loadProfileData()
+})
+
+const loadProfileData = async () => {
+  if (!process.client) return
+  
+  isLoading.value = true // 🔥 Loading ON
+  
+  const token = localStorage.getItem('token')
+  if (!token) {
+    isLoading.value = false // 🔥 Token жоқ
+    return
+  }
+
   try {
-    pending.value = true
-    errorMessage.value = null
-    
-    const apiRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
-    recipes.value = apiRecipes
-      .filter(recipe => recipe.isPublic !== false)
-      .sort((a, b) => {
-        const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
-        const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
-        return bDate - aDate
-      })
+    const res = await fetch('https://medical-backend-54hp.onrender.com/api/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    const data = await res.json()
+
+    if (data.success) {
+      const user = data.data
+      form.value.firstName = user.name || ''
+      form.value.lastName = ''
+      form.value.email = user.email || ''
+      form.value.address = user.address || ''
+      form.value.phone = user.phone || ''
+      avatarUrl.value = user.avatar || ''
+    }
   } catch (e) {
-    errorMessage.value = 'Recipes жүктелмеді'
+    console.error('Profile error:', e)
   } finally {
-    pending.value = false  // 🔥 LOADING OFF
+    isLoading.value = false // 🔥 Loading OFF
   }
 }
 
-// Popular Meals
-const fetchPopularMeals = async () => {
+const saveProfile = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+
   try {
-    const res = await $fetch('https://www.themealdb.com/api/json/v1/1/search.php?f=g')
-    topMeals.value = (res.meals || []).slice(0, 5)
+    const res = await fetch('https://medical-backend-54hp.onrender.com/api/auth/me', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name: `${form.value.firstName} ${form.value.lastName}`.trim(),
+        address: form.value.address,
+        phone: form.value.phone
+      })
+    })
+
+    const data = await res.json()
+
+    if (data.success) {
+      success.value = 'Changes have been saved successfully!'
+      setTimeout(() => success.value = '', 3000)
+      loadProfileData()
+    }
   } catch (e) {
     console.error(e)
   }
 }
 
-const popularIngredients = computed(() => {
-  if (!popularSelected.value) return []
-  const meal = popularSelected.value
-  const arr = []
-  for (let i = 1; i <= 20; i++) {
-    const ing = meal[`strIngredient${i}`]
-    const measure = meal[`strMeasure${i}`]
-    if (ing && ing.trim()) {
-      arr.push({ name: ing, measure: measure || '' })
-    }
-  }
-  return arr
-})
-
-const openPopularModal = (meal) => {
-  popularSelected.value = meal
+const resetForm = () => {
+  success.value = ''
+  loadProfileData()
 }
 
-// Favorites
-const loadFavorites = async () => {
-  if (!userId.value) return
-  try {
-    favorites.value = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`)
-  } catch (e) {
-    favorites.value = []
-  }
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  router.push('/login')
 }
-
-const toggleFavorite = async (recipeId) => {
-  if (!userId.value) {
-    router.push('/login')
-    return
-  }
-  try {
-    const exists = favorites.value.find((f) => f.recipeId === recipeId)
-    if (exists) {
-      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
-    } else {
-      await $fetch(`${MOCK_API_URL}/favorites`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: { recipeId, userId: userId.value, savedAt: new Date().toISOString() }
-      })
-    }
-    await loadFavorites()
-  } catch (e) {
-    console.error('Favorite қатесі:', e)
-  }
-}
-
-const isFavorite = (recipeId) => favorites.value.some((f) => f.recipeId === recipeId)
-
-// Filters & Pagination
-const filteredRecipes = computed(() => {
-  let result = recipes.value
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    result = result.filter(r => 
-      r.title.toLowerCase().includes(q) ||
-      r.area.toLowerCase().includes(q) ||
-      r.category.toLowerCase().includes(q)
-    )
-  }
-  return result
-})
-
-const currentPage = ref(1)
-const pageSize = 8
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize)))
-const paginatedRecipes = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  return filteredRecipes.value.slice(start, start + pageSize)
-})
-
-const goToPage = (page) => {
-  if (page < 1 || page > totalPages.value) return
-  currentPage.value = page
-  nextTick(() => {
-    if (recipesSection.value) {
-      recipesSection.value.scrollIntoView({ behavior: 'smooth' })
-    }
-  })
-}
-
-// Utils
-const openModal = (recipe) => selectedRecipe.value = recipe
-const closeModal = () => selectedRecipe.value = null
-const scrollToRecipes = () => recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
-const handleScroll = () => {}
-const isNewRecipe = (recipe) => {
-  if (!recipe.createdAt) return false
-  const createdDate = new Date(recipe.createdAt)
-  const now = new Date()
-  const diffDays = Math.ceil((now - createdDate) / (1000 * 60 * 60 * 24))
-  return diffDays <= 7
-}
-
-watch(searchQuery, () => currentPage.value = 1)
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
-<style>
-/* Барлық style сол күйі */
-.handwriting { font-family: 'Pacifico', cursive !important; }
-/* ... басқа стильдер ... */
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
+<style scoped>
+.input {
+  @apply w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#588157] focus:border-transparent transition-all;
 }
 </style>
