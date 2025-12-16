@@ -595,6 +595,29 @@ onMounted(async () => {
   await loadAll()
 })
 
+// 🔥 LATEST USERS – favorites-тен бірегей user-ларды аламыз
+const userActivityMap = {}
+favorites.forEach(f => {
+  if (f.username && f.savedAt) {
+    if (!userActivityMap[f.userId]) {
+      userActivityMap[f.userId] = {
+        id: f.userId,
+        name: f.username,
+        email: `${f.username.toLowerCase().replace(/\s+/g, '.')}@example.com`, // fake email
+        created_at: f.savedAt  // соңғы activity уақыты
+      }
+    }
+  }
+})
+
+// ең белсенді 5 user (жаңа activity бойынша)
+latestUsers.value = Object.values(userActivityMap)
+  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  .slice(0, 5)
+
+stats.totalUsers = Object.keys(userActivityMap).length
+
+
 const StatCard = defineComponent({
   name: 'StatCard',
   props: {
@@ -627,6 +650,7 @@ const StatCard = defineComponent({
       </span>
     </div>
   `
+  
 })
 </script>
 
