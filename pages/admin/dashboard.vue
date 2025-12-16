@@ -107,7 +107,7 @@
 
         <!-- DASHBOARD -->
         <section v-else class="space-y-8">
-          <!-- DETAIL VIEW (Total saved / New recipes) -->
+          <!-- DETAIL VIEW (Total saved / New recipes / Active users) -->
           <section v-if="detailMode" class="mb-6">
             <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
               <div>
@@ -116,6 +116,9 @@
                 </h2>
                 <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'new'">
                   New recipes – created in last 7 days
+                </h2>
+                <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'users'">
+                  Active users – last 30 days activity
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
                   Click "Back to overview" to return to main dashboard.
@@ -184,6 +187,30 @@
               </ul>
               <p v-if="!newRecipesList.length" class="text-xs text-slate-400 mt-2">
                 No new recipes in last 7 days.
+              </p>
+            </div>
+
+            <!-- Active users list -->
+            <div v-else-if="detailMode === 'users'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
+              <ul class="divide-y divide-slate-100">
+                <li v-for="user in latestUsers" :key="user.id" class="py-2.5 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-sm font-semibold">
+                      {{ (user.name || 'U')[0]?.toUpperCase() }}
+                    </div>
+                    <div>
+                      <p class="font-medium text-sm text-slate-900">{{ user.name || 'Unknown' }}</p>
+                      <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[11px] text-slate-400">{{ formatDateShort(user.created_at) }}</p>
+                    <p class="text-[11px] text-slate-500">{{ stats.activeUsersApprox }} ішінде</p>
+                  </div>
+                </li>
+              </ul>
+              <p v-if="!latestUsers.length" class="text-xs text-slate-400 mt-2 text-center py-4">
+                No user activity yet.
               </p>
             </div>
           </section>
@@ -259,56 +286,23 @@
                   Created in the last 7 days (click to see list)
                 </p>
               </div>
-<!-- 🔥 ACTIVE USERS – БАСҚАНДА ашылады (New recipes сияқты) -->
-<div class="relative">
-  <div
-    class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition-all duration-200 group"
-    @click="toggleActiveUsersList"
-  >
-    <div class="flex items-center justify-between mb-2">
-      <h3 class="text-sm font-semibold text-[#31572c]">Active users (approx.)</h3>
-      <span class="text-[11px] text-slate-400 group-hover:text-slate-600 transition">
-        {{ showActiveUsersList ? '▲' : '▼' }}
-      </span>
-    </div>
-    <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
-    <p class="text-xs text-slate-500 mt-1">Users who have activity (click to expand)</p>
-  </div>
-  
-  <!-- Dropdown тізімі (басқанда шығады) -->
-  <transition name="slide-fade">
-    <div v-if="showActiveUsersList" 
-         class="mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100">
-      <div class="p-4 border-b border-slate-100">
-        <h4 class="font-semibold text-slate-900 text-sm">Соңғы белсенді user-лар</h4>
-        <p class="text-xs text-slate-400">Соңғы 30 күн ({{ latestUsers.length }} та)</p>
-      </div>
-      <ul class="max-h-64 overflow-y-auto">
-        <li v-for="user in latestUsers.slice(0, 8)" :key="user.id" 
-            class="px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-[#588157]/10 flex items-center justify-center text-[#588157] font-semibold text-sm">
-                {{ (user.name || 'U')[0]?.toUpperCase() }}
-              </div>
-              <div>
-                <p class="font-medium text-sm text-slate-900">{{ user.name }}</p>
-                <p class="text-xs text-slate-500 truncate max-w-[180px]">{{ user.email }}</p>
-              </div>
-            </div>
-            <p class="text-xs text-slate-400 whitespace-nowrap">
-              {{ formatDateShort(user.created_at) }}
-            </p>
-          </div>
-        </li>
-      </ul>
-      <div v-if="latestUsers.length > 8" class="px-4 py-3 text-center text-xs text-slate-400 border-t border-slate-100">
-        +{{ latestUsers.length - 8 }} басқа user
-      </div>
-    </div>
-  </transition>
-</div>
 
+              <!-- Active users (detailMode арқылы) -->
+              <div
+                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
+                @click="openActiveUsersDetails"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="text-sm font-semibold text-[#31572c]">
+                    Active users (approx.)
+                  </h3>
+                  <span class="text-[11px] text-slate-400">30 күнде</span>
+                </div>
+                <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
+                <p class="text-xs text-slate-500 mt-1">
+                  Users who have activity (click to see list)
+                </p>
+              </div>
             </div>
           </section>
 
@@ -430,7 +424,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -476,12 +470,9 @@ const latestRecipes = ref([])
 const mostSaved = ref([])
 
 // detail state
-const detailMode = ref(null) // 'saved' | 'new' | null
+const detailMode = ref(null) // 'saved' | 'new' | 'users' | null
 const savedDetails = ref([])
 const newRecipesList = ref([])
-
-// 🔥 Active users dropdown
-const showActiveUsersList = ref(false)
 
 const diffDays = (dateStr) => {
   if (!dateStr) return 9999
@@ -496,7 +487,6 @@ const formatDate = (dateStr) => {
   return d.toLocaleDateString()
 }
 
-// 🔥 Date форматтау функциясы (Active users үшін)
 const formatDateShort = (dateStr) => {
   if (!dateStr) return '—'
   const date = new Date(dateStr)
@@ -511,17 +501,15 @@ const loadAll = async () => {
     isLoading.value = true
     error.value = ''
 
-    // 1. Деректерді аламыз
     const [recipesRes, favoritesRes] = await Promise.all([
       $fetch(`${MOCK_API_URL}/recipes`),
       $fetch(`${MOCK_API_URL}/favorites`).catch(() => [])
     ])
 
-    // 2. Массивтерді дұрыс анықтаймыз
     const recipes = Array.isArray(recipesRes) ? recipesRes : []
     const favorites = Array.isArray(favoritesRes) ? favoritesRes : []
 
-    // 3. Stats есептейміз
+    // Stats
     stats.totalRecipes = recipes.length
     stats.publicRecipes = recipes.filter(r => r.isPublic !== false).length
     stats.privateRecipes = recipes.filter(r => r.isPublic === false).length
@@ -533,7 +521,7 @@ const loadAll = async () => {
     favorites.forEach(f => f.userId && userIds.add(f.userId))
     stats.activeUsersApprox = userIds.size
 
-    // 4. Latest recipes
+    // Latest recipes
     latestRecipes.value = [...recipes]
       .sort((a, b) => {
         const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -542,7 +530,7 @@ const loadAll = async () => {
       })
       .slice(0, 5)
 
-    // 5. Most saved
+    // Most saved
     const savedCountMap = {}
     favorites.forEach(f => {
       if (!savedCountMap[f.recipeId]) savedCountMap[f.recipeId] = 0
@@ -558,7 +546,7 @@ const loadAll = async () => {
       .slice(0, 5)
     mostSaved.value = withCounts
 
-    // 6. NEW RECIPES LIST
+    // NEW RECIPES LIST
     newRecipesList.value = recipes
       .filter(r => diffDays(r.createdAt) <= 7)
       .sort((a, b) => {
@@ -567,7 +555,7 @@ const loadAll = async () => {
         return bD - aD
       })
 
-    // 7. SAVED DETAILS
+    // SAVED DETAILS
     savedDetails.value = favorites
       .map(f => {
         const recipe = recipes.find(r => r.id === f.recipeId)
@@ -580,10 +568,9 @@ const loadAll = async () => {
       })
       .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
 
-    // 8. 🔥 LATEST USERS – favorites + recipes-тен
+    // LATEST USERS
     const allUsers = new Map()
 
-    // Favorites-тен
     favorites.forEach(f => {
       if (f.username) {
         allUsers.set(f.userId, {
@@ -595,7 +582,6 @@ const loadAll = async () => {
       }
     })
 
-    // Recipes-тен (егер favorites-те жоқ болса)
     recipes.forEach(r => {
       if (r.userId && !allUsers.has(r.userId)) {
         allUsers.set(r.userId, {
@@ -630,6 +616,11 @@ const openNewRecipesDetails = () => {
   detailMode.value = 'new'
 }
 
+const openActiveUsersDetails = () => {
+  if (!latestUsers.value.length) return
+  detailMode.value = 'users'
+}
+
 const backToOverview = () => {
   detailMode.value = null
 }
@@ -644,32 +635,6 @@ onMounted(async () => {
   }
   await loadAll()
 })
-
-
-// 🔥 Toggle функциясы (басқанда ашылады/жабылады)
-const toggleActiveUsersList = () => {
-  showActiveUsersList.value = !showActiveUsersList.value
-}
-
-// Click outside жабу
-const handleClickOutside = (event) => {
-  if (showActiveUsersList.value && !event.target.closest('.group')) {
-    showActiveUsersList.value = false
-  }
-}
-
-onMounted(() => {
-  if (process.client) {
-    document.addEventListener('click', handleClickOutside)
-  }
-})
-
-onUnmounted(() => {
-  if (process.client) {
-    document.removeEventListener('click', handleClickOutside)
-  }
-})
-
 
 const StatCard = defineComponent({
   name: 'StatCard',
@@ -714,14 +679,5 @@ const StatCard = defineComponent({
   to {
     transform: rotate(360deg);
   }
-}
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.2s ease;
-}
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px) scale(0.95);
 }
 </style>
