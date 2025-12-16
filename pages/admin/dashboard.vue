@@ -135,8 +135,7 @@
               </button>
             </div>
 
-            <!-- Saved details table -->
-           <!-- Saved details table – userName + recipe -->
+        <!-- Saved details table -->
 <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
   <table class="min-w-full text-xs">
     <thead>
@@ -540,15 +539,15 @@ const loadAll = async () => {
         return bD - aD
       })
 
-   savedDetails.value = favorites
+// saved details – дұрыс userName оқу
+savedDetails.value = favorites
   .map(f => {
     const recipe = recipes.find(r => r.id === f.recipeId)
     return {
       userId: f.userId,
-      userName: f.userName || f.user_name || `User #${f.userId?.slice(-4)}`,  // ← userName қосылды
+      userName: f.username || f.userName || f.user_name || `User #${f.userId?.slice(-4)}`,  // ← username БІРІНШІ ОҚЫЛАДЫ
       recipeId: f.recipeId,
       recipeTitle: recipe?.title || 'Unknown recipe'
-      // savedAt-ты алып тастадым
     }
   })
   .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
