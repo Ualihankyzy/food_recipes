@@ -347,11 +347,7 @@ const fetchRecipes = async () => {
   try {
     pending.value = true
     errorMessage.value = null
-
-    // ✅ тек public рецепттер
-    recipes.value = await $fetch(
-      `${MOCK_API_URL}/recipes?isPublic=true`
-    )
+    recipes.value = await $fetch(`${MOCK_API_URL}/recipes`)
   } catch (e) {
     errorMessage.value = 'Recipes жүктелмеді'
     console.error(e)
@@ -359,7 +355,6 @@ const fetchRecipes = async () => {
     pending.value = false
   }
 }
-
 
 // Favorites (MockAPI)
 const loadSavedRecipes = async () => {
