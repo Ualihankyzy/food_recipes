@@ -230,7 +230,7 @@ const saveProfile = async () => {
     const data = await res.json()
 
     if (data.success) {
-      success.value = '✅ Профиль сақталды'
+      success.value = 'Changes have been made'
       loadProfileData()
     }
   } catch (e) {

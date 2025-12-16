@@ -66,30 +66,28 @@
     <!-- MAIN PANEL -->
     <main class="flex-1 bg-[#f5f6f1] flex flex-col">
       <!-- Top bar -->
- <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
-  <!-- Avatar ғана қалады -->
-  <button
-    class="flex items-center gap-3 group"
-    @click="router.push('/profile')"
-  >
-    <div
-      class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white"
-    >
-      <img
-        v-if="avatarUrl"
-        :src="avatarUrl"
-        class="w-full h-full object-cover"
-        alt="Profile Avatar"
-      />
-      <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
-        <span class="text-sm font-bold text-white">
-          {{ userInitial }}
-        </span>
-      </div>
-    </div>
-  </button>
-</header>
-
+      <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
+        <button
+          class="flex items-center gap-3 group"
+          @click="router.push('/profile')"
+        >
+          <div
+            class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white"
+          >
+            <img
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              class="w-full h-full object-cover"
+              alt="Profile Avatar"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+              <span class="text-sm font-bold text-white">
+                {{ userInitial }}
+              </span>
+            </div>
+          </div>
+        </button>
+      </header>
 
       <!-- Content -->
       <section class="flex-1 p-8 overflow-y-auto">
@@ -97,42 +95,31 @@
         <div v-if="activeTab === 'my-recipes'" class="space-y-6">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-xl font-semibold text-[#31572c]">My Recipes</h3>
-           
-
-
-             <button
+            <button
               @click="showCreateModal = true"
-    class="relative inline-flex items-center gap-2 px-8 py-3 rounded-full
-           text-white text-sm font-medium
-           bg-gradient-to-r from-[#588157] via-[#6aa56a] to-[#88c17f]
-           shadow-[0_10px_25px_rgba(0,0,0,0.25)]
-           hover:shadow-[0_14px_30px_rgba(0,0,0,0.35)]
-           transition-all duration-300
-           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#588157]"
-  >
-    <span>Create recipe</span>
-    <span class="text-lg leading-none">→</span>
-
-    <!-- жылтыр эффект үшін үстіне ақ градиент қабаты -->
-    <span
-      class="pointer-events-none absolute inset-[2px] rounded-full
-             bg-gradient-to-b from-white/60 via-white/10 to-transparent
-             opacity-80"
-    ></span>
-
-    <!-- үстіңгі контент үстіне шығу үшін -->
-    <span class="absolute inset-0 rounded-full mix-blend-soft-light"></span>
-  </button>
-
-
+              class="relative inline-flex items-center gap-2 px-8 py-3 rounded-full
+                     text-white text-sm font-medium
+                     bg-gradient-to-r from-[#588157] via-[#6aa56a] to-[#88c17f]
+                     shadow-[0_10px_25px_rgba(0,0,0,0.25)]
+                     hover:shadow-[0_14px_30px_rgba(0,0,0,0.35)]
+                     transition-all duration-300
+                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#588157]"
+            >
+              <span>Create recipe</span>
+              <span class="text-lg leading-none">→</span>
+              <span
+                class="pointer-events-none absolute inset-[2px] rounded-full
+                       bg-gradient-to-b from-white/60 via-white/10 to-transparent
+                       opacity-80"
+              ></span>
+              <span class="absolute inset-0 rounded-full mix-blend-soft-light"></span>
+            </button>
           </div>
-            <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 space-y-4">
-    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
-    <p class="text-[#6c7570]">
-Loading recipes... </p>
-  </div>
 
-      
+          <div v-if="isLoading" class="flex flex-col items-center justify-center py-20 space-y-4">
+            <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+            <p class="text-[#6c7570]">Loading recipes...</p>
+          </div>
 
           <div
             v-else
@@ -181,51 +168,49 @@ Loading recipes... </p>
         </div>
 
         <!-- SAVED -->
-<!-- SAVED (ескі кодты толық өшіріп, мынаны қой) -->
-<div v-else-if="activeTab === 'saved'" class="space-y-6">
-  <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
-  
-  <!-- Loading -->
-  <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
-    <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
-  </div>
-  
-  <!-- Home дизайнымен карточкалар -->
-  <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <button v-for="recipe in savedRecipes" :key="recipe.id" @click="viewRecipe(recipe)" class="bg-transparent text-left">
-      <!-- Home карточкасының ДӘЛ СОЛ КӨРІНІСІ -->
-      <div class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center">
-        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
-          <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
-        </div>
-        <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-          <span v-if="recipe.isNew">NEW</span>
-          <span v-else-if="recipe.discount" class="text-red-500">-{{ recipe.discount }}%</span>
-        </div>
-        <div class="mt-12 w-full text-center flex flex-col gap-2">
-          <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
-          <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
-          <p v-if="recipe.price" class="text-sm font-bold text-slate-900 mt-1">{{ recipe.price }}</p>
-        </div>
-        <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
-          <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop 
-             class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947]">
-            YouTube video
-          </a>
-          <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
-          <!-- DELETE батырмасы -->
-         <button @click.stop="removeFromSaved(recipe.id)" class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
-  Delete
-</button>
-        </div>
-      </div>
-    </button>
-  </div>
-  
-  <p v-else class="text-center text-[#6c7570] py-10">No saved recipes yet. Save some from home page! ✨</p>
-</div>
+        <div v-else-if="activeTab === 'saved'" class="space-y-6">
+          <h3 class="text-xl font-semibold text-[#31572c] mb-2">
+            Saved Recipes ({{ savedRecipes.length }})
+          </h3>
 
+          <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
+            <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+          </div>
 
+          <div v-else-if="savedRecipes.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <button v-for="recipe in savedRecipes" :key="recipe.id" @click="viewRecipe(recipe)" class="bg-transparent text-left">
+              <div class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center">
+                <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
+                  <img :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover" />
+                </div>
+                <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+                  <span v-if="recipe.isNew">NEW</span>
+                  <span v-else-if="recipe.discount" class="text-red-500">-{{ recipe.discount }}%</span>
+                </div>
+                <div class="mt-12 w-full text-center flex flex-col gap-2">
+                  <h3 class="text-sm font-semibold text-slate-900 leading-snug">{{ recipe.title }}</h3>
+                  <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
+                  <p v-if="recipe.price" class="text-sm font-bold text-slate-900 mt-1">{{ recipe.price }}</p>
+                </div>
+                <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+                  <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop 
+                     class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947]">
+                    YouTube video
+                  </a>
+                  <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
+                  <button @click.stop="removeFromSaved(recipe.id)" 
+                          class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          <p v-else class="text-center text-[#6c7570] py-10">
+            No saved recipes yet. Save some from home page! ✨
+          </p>
+        </div>
       </section>
     </main>
 
@@ -275,12 +260,11 @@ Loading recipes... </p>
 
     <!-- CREATE MODAL -->
     <transition name="fade">
-    <div
-  v-if="showCreateModal"
-  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-  @click.self="closeCreateModal"
->
-
+      <div
+        v-if="showCreateModal"
+        class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+        @click.self="closeCreateModal"
+      >
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
             <h3 class="text-lg font-semibold text-[#31572c]">Create Recipe</h3>
@@ -335,18 +319,17 @@ Loading recipes... </p>
                 class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
               ></textarea>
               <!-- Visibility toggle -->
-<div class="flex items-center gap-3 pt-2">
-  <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
-    <input 
-      type="checkbox" 
-      v-model="form.isPublic" 
-      class="w-4 h-4 rounded"
-    />
-    <span>Public (show on Home)</span>
-  </label>
-  <span class="text-xs text-[#6c7570]">(Only You = private)</span>
-</div>
-
+              <div class="flex items-center gap-3 pt-2">
+                <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    v-model="form.isPublic" 
+                    class="w-4 h-4 rounded"
+                  />
+                  <span>Public (show on Home)</span>
+                </label>
+                <span class="text-xs text-[#6c7570]">(Only You = private)</span>
+              </div>
             </div>
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
@@ -357,7 +340,7 @@ Loading recipes... </p>
               Cancel
             </button>
             <button
-            @click="createRecipe"
+              @click="createRecipe"
               class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]"
             >
               Save
@@ -369,15 +352,11 @@ Loading recipes... </p>
   </div>
 </template>
 
-
-
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { $db, $collection, $addDoc, $deleteDoc, $doc, $onSnapshot, $query, $where } = useNuxtApp()
-
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
 // State
@@ -386,6 +365,7 @@ const userId = ref('')
 const userName = ref('')
 const avatarUrl = ref('')
 const isLoading = ref(false)
+const isLoadingSaved = ref(false)
 const myRecipes = ref([])
 const savedRecipes = ref([])
 const viewedRecipe = ref(null)
@@ -399,7 +379,7 @@ const form = ref({
   imageUrl: '',
   instructions: '',
   ingredients: [],
-    isPublic: true 
+  isPublic: true 
 })
 
 // Computed
@@ -413,13 +393,10 @@ const ingredientsText = computed({
 
 // Menu
 const menuItems = [
-  { key: 'home', label: 'Home', type: 'route', to: '/' },
-  { key: 'my-recipes', label: 'My recipes', type: 'tab' },
-  { key: 'saved', label: 'Saved', type: 'tab'}
+  { key: 'home', label: '🏠 Home', type: 'route', to: '/' },
+  { key: 'my-recipes', label: '🍳 My recipes', type: 'tab', icon: '🍳' },
+  { key: 'saved', label: '❤️ Saved', type: 'tab', icon: '❤️' }
 ]
-
-// Listeners
-let unsubscribeMyRecipes = null
 
 // User
 const setupUser = () => {
@@ -430,51 +407,24 @@ const setupUser = () => {
   }
 }
 
-// Firebase: My Recipes
-const loadMyRecipes = () => {
-  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
-  if (!userId.value) return
-
+// MockAPI: My Recipes (userId бойынша)
+const loadMyRecipes = async () => {
+  if (!userId.value) {
+    myRecipes.value = []
+    return
+  }
   isLoading.value = true
-
-  const q = $query(
-    $collection($db, 'recipes'),
-    $where('userId', '==', userId.value)
-  )
-
-  unsubscribeMyRecipes = $onSnapshot(q, (snapshot) => {
-    myRecipes.value = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    isLoading.value = false
-  }, (error) => {
-    console.error('Error loading recipes:', error)
-    isLoading.value = false
-  })
-}
-
-// MockAPI: Saved Recipes
-// ✅ 404 error-ды ұстап, бос массив қайтару
-// Saved ішінен өшіру
-const isLoadingSaved = ref(false)
-const removeFromSaved = async (recipeId) => {
-  if (!userId.value) return
-  isLoadingSaved.value = true
   try {
-    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(() => [])
-    for (const fav of favorites) {
-      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
-    }
-    await loadSavedRecipes() // қайта жүктеу
+    const recipes = await $fetch(`${MOCK_API_URL}/recipes?userId=${userId.value}`)
+    myRecipes.value = recipes || []
   } catch (e) {
-    console.error('Remove error:', e)
+    myRecipes.value = []
   } finally {
-    isLoadingSaved.value = false
+    isLoading.value = false
   }
 }
 
-// loadSavedRecipes функциясын жаңарту (ескі бар болса)
+// MockAPI: Saved Recipes
 const loadSavedRecipes = async () => {
   if (!userId.value) {
     savedRecipes.value = []
@@ -483,8 +433,10 @@ const loadSavedRecipes = async () => {
   isLoadingSaved.value = true
   try {
     const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(() => [])
-    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`)
-    savedRecipes.value = recipesResponse.filter(r => favorites.some(f => f.recipeId === r.id))
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`).catch(() => [])
+    savedRecipes.value = recipesResponse.filter(r => 
+      favorites.some(f => f.recipeId === r.id)
+    )
   } catch (e) {
     savedRecipes.value = []
   } finally {
@@ -492,44 +444,47 @@ const loadSavedRecipes = async () => {
   }
 }
 
+// Saved ішінен өшіру
+const removeFromSaved = async (recipeId) => {
+  if (!userId.value) return
+  isLoadingSaved.value = true
+  try {
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(() => [])
+    for (const fav of favorites) {
+      await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
+    }
+    await loadSavedRecipes()
+  } catch (e) {
+    console.error('Remove error:', e)
+  } finally {
+    isLoadingSaved.value = false
+  }
+}
 
-
-// Create Recipe
+// Create Recipe (тек MockAPI)
 const createRecipe = async () => {
   if (!form.value.title || !userId.value) return
-
   isLoading.value = true
-
   const recipe = {
     id: Date.now().toString(),
+    userId: userId.value,
     title: form.value.title,
     category: form.value.category,
     area: form.value.area,
     imageUrl: form.value.imageUrl,
     instructions: form.value.instructions,
     ingredients: form.value.ingredients,
-    userId: userId.value,
     createdAt: new Date().toISOString(),
     isNew: true,
     discount: null,
     price: null,
     youtubeUrl: null,
-    isPublic: form.value.isPublic  // ✅ Visibility
+    isPublic: form.value.isPublic
   }
-
   try {
-    // 1️⃣ ӘРҚашан Firebase-қа сақтау (My Recipes)
-    await $addDoc($collection($db, 'recipes'), recipe)
-    
-    // 2️⃣ Тек Public болса MockAPI-ға сақтау (Home)
-    if (form.value.isPublic) {
-      await $fetch(`${MOCK_API_URL}/recipes`, {
-        method: 'POST',
-        body: recipe
-      })
-    }
-    
+    await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: recipe })
     closeCreateModal()
+    await loadMyRecipes() // тізімді жаңарту
   } catch (error) {
     console.error('Create error:', error)
   } finally {
@@ -537,7 +492,18 @@ const createRecipe = async () => {
   }
 }
 
-
+// Delete Recipe (тек MockAPI)
+const deleteUserRecipe = async (id) => {
+  isLoading.value = true
+  try {
+    await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
+    await loadMyRecipes() // тізімді жаңарту
+  } catch (error) {
+    console.error('Delete error:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 // UI
 const closeCreateModal = () => {
@@ -548,7 +514,8 @@ const closeCreateModal = () => {
     area: '',
     imageUrl: '',
     instructions: '',
-    ingredients: []
+    ingredients: [],
+    isPublic: true
   }
 }
 
@@ -556,31 +523,10 @@ const viewRecipe = (recipe) => {
   viewedRecipe.value = { ...recipe }
 }
 
-const deleteUserRecipe = async (id) => {
-  isLoading.value = true
-  try {
-    // 1. Firebase-тан өшіру
-    await $deleteDoc($doc($db, 'recipes', id))
-    
-    // 2. Егер favorites-та бар болса, өшіру
-    await removeFromSaved(id)
-    
-    console.log('✅ Fully deleted!')
-  } catch (error) {
-    console.error('Delete error:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-
-
-
 const logout = () => {
   if (typeof window !== 'undefined') {
     localStorage.clear()
   }
-  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
   router.push('/login')
 }
 
@@ -594,13 +540,6 @@ onMounted(() => {
     }, 500)
   }
 })
-
-onUnmounted(() => {
-  if (unsubscribeMyRecipes) unsubscribeMyRecipes()
-})
-
-
-
 </script>
 
 <style scoped>
