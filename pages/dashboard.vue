@@ -113,7 +113,7 @@
         </div>
 
         <!-- SAVED -->
-        <div v-else-if="activeTab === 'saved'" class="space-y-6">
+        <div v-else-if="activeTab === 'saved'" class="space-y-6 mt-28">
           <h3 class="text-xl font-semibold text-[#31572c] mb-2">Saved Recipes ({{ savedRecipes.length }})</h3>
 
           <div v-if="isLoadingSaved" class="flex items-center justify-center py-20">
