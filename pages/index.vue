@@ -38,7 +38,16 @@
 
         <template v-if="isAuth">
           <a href="/dashboard" class="hover:underline">Dashboard</a>
-          <a href="/profile" class="hover:underline">Profile</a>
+         <header class="h-20 border-b border-[#d0d3c8] flex items-center justify-end px-8 bg-white">
+        <button class="flex items-center gap-3 group" @click="router.push('/profile')">
+          <div class="w-16 h-16 rounded-full bg-[#588157] overflow-hidden shadow-md border-4 border-white">
+            <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" alt="Profile Avatar" />
+            <div v-else class="w-full h-full flex items-center justify-center bg-white/20">
+              <span class="text-sm font-bold text-white">{{ userInitial }}</span>
+            </div>
+          </div>
+        </button>
+      </header>
         </template>
         <template v-else>
           <a href="/login" class="hover:underline">Login</a>
