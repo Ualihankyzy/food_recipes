@@ -78,7 +78,7 @@
     <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
       {{ userInitial }}
     </div>
-    <span class="text-sm font-medium text-slate-900 hidden md:inline">Admin</span>
+ 
   </div>
 </header>
 
