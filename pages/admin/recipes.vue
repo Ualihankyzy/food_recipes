@@ -37,56 +37,18 @@
   :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
 >
   <!-- Dashboard icon -->
-  <svg
-    v-if="item.icon === 'dashboard'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
-    />
-  </svg>
+  <svg v-if="item.icon === 'dashboard'">...</svg>
 
-  <!-- Recipes (eye) icon -->
-  <svg
-    v-else-if="item.icon === 'recipes'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+  <!-- Recipes icon (book) -->
+  <svg v-else-if="item.icon === 'book'" xmlns="http://www.w3.org/2000/svg"
+       class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M4 5a2 2 0 012-2h10a2 2 0 012 2v14a1 1 0 01-1.447.894L14 18.618l-4.553 1.276A1 1 0 018 19V5a2 2 0 00-2-2H4z"
     />
-    <circle cx="12" cy="12" r="3" />
   </svg>
 
   <!-- Users icon -->
-  <svg
-    v-else-if="item.icon === 'users'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
-    />
-  </svg>
+  <svg v-else-if="item.icon === 'users'">...</svg>
 </span>
 
           <span

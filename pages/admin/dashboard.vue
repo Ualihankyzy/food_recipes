@@ -42,12 +42,25 @@
                 : '-translate-x-full'
             ]"
           ></span>
-          <span
-            class="relative z-10 text-lg"
-            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90'"
-          >
-            {{ item.icon }}
-          </span>
+         <span
+  class="relative z-10 flex-shrink-0"
+  :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
+>
+  <!-- Dashboard icon -->
+  <svg v-if="item.icon === 'dashboard'" >...</svg>
+
+  <!-- Recipes icon (book) -->
+  <svg v-else-if="item.icon === 'book'" xmlns="http://www.w3.org/2000/svg"
+       class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M4 5a2 2 0 012-2h10a2 2 0 012 2v14a1 1 0 01-1.447.894L14 18.618l-4.553 1.276A1 1 0 018 19V5a2 2 0 00-2-2H4z"
+    />
+  </svg>
+
+  <!-- Users icon -->
+  <svg v-else-if="item.icon === 'users'" >...</svg>
+</span>
+
           <span
             v-if="isSidebarOpen"
             class="relative z-10"
@@ -365,9 +378,9 @@ const adminName = 'Admin'
 const userInitial = computed(() => adminName[0])
 
 const menuItems = [
-  { key: 'dashboard', label: 'Dashboard', icon: '🏠', to: '/admin/dashboard' },
-  { key: 'recipes', label: 'Recipes', icon: '📖',  to: '/admin/recipes'  },
-  { key: 'users', label: 'Users', icon: '👥',to: '/admin/users' }
+  { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
+  { key: 'recipes',   label: 'Recipes',   icon: 'recipes',   to: '/admin/recipes' },
+  { key: 'users',     label: 'Users',     icon: 'users',     to: '/admin/users' }
 ]
 
 const logout = () => {
