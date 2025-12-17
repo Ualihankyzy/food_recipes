@@ -150,137 +150,99 @@
         </div>
 
         <!-- Recipes Grid -->
-     <div
+<div
   v-else
-  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-14"
+  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-14"
 >
-
-          <div
-            v-for="recipe in filteredRecipes"
-            :key="recipe.id"
-            class="group relative"
-          >
-            <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center">
-              <!-- Round image -->
-              <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
-                <img
-                  v-if="recipe.imageUrl"
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div
-                  v-else
-                  class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center"
-                >
-                  <span class="text-2xl">📖</span>
-                </div>
-              </div>
-
-              <!-- NEW badge -->
-              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                <span
-                  v-if="isNewRecipe(recipe)"
-                  class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg"
-                >
-                  NEW
-                </span>
-              </div>
-
-              <!-- Public / Private badge (MockAPI‑ден бәрін Public ретінде көрсетеміз) -->
-              <div class="absolute top-2 right-3 text-[11px] font-semibold">
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white"
-                >
-                  Public
-                </span>
-              </div>
-
-              <!-- Text -->
-              <div class="mt-12 w-full text-center flex flex-col gap-2">
-                <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
-                  {{ recipe.title }}
-                </h3>
-                <p class="text-[11px] text-slate-400">
-                  {{ recipe.category }} • {{ recipe.area }}
-                </p>
-              </div>
-
-              <!-- Bottom actions: 3 ақ иконка -->
-              <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]">
-                <!-- View -->
-                <button
-                  type="button"
-                  @click="openQuickView(recipe)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
-                  title="View"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
-
-                <!-- Edit (ақ “карандаш” иконка) -->
-                <button
-                  type="button"
-                  @click.stop="openEditModal(recipe)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
-                  title="Edit"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15.232 5.232l3.536 3.536M4 20h4.586L19.414 9.172a2 2 0 000-2.828l-2.758-2.758a2 2 0 00-2.828 0L4 14.586V20z"
-                    />
-                  </svg>
-                </button>
-
-                <!-- Delete (ақ “trash” иконка) -->
-                <button
-                  type="button"
-                  @click.stop="deleteRecipe(recipe.id)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors"
-                  title="Delete"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
+  <div
+    v-for="recipe in filteredRecipes"
+    :key="recipe.id"
+    class="group relative"
+  >
+    <div class="relative bg-white rounded-3xl shadow-md pt-14 pb-4 px-4 flex flex-col items-center">
+      <!-- Round image -->
+      <div
+        class="absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
+      >
+        <img
+          v-if="recipe.imageUrl"
+          :src="recipe.imageUrl"
+          :alt="recipe.title"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div
+          v-else
+          class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center"
+        >
+          <span class="text-2xl">📖</span>
         </div>
+      </div>
+
+      <!-- NEW badge -->
+      <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+        <span
+          v-if="isNewRecipe(recipe)"
+          class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg"
+        >
+          NEW
+        </span>
+      </div>
+
+      <!-- Public badge -->
+      <div class="absolute top-2 right-3 text-[11px] font-semibold">
+        <span
+          class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white"
+        >
+          Public
+        </span>
+      </div>
+
+      <!-- Text -->
+      <div class="mt-12 w-full text-center flex flex-col gap-2">
+        <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
+          {{ recipe.title }}
+        </h3>
+        <p class="text-[11px] text-slate-400">
+          {{ recipe.category }} • {{ recipe.area }}
+        </p>
+      </div>
+
+      <!-- Bottom actions -->
+      <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]">
+        <!-- View -->
+        <button
+          type="button"
+          @click="openQuickView(recipe)"
+          class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
+          title="View"
+        >
+          <!-- eye svg -->
+        </button>
+
+        <!-- Edit -->
+        <button
+          type="button"
+          @click.stop="openEditModal(recipe)"
+          class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
+          title="Edit"
+        >
+          <!-- pencil svg -->
+        </button>
+
+        <!-- Delete -->
+        <button
+          type="button"
+          @click.stop="deleteRecipe(recipe.id)"
+          class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors"
+          title="Delete"
+        >
+          <!-- trash svg -->
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
       </main>
     </div>
 
