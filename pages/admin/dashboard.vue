@@ -137,7 +137,7 @@
           <button
             type="button"
             class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
-            @click="router.push('/admin/profile')"
+            @click="router.push('/profile')"
           >
             {{ userInitial }}
           </button>
