@@ -89,9 +89,6 @@
       <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
-          <div class="text-sm text-slate-500">
-            Total: {{ filteredRecipes.length || 0 }}
-          </div>
         </div>
         <div class="flex items-center gap-3">
           <button

@@ -75,7 +75,6 @@
       <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-[#31572c]">Users Management</h1>
-          <div class="text-sm text-slate-500">Total: {{ users.length }}</div>
         </div>
         <div class="flex items-center gap-3">
           <button class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors" @click="router.push('/profile')">
@@ -88,8 +87,8 @@
         <!-- Create button -->
         <div class="max-w-7xl mx-auto flex justify-between items-center mb-8">
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Customers</h2>
-            <p class="text-xs text-slate-500">Showing {{ users.length }} customers</p>
+            <h2 class="text-xl font-bold text-slate-900">Users</h2>
+          
           </div>
           <button @click="openCreateUser" class="px-6 py-3 bg-[#588157] text-white rounded-2xl font-semibold hover:bg-[#476747] shadow-md transition-all flex items-center gap-2">
             + Create User
@@ -151,7 +150,6 @@
             </table>
             <div class="flex items-center justify-between px-4 py-3 text-xs text-slate-500 border-t border-slate-100">
               <span>Showing {{ users.length }} customers</span>
-              <div>25 per page</div>
             </div>
           </div>
         </div>
