@@ -290,53 +290,68 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
+// UI state
 const isSidebarOpen = ref(true)
 const activeMenu = ref('users')
 const loading = ref(false)
-const favorites = ref([])
 
-// Users from favorites + created users
+// Data
+const favorites = ref([])          // favorites API-дан келетiндер
+const createdUsers = ref([])       // admin осы беттен құрған юзерлер
+
+// Admin info
+const adminName = ref('Admin')
+const adminInitial = computed(() => adminName.value[0]?.toUpperCase() || 'A')
+
+// Sidebar menu
+const menuItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
+  { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
+  { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
+]
+
+// Users list (favorites + createdUsers)
 const users = computed(() => {
   const byUser = new Map()
-  
-  // 1. Favorites users (savedCount санау)
+
+  // 1. Favorites-тен юзерлер
   for (const fav of favorites.value) {
     const key = fav.userId || 'unknown'
     if (!key || !fav.username) continue
-    
+
     if (!byUser.has(key)) {
       byUser.set(key, {
         userId: key,
         username: fav.username,
         email: fav.email || '',
-        avatarUrl: '',
         savedCount: 0,
         lastSaved: ''
       })
     }
+
     const u = byUser.get(key)
-    u.savedCount++  // ✅ favorites болса +1
+    u.savedCount += 1
+
     const savedAt = fav.savedAt ? new Date(fav.savedAt) : null
     if (savedAt && (!u.lastSaved || savedAt > new Date(u.lastSaved))) {
       u.lastSaved = savedAt.toLocaleDateString()
     }
   }
-  
-  // 2. Created users (savedCount = 0)
-  for (const createdUser of createdUsers.value) {
-    const key = `created_${createdUser.email}`
+
+  // 2. Admin құрған юзерлер (favorites жоқ болса да көріну үшін)
+  for (const created of createdUsers.value) {
+    const key = `created_${created.email}`
     if (!byUser.has(key)) {
       byUser.set(key, {
         userId: key,
-        username: createdUser.name,
-        email: createdUser.email,
-        avatarUrl: '',
-        savedCount: 0,        // ✅ 0 recipes
-        lastSaved: new Date(createdUser.createdAt || Date.now()).toLocaleDateString()
+        username: created.name,
+        email: created.email,
+        savedCount: 0,
+        lastSaved: new Date(created.createdAt || Date.now()).toLocaleDateString()
       })
     }
   }
-  
+
   return Array.from(byUser.values()).map(u => ({
     ...u,
     initial: u.username ? u.username[0].toUpperCase() : 'U',
@@ -344,26 +359,20 @@ const users = computed(() => {
   }))
 })
 
-
-const adminName = ref('Admin')
-const adminInitial = computed(() => adminName.value[0]?.toUpperCase() || 'A')
-
-const menuItems = [
-  { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
-  { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
-  { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
-]
-
 // Info modal
 const showInfoModal = ref(false)
 const selectedUser = ref(null)
 
-// CREATE USER MODAL + REGISTER API
+const showUserInfo = (user) => {
+  selectedUser.value = user
+  showInfoModal.value = true
+}
+
+// Create user modal
 const showCreateModal = ref(false)
 const registerForm = ref({ name: '', email: '', password: '' })
 const registerLoading = ref(false)
 const registerError = ref('')
-const createdUsers = ref([])
 
 const openCreateUser = () => {
   registerForm.value = { name: '', email: '', password: '' }
@@ -375,6 +384,7 @@ const closeCreateModal = () => {
   showCreateModal.value = false
 }
 
+// Register (тек backend-ке жiбередi, favorites-ке емес)
 const handleRegister = async () => {
   if (!registerForm.value.name?.trim() || !registerForm.value.email?.trim() || !registerForm.value.password?.trim()) {
     registerError.value = 'Please fill all fields'
@@ -390,46 +400,40 @@ const handleRegister = async () => {
   registerLoading.value = true
 
   try {
-    // ✅ 1. Тек Register API (favorites-ке ЖІБЕРМЕ!)
     await $fetch('https://medical-backend-54hp.onrender.com/api/auth/register', {
       method: 'POST',
       body: registerForm.value
     })
 
-    // ✅ 2. Local createdUsers-ке сақта (table-да көрінсін, savedCount = 0)
+    // Local list-ке қосу (0 favorites-пен)
     createdUsers.value.push({
       name: registerForm.value.name,
       email: registerForm.value.email,
       createdAt: new Date().toISOString()
     })
 
-    registerError.value = ''
     closeCreateModal()
   } catch (error) {
     console.error('Register error:', error)
-    if (error.statusCode === 409 || error.statusCode === 400) {
+    if (error?.statusCode === 409 || error?.statusCode === 400) {
       registerError.value = 'This email address is already registered'
     } else {
-      registerError.value = error.data?.message || 'Registration failed'
+      registerError.value = error?.data?.message || 'Registration failed'
     }
   } finally {
     registerLoading.value = false
   }
 }
 
-
-
-const showUserInfo = (user) => {
-  selectedUser.value = user
-  showInfoModal.value = true
-}
-
+// Delete from list (favorites + createdUsers)
 const deleteUser = (userId) => {
-  if (confirm('Remove this user from list?')) {
-    favorites.value = favorites.value.filter(f => (f.userId || f.id) !== userId)
-  }
+  if (!confirm('Remove this user from list?')) return
+
+  favorites.value = favorites.value.filter(f => (f.userId || f.id) !== userId)
+  createdUsers.value = createdUsers.value.filter(u => `created_${u.email}` !== userId)
 }
 
+// Load all favorites (admin overview)
 const loadFavorites = async () => {
   loading.value = true
   try {
@@ -443,11 +447,15 @@ const loadFavorites = async () => {
   }
 }
 
+// Logout
 const logout = () => {
-  if (typeof window !== 'undefined') localStorage.clear()
+  if (typeof window !== 'undefined') {
+    localStorage.clear()
+  }
   router.push('/login')
 }
 
+// Mounted
 onMounted(async () => {
   if (typeof window !== 'undefined') {
     adminName.value = localStorage.getItem('userName') || 'Admin'
@@ -460,6 +468,7 @@ onMounted(async () => {
   await loadFavorites()
 })
 </script>
+
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
