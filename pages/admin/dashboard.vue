@@ -367,8 +367,7 @@ const userInitial = computed(() => adminName[0])
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠', to: '/admin/dashboard' },
   { key: 'recipes', label: 'Recipes', icon: '📖',  to: '/admin/recipes'  },
-  { key: 'users', label: 'Users', icon: '👥',to: '/admin/users' },
-  { key: 'saved', label: 'Saved', icon: '⭐' , to: '/admin/saved'}
+  { key: 'users', label: 'Users', icon: '👥',to: '/admin/users' }
 ]
 
 const logout = () => {
