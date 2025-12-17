@@ -87,7 +87,7 @@
 
       <!-- Content -->
       <main class="flex-1 px-8 py-8 overflow-y-auto">
-        <!-- Search + Create (бір сызықта) -->
+        <!-- Search + Create -->
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-6 mb-8">
           <div class="flex-1">
             <div class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
@@ -115,7 +115,6 @@
             </div>
           </div>
 
-          <!-- Create Recipe баттоны – search-пен бір қатарда, оң жақта -->
           <button
             @click="showCreateModal = true"
             class="flex items-center gap-2 px-6 py-3 bg-[#588157] text-white rounded-2xl font-semibold hover:bg-[#476747] shadow-md transition-all"
@@ -184,13 +183,12 @@
                 </span>
               </div>
 
-              <!-- Public / Private badge -->
+              <!-- Public / Private badge (MockAPI‑ден бәрін Public ретінде көрсетеміз) -->
               <div class="absolute top-2 right-3 text-[11px] font-semibold">
                 <span
-                  class="px-2 py-0.5 rounded-full text-xs shadow-md"
-                  :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'"
+                  class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white"
                 >
-                  {{ recipe.isPublic ? 'Public' : 'Private' }}
+                  Public
                 </span>
               </div>
 
@@ -204,18 +202,18 @@
                 </p>
               </div>
 
-              <!-- Bottom actions: 👁 + Edit/Delete -->
-              <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden">
-                <!-- 👁 eye icon button -->
+              <!-- Bottom actions: 3 ақ иконка -->
+              <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]">
+                <!-- View -->
                 <button
                   type="button"
                   @click="openQuickView(recipe)"
-                  class="flex-1 flex items-center justify-center bg-[#588157] hover:bg-[#476747] text-white transition-colors py-2.5"
+                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
                   title="View"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5"
+                    class="w-5 h-5 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -230,24 +228,50 @@
                   </svg>
                 </button>
 
-                <!-- Edit -->
+                <!-- Edit (ақ “карандаш” иконка) -->
                 <button
                   type="button"
                   @click.stop="openEditModal(recipe)"
-                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] border-l border-white/40 transition-colors py-2.5"
+                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
                   title="Edit"
                 >
-                  ✏️
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536M4 20h4.586L19.414 9.172a2 2 0 000-2.828l-2.758-2.758a2 2 0 00-2.828 0L4 14.586V20z"
+                    />
+                  </svg>
                 </button>
 
-                <!-- Delete -->
+                <!-- Delete (ақ “trash” иконка) -->
                 <button
                   type="button"
                   @click.stop="deleteRecipe(recipe.id)"
-                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40 transition-colors py-2.5"
+                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors"
                   title="Delete"
                 >
-                  🗑️
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -289,11 +313,8 @@
               <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
                 {{ quickViewRecipe?.area }}
               </span>
-              <span
-                class="px-2.5 py-1 rounded-full font-semibold"
-                :class="quickViewRecipe?.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'"
-              >
-                {{ quickViewRecipe?.isPublic ? 'Public' : 'Private' }}
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+                Public
               </span>
             </div>
 
@@ -319,7 +340,7 @@
       </div>
     </transition>
 
-    <!-- CREATE/EDIT MODAL (Кіші стиль) -->
+    <!-- CREATE/EDIT MODAL -->
     <transition name="fade">
       <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeModal">
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -421,7 +442,9 @@ const initClientData = () => {
 const loadRecipes = async () => {
   isLoading.value = true
   try {
-    recipes.value = await $fetch(`${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`)
+    const data = await $fetch(`${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`)
+    // Барлық MockAPI рецептерін filtered‑ке сол күйі береміз (public фильтрсіз)
+    recipes.value = data
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
     console.error('Failed to load recipes:', error)
