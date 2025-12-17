@@ -1,26 +1,5 @@
 <template>
   <div class="min-h-screen flex bg-[#f5f6f1] font-sans">
-    <!-- HEADER CARD -->
-    <div class="w-full bg-gradient-to-r from-[#fca311]/90 via-[#fca311]/70 to-[#f7931e]/90 text-white p-6 rounded-3xl shadow-2xl mb-8 mx-6 border-0">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-2 leading-tight">Recipes Dashboard</h1>
-        <p class="text-lg opacity-95 leading-relaxed max-w-2xl">
-          Monitor your recipe platform's performance, track user activity, and discover trending content in real-time.
-        </p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm">
-          <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full font-medium">
-            📊 Real-time stats
-          </span>
-          <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full font-medium">
-            👥 {{ stats.totalUsers }} active users
-          </span>
-          <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full font-medium">
-            📖 {{ stats.totalRecipes }} recipes
-          </span>
-        </div>
-      </div>
-    </div>
-
     <!-- SIDEBAR -->
     <aside
       :class="[
@@ -93,7 +72,7 @@
       <!-- Top bar -->
       <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm ring-2 ring-[#fca311]/30">
+          <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
             {{ userInitial }}
           </div>
         </div>
@@ -103,13 +82,13 @@
       <main class="flex-1 p-6 overflow-y-auto">
         <!-- Loading / error -->
         <div v-if="isLoading" class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-[#fca311]/20 border-t-[#fca311] rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
         </div>
 
-        <div v-else-if="error" class="max-w-4xl mx-auto bg-white rounded-2xl p-6 text-center ring-2 ring-[#fca311]/20">
+        <div v-else-if="error" class="max-w-4xl mx-auto bg-white rounded-2xl p-6 text-center">
           <p class="text-red-600 font-semibold mb-2">{{ error }}</p>
           <button
-            class="px-4 py-2 rounded-full bg-gradient-to-r from-[#588157] to-[#fca311]/60 text-white text-sm font-semibold hover:from-[#476747] hover:to-[#fca311] shadow-md hover:shadow-lg transition-all"
+            class="px-4 py-2 rounded-full bg-[#588157] text-white text-sm font-semibold hover:bg-[#476747]"
             @click="loadAll"
           >
             Retry
@@ -120,12 +99,12 @@
         <section v-else class="space-y-8">
           <!-- DETAIL VIEW -->
           <section v-if="detailMode" class="mb-6">
-            <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between ring-1 ring-[#fca311]/10">
+            <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
               <div>
-                <h2 class="text-base font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent" v-if="detailMode === 'saved'">
+                <h2 class="text-base font-semibold text-[#31572c]" v-if="detailMode === 'saved'">
                   Saved activity
                 </h2>
-                <h2 class="text-base font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent" v-else-if="detailMode === 'new'">
+                <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'new'">
                   New recipes (7 days)
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
@@ -133,7 +112,7 @@
                 </p>
               </div>
               <button
-                class="px-3 py-1.5 rounded-full text-xs font-semibold border border-[#fca311]/50 text-[#fca311] hover:bg-[#fca311]/90 hover:text-white hover:border-[#fca311] transition-all shadow-sm"
+                class="px-3 py-1.5 rounded-full text-xs font-semibold border border-[#588157] text-[#588157] hover:bg-[#588157] hover:text-white transition"
                 @click="backToOverview"
               >
                 Back to overview
@@ -141,7 +120,7 @@
             </div>
 
             <!-- Saved details table -->
-            <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto ring-1 ring-[#fca311]/10">
+            <div v-if="detailMode === 'saved'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
               <table class="min-w-full text-xs">
                 <thead>
                   <tr class="uppercase text-[10px] text-slate-400 border-b">
@@ -153,7 +132,7 @@
                   <tr
                     v-for="row in savedDetails"
                     :key="row.userId + '-' + row.recipeId"
-                    class="border-b last:border-b-0 hover:bg-slate-50/50 hover:ring-1 hover:ring-[#fca311]/20 transition-all"
+                    class="border-b last:border-b-0 hover:bg-slate-50"
                   >
                     <td class="py-2 pr-4 font-medium text-slate-800">
                       {{ row.userName }}
@@ -168,11 +147,11 @@
             </div>
 
             <!-- New recipes list -->
-            <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4 ring-1 ring-[#fca311]/10">
+            <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
               <ul class="divide-y divide-slate-100">
-                <li v-for="r in newRecipesList" :key="r.id" class="py-2.5 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                <li v-for="r in newRecipesList" :key="r.id" class="py-2.5 flex items-center justify-between">
                   <div class="overflow-hidden">
-                    <p class="text-sm font-medium text-slate-900 truncate hover:text-[#fca311]/90 transition-colors">{{ r.title }}</p>
+                    <p class="text-sm font-medium text-slate-900 truncate">{{ r.title }}</p>
                     <p class="text-xs text-slate-500">{{ r.area }} • {{ r.category }}</p>
                   </div>
                   <div class="text-right">
@@ -189,69 +168,69 @@
 
           <!-- Stats cards -->
           <section>
-            <h2 class="text-base font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent mb-4">Overall statistics</h2>
+            <h2 class="text-base font-semibold text-[#31572c] mb-4">Overall statistics</h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               <!-- Total users -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-[#fca311]/10 hover:ring-2 hover:ring-[#fca311]/20 transition-all cursor-pointer group" @click="router.push('/admin/users')">
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/users')">
                 <div class="flex items-start justify-between mb-2">
                   <div>
-                    <p class="text-xs text-slate-500 mb-1 group-hover:text-[#fca311]/70 transition-colors">Total users</p>
-                    <p class="text-2xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311]/80 bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.totalUsers }}</p>
+                    <p class="text-xs text-slate-500 mb-1">Total users</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.totalUsers }}</p>
                   </div>
-                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 group-hover:bg-[#fca311]/20 transition-all flex items-center justify-center text-lg">
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
                     <span>👥</span>
                   </div>
                 </div>
-                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 group-hover:bg-[#fca311]/20 group-hover:text-[#fca311]/90 transition-all">
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
                   from activity
                 </span>
               </div>
 
               <!-- Total recipes -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-[#fca311]/10 hover:ring-2 hover:ring-[#fca311]/20 transition-all cursor-pointer group" @click="router.push('/admin/recipes')">
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/recipes')">
                 <div class="flex items-start justify-between mb-2">
                   <div>
-                    <p class="text-xs text-slate-500 mb-1 group-hover:text-[#fca311]/70 transition-colors">Total recipes</p>
-                    <p class="text-2xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311]/80 bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.totalRecipes }}</p>
+                    <p class="text-xs text-slate-500 mb-1">Total recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.totalRecipes }}</p>
                   </div>
-                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 group-hover:bg-[#fca311]/20 transition-all flex items-center justify-center text-lg">
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
                     <span>📖</span>
                   </div>
                 </div>
-                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 group-hover:bg-[#fca311]/20 group-hover:text-[#fca311]/90 transition-all">
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
                   mockapi
                 </span>
               </div>
 
               <!-- Public recipes -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-[#fca311]/10 hover:ring-2 hover:ring-[#fca311]/20 transition-all group">
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
                 <div class="flex items-start justify-between mb-2">
                   <div>
-                    <p class="text-xs text-slate-500 mb-1 group-hover:text-[#fca311]/70 transition-colors">Public recipes</p>
-                    <p class="text-2xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311]/80 bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.publicRecipes }}</p>
+                    <p class="text-xs text-slate-500 mb-1">Public recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.publicRecipes }}</p>
                   </div>
-                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 group-hover:bg-[#fca311]/20 transition-all flex items-center justify-center text-lg">
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
                     <span>🌍</span>
                   </div>
                 </div>
-                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 group-hover:ring-1 group-hover:ring-[#fca311]/30 transition-all">
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">
                   visible on home
                 </span>
               </div>
 
               <!-- Private recipes -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-[#fca311]/10 hover:ring-2 hover:ring-[#fca311]/20 transition-all group">
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
                 <div class="flex items-start justify-between mb-2">
                   <div>
-                    <p class="text-xs text-slate-500 mb-1 group-hover:text-[#fca311]/70 transition-colors">Private recipes</p>
-                    <p class="text-2xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311]/80 bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.privateRecipes }}</p>
+                    <p class="text-xs text-slate-500 mb-1">Private recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.privateRecipes }}</p>
                   </div>
-                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 group-hover:bg-[#fca311]/20 transition-all flex items-center justify-center text-lg">
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
                     <span>🔒</span>
                   </div>
                 </div>
-                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 group-hover:bg-[#fca311]/20 group-hover:text-[#fca311]/90 transition-all">
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
                   only owner
                 </span>
               </div>
@@ -261,25 +240,25 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
               <!-- Total saved -->
               <div
-                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-xl hover:shadow-[#fca311]/20 hover:ring-2 hover:ring-[#fca311]/30 transition-all group"
+                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                 @click="openSavedDetails"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-sm font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent group-hover:scale-105 transition-all">Total saved</h3>
-                  <span class="text-[11px] text-slate-400 group-hover:text-[#fca311]/70 transition-colors">all time</span>
+                  <h3 class="text-sm font-semibold text-[#31572c]">Total saved</h3>
+                  <span class="text-[11px] text-slate-400">all time</span>
                 </div>
-                <p class="text-3xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311] bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.totalSaved }}</p>
+                <p class="text-3xl font-semibold text-slate-900">{{ stats.totalSaved }}</p>
               </div>
 
               <!-- New recipes (7 days) -->
               <div
-                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-xl hover:shadow-[#fca311]/20 hover:ring-2 hover:ring-[#fca311]/30 transition-all group"
+                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                 @click="openNewRecipesDetails"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-sm font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent group-hover:scale-105 transition-all">New recipes (7 days)</h3>
+                  <h3 class="text-sm font-semibold text-[#31572c]">New recipes (7 days)</h3>
                 </div>
-                <p class="text-2xl font-semibold bg-gradient-to-r from-slate-900 to-[#fca311] bg-clip-text text-transparent group-hover:from-[#fca311]/90">{{ stats.newRecipes7d }}</p>
+                <p class="text-2xl font-semibold text-slate-900">{{ stats.newRecipes7d }}</p>
               </div>
             </div>
           </section>
@@ -287,16 +266,16 @@
           <!-- Latest users & recipes -->
           <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <!-- Latest users -->
-            <div class="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md hover:shadow-[#fca311]/10 transition-all ring-1 ring-transparent hover:ring-[#fca311]/20">
-              <h3 class="text-sm font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent mb-3">Latest users</h3>
+            <div class="bg-white rounded-2xl shadow-sm p-4">
+              <h3 class="text-sm font-semibold text-[#31572c] mb-3">Latest users</h3>
               <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
-                <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] hover:bg-[#fca311]/20 hover:text-[#fca311] transition-all flex items-center justify-center text-xs font-semibold ring-1 ring-transparent hover:ring-[#fca311]/30">
+                    <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold">
                       {{ (u.name || 'U')[0]?.toUpperCase() }}
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-slate-900 hover:text-[#fca311]/90 transition-colors">{{ u.name || 'Unknown' }}</p>
+                      <p class="text-sm font-medium text-slate-900">{{ u.name || 'Unknown' }}</p>
                       <p class="text-xs text-slate-500">{{ u.email }}</p>
                     </div>
                   </div>
@@ -307,19 +286,19 @@
             </div>
 
             <!-- Latest recipes -->
-            <div class="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md hover:shadow-[#fca311]/10 transition-all ring-1 ring-transparent hover:ring-[#fca311]/20">
+            <div class="bg-white rounded-2xl shadow-sm p-4">
               <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent">Latest recipes</h3>
+                <h3 class="text-sm font-semibold text-[#31572c]">Latest recipes</h3>
               </div>
               <ul class="divide-y divide-slate-100">
-                <li v-for="r in latestRecipes" :key="r.id" class="py-2.5 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                <li v-for="r in latestRecipes" :key="r.id" class="py-2.5 flex items-center justify-between">
                   <div class="overflow-hidden">
-                    <p class="text-sm font-medium text-slate-900 truncate hover:text-[#fca311]/90 transition-colors">{{ r.title }}</p>
+                    <p class="text-sm font-medium text-slate-900 truncate">{{ r.title }}</p>
                     <p class="text-xs text-slate-500">{{ r.area }} • {{ r.category }}</p>
                   </div>
                   <div class="flex items-center gap-2">
                     <span
-                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold hover:ring-1 hover:ring-[#fca311]/30 transition-all"
+                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold"
                       :class="r.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
                     >
                       {{ r.isPublic ? 'Public' : 'Only you' }}
@@ -332,9 +311,9 @@
           </section>
 
           <!-- Most saved recipes -->
-          <section class="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md hover:shadow-[#fca311]/10 transition-all ring-1 ring-transparent hover:ring-[#fca311]/20">
+          <section class="bg-white rounded-2xl shadow-sm p-4">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="text-sm font-semibold bg-gradient-to-r from-[#31572c] to-[#fca311]/60 bg-clip-text text-transparent">Most saved recipes</h3>
+              <h3 class="text-sm font-semibold text-[#31572c]">Most saved recipes</h3>
             </div>
             <div v-if="mostSaved.length" class="overflow-x-auto">
               <table class="min-w-full text-xs">
@@ -346,12 +325,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in mostSaved" :key="item.id" class="border-b last:border-0 hover:bg-slate-50/50 transition-colors">
-                    <td class="py-2 pr-4 text-slate-900 hover:text-[#fca311]/90 transition-colors">{{ item.title }}</td>
-                    <td class="py-2 pr-4 text-slate-800 font-semibold">⭐ {{ item.savedCount }}</td>
+                  <tr v-for="item in mostSaved" :key="item.id" class="border-b last:border-0">
+                    <td class="py-2 pr-4 text-slate-900">{{ item.title }}</td>
+                    <td class="py-2 pr-4 text-slate-800">⭐ {{ item.savedCount }}</td>
                     <td class="py-2">
                       <span
-                        class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold hover:ring-1 hover:ring-[#fca311]/30 transition-all"
+                        class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
                         :class="item.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
                       >
                         {{ item.isPublic ? 'Public' : 'Only you' }}
