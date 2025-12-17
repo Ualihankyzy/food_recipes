@@ -1,37 +1,44 @@
 <template>
   <div class="min-h-screen w-full relative">
-    <!-- NAVBAR -->
-  <header class="w-full text-white flex justify-between items-center h-16 px-20 absolute top-0 left-0 z-40 mt-4">
-  <h1 class="text-2xl font-bold mr-20">Recipes</h1>
-
-  <nav class="flex items-center gap-6 text-lg relative">
-
-
-    <!-- 🔥 3. Auth/Guest логикасы (template ЖОҚ!) -->
- <!-- NAVBAR ішінде -->
-<div v-if="isAuth" class="flex items-center gap-4 ml-4">
-  <!-- 🔥 ROLE БОЙЫША DASHBOARD -->
-  <a 
-    :href="isAdmin ? '/admin/dashboard' : '/dashboard'" 
-    class="hover:underline font-semibold text-lg"
-  >
-    {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
-  </a>
-  
-  <!-- 🔥 АВАТАРКА – ROLE БОЙЫША -->
-<button 
-  @click="router.push('/profile')"
-  class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
+   <header 
+  class="w-full text-white flex items-center justify-between h-16 px-4 sm:px-8 lg:px-20 absolute top-0 left-0 z-40 mt-4"
 >
-  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
-    {{ userInitial }}
-  </div>
-</button>
-</div>
+  <!-- ЛОГО / ТИТЛ -->
+  <h1 class="text-lg sm:text-2xl font-bold mr-4 sm:mr-20">
+    Recipes
+  </h1>
 
+  <!-- NAV -->
+  <nav class="flex items-center gap-3 sm:gap-6 text-sm sm:text-lg relative">
+    <!-- AUTH -->
+    <div
+      v-if="isAuth"
+      class="flex items-center gap-2 sm:gap-4 ml-1 sm:ml-4"
+    >
+      <a
+        :href="isAdmin ? '/admin/dashboard' : '/dashboard'"
+        class="hidden xs:inline-block sm:inline-block hover:underline font-semibold text-sm sm:text-lg"
+      >
+        {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
+      </a>
 
-    
-    <div v-else class="flex items-center gap-4">
+      <button
+        @click="router.push('/profile')"
+        class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
+      >
+        <div
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+        >
+          {{ userInitial }}
+        </div>
+      </button>
+    </div>
+
+    <!-- GUEST -->
+    <div
+      v-else
+      class="flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-6 text-xs sm:text-2xl font-semibold"
+    >
       <a href="/login" class="hover:underline">Login</a>
       <a href="/signup" class="hover:underline">Register</a>
     </div>
@@ -39,51 +46,53 @@
 </header>
 
 
-    <!-- LIGHT PNG -->
-    <div class="w-full flex justify-center items-center gap-6 absolute z-20">
-      <img src="../public/images/light.png" class="w-64" />
-      <img src="../public/images/light.png" class="w-64" />
-      <img src="../public/images/light.png" class="w-64" />
-    </div>
+ <div
+  class="w-full flex justify-center items-center gap-6 absolute top-0 left-0 z-20  sm:mt-0"
+>
+  <img src="../public/images/light.png" class="w-56 sm:w-64" />
+  <img src="../public/images/light.png" class="w-64 hidden sm:block" />
+  <img src="../public/images/light.png" class="w-64 hidden sm:block" />
+</div>
 
-    <!-- HERO -->
-    <section class="relative w-full min-h-screen flex justify-center items-center">
-      <img
-        src="../public/images/pexels-catscoming-1907227 3.jpg"
-        class="absolute top-0 left-0 w-full h-full object-cover"
-      />
-      <div class="relative z-10 text-center text-white px-4 mb-56">
-        <h2 class="text-7xl handwriting">
-          Simple and Tasty <br />
-          Recipes
-        </h2>
-      </div>
-    </section>
 
-    <!-- POPULAR RECIPES (фотодагы блок, категориялардын үстінде) -->
-    <section class="w-full bg-slate-50  py-14 px-4 sm:px-8 lg:px-20">
+<section class="relative w-full h-[60vh] md:h-screen flex justify-center items-center overflow-hidden">
+  <img
+    src="../public/images/pexels-catscoming-1907227 3.jpg"
+    class="absolute inset-0 w-full h-full object-contain bg-black"
+  />
+  <div class="relative z-10 text-center text-white px-4 mb-36 md:mb-56">
+    <h2 class="text-3xl md:text-7xl handwriting leading-tight">
+      Simple and Tasty <br />
+      Recipes
+    </h2>
+  </div>
+</section>
+
+
+
+
+    <section class="w-full bg-slate-50 py-10 sm:py-14 px-4 sm:px-8 lg:px-20">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-2xl font-semibold text-slate-900">
-            Популярные рецепты
+          <h3 class="text-xl sm:text-2xl font-semibold text-slate-900">
+           Popular Recipes
           </h3>
           <button
             type="button"
-            class="text-sm text-sky-700 hover:text-sky-900 hover:underline"
+            class="text-xs sm:text-sm text-sky-700 hover:text-sky-900 hover:underline"
             @click="scrollToRecipes"
           >
-            Смотреть все →
+            
+See all →
           </button>
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
-          <!-- Сол жақ: үлкен + екі кіші -->
           <div class="grid gap-4 md:col-span-2">
-            <!-- Үлкен card -->
             <button
               v-if="topMeals[0]"
               type="button"
-              class="relative rounded-[26px] overflow-hidden h-64 w-full group"
+              class="relative rounded-[20px] sm:rounded-[26px] overflow-hidden h-52 sm:h-64 w-full group"
               @click="openPopularModal(topMeals[0])"
             >
               <img
@@ -91,22 +100,23 @@
                 :alt="topMeals[0].strMeal"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+              ></div>
               <span
-                class="absolute bottom-4 left-4 px-4 py-1.5 rounded-full bg-black/70 text-white text-sm font-medium flex items-center gap-2"
+                class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-3 sm:px-4 py-1.5 rounded-full bg-black/70 text-white text-xs sm:text-sm font-medium flex items-center gap-2"
               >
                 {{ topMeals[0].strMeal }}
-                <span class="text-base">View →</span>
+                <span class="text-sm sm:text-base">View →</span>
               </span>
             </button>
 
-            <!-- Төменгі екі кіші -->
             <div class="grid gap-4 sm:grid-cols-2">
               <button
                 v-for="(meal, idx) in topMeals.slice(1, 3)"
                 :key="'small-left-' + (meal?.idMeal || idx)"
                 type="button"
-                class="relative rounded-[22px] overflow-hidden h-44 w-full group"
+                class="relative rounded-[18px] sm:rounded-[22px] overflow-hidden h-40 sm:h-44 w-full group"
                 @click="openPopularModal(meal)"
               >
                 <img
@@ -114,23 +124,24 @@
                   :alt="meal.strMeal"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+                ></div>
                 <span
-                  class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-black/70 text-white text-xs font-medium flex items-center gap-2"
+                  class="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 px-2 sm:px-3 py-1.5 rounded-full bg-black/70 text-white text-[10px] sm:text-xs font-medium flex items-center gap-2"
                 >
                   {{ meal.strMeal }}
-                  <span class="text-sm">View →</span>
+                  <span class="text-xs sm:text-sm">View →</span>
                 </span>
               </button>
             </div>
           </div>
 
-          <!-- Оң жақ: бір үлкен, астында бір кіші -->
           <div>
             <button
               v-if="topMeals[3]"
               type="button"
-              class="relative rounded-[30px] overflow-hidden h-full min-h-[280px] w-full group"
+              class="relative rounded-[22px] sm:rounded-[30px] overflow-hidden h-52 sm:h-full min-h-[220px] sm:min-h-[280px] w-full group"
               @click="openPopularModal(topMeals[3])"
             >
               <img
@@ -138,19 +149,21 @@
                 :alt="topMeals[3].strMeal"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"
+              ></div>
               <span
-                class="absolute bottom-4 left-4 px-4 py-1.5 rounded-full bg-black/70 text-white text-sm font-medium flex items-center gap-2"
+                class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-3 sm:px-4 py-1.5 rounded-full bg-black/70 text-white text-xs sm:text-sm font-medium flex items-center gap-2"
               >
                 {{ topMeals[3].strMeal }}
-                <span class="text-base">View →</span>
+                <span class="text-sm sm:text-base">View →</span>
               </span>
             </button>
 
             <button
               v-if="topMeals[4]"
               type="button"
-              class="relative rounded-[22px] overflow-hidden h-40 w-full mt-4 group"
+              class="relative rounded-[18px] sm:rounded-[22px] overflow-hidden h-36 sm:h-40 w-full mt-4 group"
               @click="openPopularModal(topMeals[4])"
             >
               <img
@@ -158,12 +171,14 @@
                 :alt="topMeals[4].strMeal"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+              ></div>
               <span
-                class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-black/70 text-white text-xs font-medium flex items-center gap-2"
+                class="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 px-2 sm:px-3 py-1.5 rounded-full bg-black/70 text-white text-[10px] sm:text-xs font-medium flex items-center gap-2"
               >
                 {{ topMeals[4].strMeal }}
-                <span class="text-sm">View →</span>
+                <span class="text-xs sm:text-sm">View →</span>
               </span>
             </button>
           </div>
@@ -171,29 +186,14 @@
       </div>
     </section>
 
-    
-
-
-
-
-
-
-
-
-
-
-    <!-- КАТЕГОРИЯ/РЕЦЕПТТЕР GRID (өзіңнің бұрынғы кодың) -->
-    <div
-      class="min-h-screen w-full bg-slate-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-
-
-
-
-
-    <div class="w-full  mb-10">
+    <div class="min-h-screen w-full bg-slate-50 py-10 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+   <div 
+  class="w-full flex flex-row items-center gap-2 sm:gap-6 mb-8"
+>
   <div
-    class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md"
+    class="flex items-center gap-2 bg-white/90 border border-slate-200 rounded-2xl px-3 sm:px-5 py-2.5 sm:py-3 shadow-md
+           w-[70%] sm:w-[500px]"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -213,172 +213,177 @@
     <input
       v-model="searchQuery"
       type="text"
-      placeholder="search..."
-      class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
+      placeholder="Search..."
+      class="w-full bg-transparent outline-none text-xs sm:text-sm text-slate-800 placeholder:text-slate-400"
       @keyup.enter="scrollToRecipes"
     />
-
-    <button
-      type="button"
-      class="hidden sm:inline-flex px-4 py-2 rounded-xl bg-[#588157] text-white text-xs font-semibold hover:bg-slate-800 transition"
-      @click="scrollToRecipes"
-    >
-      Search
-    </button>
   </div>
+
+  <button
+    type="button"
+    class="w-[30%] sm:w-auto inline-flex justify-center px-4 py-2.5 rounded-xl bg-[#588157] text-white text-xs sm:text-sm font-semibold hover:bg-slate-800 transition"
+    @click="scrollToRecipes"
+  >
+    Search
+  </button>
 </div>
-    
-      <div class="max-w-7xl mx-auto mt-16">
-        
-        <div
-          ref="recipesSection"
-          v-if="!pending && !errorMessage && paginatedRecipes.length"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          <button
-            v-for="recipe in paginatedRecipes"
-            :key="recipe.id"
-            @click="openModal(recipe)"
-            class="bg-transparent text-left"
+
+
+
+        <div class="mt-6 sm:mt-16">
+          <div
+            ref="recipesSection"
+            v-if="!pending && !errorMessage && paginatedRecipes.length"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
           >
-            <div
-              class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center"
+            <button
+              v-for="recipe in paginatedRecipes"
+              :key="recipe.id"
+              @click="openModal(recipe)"
+              class="bg-transparent text-left"
             >
               <div
-                class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
+                class="relative bg-white rounded-3xl shadow-md w-full pt-10 pb-4 px-4 flex flex-col items-center"
               >
-                <img
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-
-              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                 <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
-    NEW
-  </span>
-  <span v-else-if="recipe.discount" class="text-red-500">
-    -{{ recipe.discount }}%
-  </span>
-              </div>
-
-              <div class="mt-12 w-full text-center flex flex-col gap-2">
-                <h3 class="text-sm font-semibold text-slate-900 leading-snug">
-                  {{ recipe.title }}
-                </h3>
-                <p class="text-[11px] text-slate-400">
-                  {{ recipe.category }} • {{ recipe.area }}
-                </p>
-                <p
-                  v-if="recipe.price"
-                  class="text-sm font-bold text-slate-900 mt-1"
+                <div
+                  class="absolute -top-10 left-1/2 -translate-x-1/2 w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
                 >
-                  {{ recipe.price }}
-                </p>
-              </div>
+                  <img
+                    :src="recipe.imageUrl"
+                    :alt="recipe.title"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
 
-              <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
-                <a
-                  v-if="recipe.youtubeUrl"
-                  :href="recipe.youtubeUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  @click.stop
-                  class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors"
+                <div
+                  class="absolute top-2 left-3 text-[10px] sm:text-[11px] font-semibold text-[#588157]"
                 >
-                  YouTube video
-                </a>
-                <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
+                  <span
+                    v-if="isNewRecipe(recipe)"
+                    class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-[10px] sm:text-xs shadow-lg"
+                  >
+                    NEW
+                  </span>
+                  <span v-else-if="recipe.discount" class="text-red-500">
+                    -{{ recipe.discount }}%
+                  </span>
+                </div>
 
-                <button
-                  v-if="isAuth"
-                  @click.stop="toggleFavorite(recipe.id)"
-                  class="w-24 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors"
-                >
-                  {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
-                </button>
+                <div class="mt-10 sm:mt-12 w-full text-center flex flex-col gap-2">
+                  <h3 class="text-sm font-semibold text-slate-900 leading-snug">
+                    {{ recipe.title }}
+                  </h3>
+                  <p class="text-[11px] text-slate-400">
+                    {{ recipe.category }} • {{ recipe.area }}
+                  </p>
+                  <p
+                    v-if="recipe.price"
+                    class="text-sm font-bold text-slate-900 mt-1"
+                  >
+                    {{ recipe.price }}
+                  </p>
+                </div>
+
+                <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
+                  <a
+                    v-if="recipe.youtubeUrl"
+                    :href="recipe.youtubeUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    @click.stop
+                    class="flex-1 flex items-center justify-center text-[11px] sm:text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors"
+                  >
+                    YouTube video
+                  </a>
+                  <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
+
+                  <button
+                    v-if="isAuth"
+                    @click.stop="toggleFavorite(recipe.id)"
+                    class="w-24 flex items-center justify-center text-[11px] sm:text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] border-l border-white/40 transition-colors"
+                  >
+                    {{ isFavorite(recipe.id) ? 'Saved' : 'Save' }}
+                  </button>
+                </div>
               </div>
-            </div>
-          </button>
-        </div>
-
-        <!-- loading / error / empty / pagination – сендегі сияқты -->
-        <div v-if="pending" class="flex justify-center py-20">
-          <div class="relative w-20 h-20">
-            <div
-              class="absolute inset-0 rounded-full border-4 border-transparent border-t-sky-400 animate-spin"
-            ></div>
-            <div
-              class="absolute inset-3 rounded-full border-4 border-transparent border-r-red-400 animate-spin-slow"
-            ></div>
-            <div
-              class="absolute inset-6 rounded-full border-4 border-transparent border-b-amber-400 animate-spin-slower"
-            ></div>
-          </div>
-        </div>
-
-        <div v-else-if="errorMessage" class="text-center py-16">
-          <p class="text-red-500 text-xl font-semibold mb-4">
-            {{ errorMessage }}
-          </p>
-          <button
-            @click="fetchRecipes"
-            class="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold"
-          >
-            Retry
-          </button>
-        </div>
-
-        <div v-else-if="!paginatedRecipes.length" class="text-center py-16">
-          <p class="text-slate-600 text-xl font-semibold mb-2">
-            No recipes found
-          </p>
-          <button
-            @click="fetchRecipes"
-            class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold"
-          >
-            Reload
-          </button>
-        </div>
-
-        <div
-          v-if="totalPages > 1"
-          class="mt-10 flex items-center justify-center gap-4 text-sm font-medium text-slate-700"
-        >
-          <button
-            class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
-            :disabled="currentPage === 1"
-            @click="goToPage(currentPage - 1)"
-          >
-            ‹ Previous
-          </button>
-
-          <div class="flex items-center gap-2">
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="goToPage(page)"
-              class="w-10 h-10 rounded-full flex items-center justify-center border text-sm"
-              :class="page === currentPage
-                ? 'bg-amber-400 text-black border-transparent'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'"
-            >
-              {{ page.toString().padStart(2, '0') }}
             </button>
           </div>
 
-          <button
-            class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
-            :disabled="currentPage === totalPages"
-            @click="goToPage(currentPage + 1)"
+          <div v-if="pending" class="flex justify-center py-20">
+            <div class="relative w-16 h-16 sm:w-20 sm:h-20">
+              <div
+                class="absolute inset-0 rounded-full border-4 border-transparent border-t-sky-400 animate-spin"
+              ></div>
+              <div
+                class="absolute inset-3 rounded-full border-4 border-transparent border-r-red-400 animate-spin-slow"
+              ></div>
+              <div
+                class="absolute inset-6 rounded-full border-4 border-transparent border-b-amber-400 animate-spin-slower"
+              ></div>
+            </div>
+          </div>
+
+          <div v-else-if="errorMessage" class="text-center py-16">
+            <p class="text-red-500 text-lg sm:text-xl font-semibold mb-4">
+              {{ errorMessage }}
+            </p>
+            <button
+              @click="fetchRecipes"
+              class="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm"
+            >
+              Retry
+            </button>
+          </div>
+
+          <div v-else-if="!paginatedRecipes.length" class="text-center py-16">
+            <p class="text-slate-600 text-lg sm:text-xl font-semibold mb-2">
+              No recipes found
+            </p>
+            <button
+              @click="fetchRecipes"
+              class="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm"
+            >
+              Reload
+            </button>
+          </div>
+
+          <div
+            v-if="totalPages > 1"
+            class="mt-8 sm:mt-10 flex items-center justify-center gap-4 text-xs sm:text-sm font-medium text-slate-700"
           >
-            Next ›
-          </button>
+            <button
+              class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="currentPage === 1"
+              @click="goToPage(currentPage - 1)"
+            >
+              ‹ Previous
+            </button>
+
+            <div class="flex items-center gap-1 sm:gap-2">
+              <button
+                v-for="page in totalPages"
+                :key="page"
+                @click="goToPage(page)"
+                class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border text-xs sm:text-sm"
+                :class="page === currentPage
+                  ? 'bg-amber-400 text-black border-transparent'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'"
+              >
+                {{ page.toString().padStart(2, '0') }}
+              </button>
+            </div>
+
+            <button
+              class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="currentPage === totalPages"
+              @click="goToPage(currentPage + 1)"
+            >
+              Next ›
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Сенің MODAL (локал рецептер) -->
       <transition name="fade">
         <div
           v-if="selectedRecipe"
@@ -388,7 +393,7 @@
           <div
             class="bg-white w-full max-w-md max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
-            <div class="relative h-48 w-full">
+            <div class="relative h-40 sm:h-48 w-full">
               <img
                 :src="selectedRecipe.imageUrl"
                 :alt="selectedRecipe.title"
@@ -402,14 +407,14 @@
               </button>
               <div class="absolute bottom-3 left-3 right-3">
                 <h2
-                  class="text-xl font-bold text-white drop-shadow-lg line-clamp-2"
+                  class="text-lg sm:text-xl font-bold text-white drop-shadow-lg line-clamp-2"
                 >
                   {{ selectedRecipe.title }}
                 </h2>
               </div>
             </div>
 
-            <div class="flex-1 p-5 overflow-y-auto custom-scrollbar">
+            <div class="flex-1 p-4 sm:p-5 overflow-y-auto custom-scrollbar">
               <div class="flex flex-wrap gap-2 mb-4">
                 <span
                   class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold"
@@ -465,7 +470,7 @@
                   rel="noopener noreferrer"
                   class="block w-full text-center py-3 px-4 rounded-xl bg-[#588157] hover:bg-red-600 text-white font-semibold text-sm transition-colors"
                 >
-                   YouTube video
+                  YouTube video
                 </a>
               </div>
             </div>
@@ -473,7 +478,6 @@
         </div>
       </transition>
 
-      <!-- POPULAR MODAL (TheMealDB view) -->
       <transition name="fade">
         <div
           v-if="popularSelected"
@@ -483,7 +487,7 @@
           <div
             class="bg-white w-full max-w-md max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
           >
-            <div class="relative h-48 w-full">
+            <div class="relative h-40 sm:h-48 w-full">
               <img
                 :src="popularSelected.strMealThumb"
                 :alt="popularSelected.strMeal"
@@ -497,14 +501,14 @@
               </button>
               <div class="absolute bottom-3 left-3 right-3">
                 <h2
-                  class="text-xl font-bold text-white drop-shadow-lg line-clamp-2"
+                  class="text-lg sm:text-xl font-bold text-white drop-shadow-lg line-clamp-2"
                 >
                   {{ popularSelected.strMeal }}
                 </h2>
               </div>
             </div>
 
-            <div class="flex-1 p-5 overflow-y-auto custom-scrollbar">
+            <div class="flex-1 p-4 sm:p-5 overflow-y-auto custom-scrollbar">
               <div class="flex flex-wrap gap-2 mb-4">
                 <span
                   class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold"
@@ -555,7 +559,7 @@
                   rel="noopener noreferrer"
                   class="block w-full text-center py-3 px-4 rounded-xl bg-[#588157] hover:bg-red-600 text-white font-semibold text-sm transition-colors"
                 >
-                 YouTube video
+                  YouTube video
                 </a>
               </div>
             </div>
@@ -566,10 +570,6 @@
   </div>
 </template>
 
-
-
-
-
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from '#app'
@@ -577,7 +577,6 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-/* ---------- USER / AUTH ---------- */
 const userId = ref('')
 const userName = ref('')
 const userEmail = ref('')
@@ -589,21 +588,17 @@ const userInitial = computed(() =>
   userName.value ? userName.value[0]?.toUpperCase() : 'U'
 )
 
-/* ---------- UI STATE ---------- */
 const showSearch = ref(false)
 const searchQuery = ref('')
 const recipesSection = ref(null)
 const activeLetter = ref(null)
 
-/* ---------- DATA ---------- */
 const recipes = ref([])
 const pending = ref(true)
 const errorMessage = ref(null)
 
-/* ---------- FAVORITES ---------- */
 const favorites = ref([])
 
-/* ---------- POPULAR (TheMealDB) ---------- */
 const topMeals = ref([])
 const popularSelected = ref(null)
 
@@ -621,14 +616,11 @@ const popularIngredients = computed(() => {
   return arr
 })
 
-/* ---------- LOCAL MODAL (LOCAL RECIPES) ---------- */
 const selectedRecipe = ref(null)
 
-/* ---------- PAGINATION ---------- */
 const currentPage = ref(1)
 const pageSize = 8
 
-/* ---------- COMPUTEDS ---------- */
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
@@ -660,7 +652,6 @@ const paginatedRecipes = computed(() => {
   return filteredRecipes.value.slice(start, start + pageSize)
 })
 
-/* ---------- HELPERS ---------- */
 const isNewRecipe = recipe => {
   if (!recipe.createdAt) return false
   const createdDate = new Date(recipe.createdAt)
@@ -670,7 +661,6 @@ const isNewRecipe = recipe => {
   return diffDays <= 7
 }
 
-/* ---------- API: RECIPES ---------- */
 const fetchRecipes = async () => {
   try {
     pending.value = true
@@ -692,7 +682,6 @@ const fetchRecipes = async () => {
   }
 }
 
-/* ---------- API: POPULAR (TheMealDB) ---------- */
 const fetchPopularMeals = async () => {
   try {
     const res = await $fetch(
@@ -708,7 +697,6 @@ const openPopularModal = meal => {
   popularSelected.value = meal
 }
 
-/* ---------- API: FAVORITES ---------- */
 const loadFavorites = async () => {
   if (!userId.value) return
   try {
@@ -757,7 +745,6 @@ const toggleFavorite = async recipeId => {
 const isFavorite = recipeId =>
   favorites.value.some(f => f.recipeId === recipeId)
 
-/* ---------- MODALS / SCROLL ---------- */
 const openModal = recipe => {
   selectedRecipe.value = recipe
 }
@@ -774,7 +761,6 @@ const handleScroll = () => {
   if (window.scrollY < 100) showSearch.value = false
 }
 
-/* ---------- PAGINATION ACTION ---------- */
 const goToPage = page => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
@@ -785,7 +771,6 @@ const goToPage = page => {
   })
 }
 
-/* ---------- AUTH SETUP ---------- */
 const setupUser = () => {
   if (typeof window === 'undefined') return
 
@@ -810,7 +795,6 @@ const setupUser = () => {
   isAdmin.value = userRole.value === 'admin'
 }
 
-/* ---------- LIFECYCLE (БІР-АҚ onMounted!) ---------- */
 onMounted(async () => {
   setupUser()
   if (typeof window !== 'undefined') {
@@ -827,12 +811,10 @@ onUnmounted(() => {
   }
 })
 
-/* ---------- WATCHERS ---------- */
 watch(searchQuery, () => {
   activeLetter.value = null
 })
 </script>
-
 
 <style>
 * {
