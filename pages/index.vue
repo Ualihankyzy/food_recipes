@@ -602,13 +602,14 @@ onMounted(async () => {
 
 
 // 🔥 onMounted-ты осылай өзгертіңіз (setupUser жоқ болса)
+// 🔥 onMounted ішінде userId-ны EMAIL ретінде алу
 onMounted(async () => {
-  // User мәліметтерін алу
   if (typeof window !== 'undefined') {
     userName.value = localStorage.getItem('userName') || 'User'
-    userId.value = localStorage.getItem('userId') || ''
+    userId.value = localStorage.getItem('userId') || localStorage.getItem('userEmail') || ''  // ✅ EMAIL
     const token = localStorage.getItem('token')
     isAuth.value = !!userId.value || !!token
+    isAdmin.value = localStorage.getItem('role') === 'admin'
   }
   
   window.addEventListener('scroll', handleScroll)
@@ -712,41 +713,52 @@ onMounted(async () => {
 // Favorites
 const loadFavorites = async () => {
   if (!userId.value) return
+  
   try {
+    // ✅ userId = email бойынша сүзгі
     favorites.value = await $fetch(
       `${MOCK_API_URL}/favorites?userId=${userId.value}`
-    )
+    ) || []
   } catch (e) {
     favorites.value = []
   }
 }
+
 
 const toggleFavorite = async (recipeId) => {
   if (!userId.value) {
     router.push('/login')
     return
   }
+  
   try {
     const exists = favorites.value.find((f) => f.recipeId === recipeId)
+    
     if (exists) {
+      // Delete
       await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
-    await $fetch(`${MOCK_API_URL}/favorites`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: {
-    recipeId,
-    userId: userId.value,
-    username: userName.value,   // 👈 МІНЕ ОСЫ
-    savedAt: new Date().toISOString(),
-  },
+      // ✅ CREATE: EMAIL + USERNAME + email field
+      await $fetch(`${MOCK_API_URL}/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+          recipeId,
+          userId: userId.value,                    // ✅ EMAIL (bvcxz@gmail.com)
+          username: userName.value || 'User',      // ✅ NAME (bvcxz)
+          email: userId.value,                     // ✅ EMAIL дубликат
+          savedAt: new Date().toISOString(),
+          savedCount: 0
+        }
       })
     }
+    
     await loadFavorites()
   } catch (e) {
-    console.error('Favorite қатесі:', e)
+    console.error('Favorite error:', e)
   }
 }
+
 
 const isFavorite = (recipeId) =>
   favorites.value.some((f) => f.recipeId === recipeId)
