@@ -218,6 +218,7 @@
                 Discard Changes
               </button>
               <button
+              :disabled="!isFormValid"
                 type="button"
                 @click="saveProfile"
                 class="px-6 md:px-8 py-2.5 rounded-full bg-[#588157] text-white text-sm font-semibold hover:bg-[#a3b18a] shadow-lg transform hover:-translate-y-0.5 transition-all"
@@ -366,6 +367,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -424,6 +426,18 @@ const loadProfileData = async () => {
     isLoading.value = false
   }
 }
+
+
+
+const isFormValid = computed(() => {
+  return (
+    form.value.firstName.trim() !== '' &&
+    form.value.email.trim() !== '' &&
+    form.value.phone.trim() !== ''
+  )
+})
+
+
 
 const saveProfile = async () => {
   const token = localStorage.getItem('token')

@@ -851,6 +851,16 @@ const closeModal = () => {
 }
 
 const saveRecipe = async () => {
+  // Form validation
+  if (
+    !currentForm.value.title?.trim() ||
+    !currentForm.value.category?.trim() ||
+    !currentForm.value.area?.trim()
+  ) {
+    alert("Please fill in all required fields: Title, Category, Area.")
+    return
+  }
+
   isLoading.value = true
   try {
     const clientUserId = process.client
@@ -868,6 +878,7 @@ const saveRecipe = async () => {
         method: 'POST',
         body: newRecipe
       })
+      alert("Recipe created successfully!") 
     } else {
       await $fetch(
         `${MOCK_API_URL}/recipes/${currentForm.value.id}`,
@@ -876,16 +887,19 @@ const saveRecipe = async () => {
           body: currentForm.value
         }
       )
+      alert("Recipe updated successfully!") 
     }
+
     await loadRecipes()
     closeModal()
   } catch (error) {
     console.error('Save failed:', error)
-    alert('Save failed. Please try again.')
+    alert("Save failed. Please try again.") 
   } finally {
     isLoading.value = false
   }
 }
+
 
 const deleteRecipe = async id => {
   if (!confirm('Delete this recipe?')) return
