@@ -150,7 +150,11 @@
         </div>
 
         <!-- Recipes Grid -->
-        <div v-else class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+     <div
+  v-else
+  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8"
+>
+
           <div
             v-for="recipe in filteredRecipes"
             :key="recipe.id"
