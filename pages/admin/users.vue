@@ -389,18 +389,28 @@ const handleRegister = async () => {
   registerLoading.value = true
 
   try {
-    // Register API
+    // ✅ 1. Register API (нақты backend)
     await $fetch('https://medical-backend-54hp.onrender.com/api/auth/register', {
       method: 'POST',
       body: registerForm.value
     })
 
-    // Add to local created users list (will appear in table)
-    createdUsers.value.push({
-      name: registerForm.value.name,
-      email: registerForm.value.email
+    // ✅ 2. MockAPI favorites-ке қосу (table-да көрінсін)
+    await $fetch(`${MOCK_API_URL}/favorites`, {
+      method: 'POST',
+      body: {
+        userId: registerForm.value.email,        // unique ID
+        username: registerForm.value.name,       // Name
+        email: registerForm.value.email,         // ✅ EMAIL САҚТАЛАДЫ
+        avatarUrl: '',
+        savedCount: 0,
+        savedAt: new Date().toISOString()        // Last activity
+      }
     })
 
+    // ✅ 3. Table refresh
+    await loadFavorites()
+    
     registerError.value = ''
     closeCreateModal()
   } catch (error) {
@@ -414,6 +424,7 @@ const handleRegister = async () => {
     registerLoading.value = false
   }
 }
+
 
 const showUserInfo = (user) => {
   selectedUser.value = user
