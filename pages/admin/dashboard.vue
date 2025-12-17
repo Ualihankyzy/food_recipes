@@ -28,7 +28,7 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-  @click="() => { 
+          @click="() => { 
             activeMenu = item.key; 
             item.to && router.push(item.to); 
           }"
@@ -42,61 +42,62 @@
                 : '-translate-x-full'
             ]"
           ></span>
-        <span
-  class="relative z-10 flex-shrink-0"
-  :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
->
-  <!-- Dashboard icon -->
-  <svg
-    v-if="item.icon === 'dashboard'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
-    />
-  </svg>
 
-  <!-- Recipes (BOOK) icon -->
-  <svg
-    v-else-if="item.icon === 'recipes'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"
-    />
-  </svg>
+          <span
+            class="relative z-10 flex-shrink-0"
+            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
+          >
+            <!-- Dashboard icon -->
+            <svg
+              v-if="item.icon === 'dashboard'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
+              />
+            </svg>
 
-  <!-- Users icon -->
-  <svg
-    v-else-if="item.icon === 'users'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
-    />
-  </svg>
-</span>
+            <!-- Recipes (BOOK) icon -->
+            <svg
+              v-else-if="item.icon === 'recipes'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"
+              />
+            </svg>
+
+            <!-- Users icon -->
+            <svg
+              v-else-if="item.icon === 'users'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
+              />
+            </svg>
+          </span>
 
           <span
             v-if="isSidebarOpen"
@@ -123,26 +124,25 @@
     <!-- MAIN -->
     <div class="flex-1 flex flex-col">
       <!-- Top bar -->
-   <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
-  <div class="flex items-center gap-4">
-    <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
-    <div class="text-sm text-slate-500">
-      Total: {{ filteredRecipes.length }}
-    </div>
-  </div>
+      <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
+        <div class="flex items-center gap-4">
+          <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
+          <div class="text-sm text-slate-500">
+            <!-- filteredRecipes жоқ, сондықтан жалпы санды stats.totalRecipes‑тен аламыз -->
+            Total: {{ stats.totalRecipes }}
+          </div>
+        </div>
 
-  <div class="flex items-center gap-3">
-    <button
-      type="button"
-      class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
-      @click="router.push('/admin/profile')"
-    >
-      {{ userInitial }}
-    </button>
-  </div>
-</header>
-
-
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
+            @click="router.push('/admin/profile')"
+          >
+            {{ userInitial }}
+          </button>
+        </div>
+      </header>
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-y-auto">
@@ -235,10 +235,13 @@
           <!-- Stats cards -->
           <section>
             <h2 class="text-base font-semibold text-[#31572c] mb-4">Overall statistics</h2>
-            
+
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               <!-- Total users -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/users')">
+              <div
+                class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer"
+                @click="router.push('/admin/users')"
+              >
                 <div class="flex items-start justify-between mb-2">
                   <div>
                     <p class="text-xs text-slate-500 mb-1">Total users</p>
@@ -254,7 +257,10 @@
               </div>
 
               <!-- Total recipes -->
-              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/recipes')">
+              <div
+                class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer"
+                @click="router.push('/admin/recipes')"
+              >
                 <div class="flex items-start justify-between mb-2">
                   <div>
                     <p class="text-xs text-slate-500 mb-1">Total recipes</p>
@@ -302,7 +308,7 @@
               </div>
             </div>
 
-            <!-- 🔥 TOTAL SAVED ONLY (Active users өшірілді) -->
+            <!-- Total saved & new recipes -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
               <!-- Total saved -->
               <div
@@ -334,7 +340,7 @@
             <!-- Latest users -->
             <div class="bg-white rounded-2xl shadow-sm p-4">
               <h3 class="text-sm font-semibold text-[#31572c] mb-3">Latest users</h3>
-              <ul v-if="latestUsers.length" class="divide-y divide-slate-100">
+              <ul v-if="latestUsers && latestUsers.length" class="divide-y divide-slate-100">
                 <li v-for="u in latestUsers" :key="u.id" class="py-2.5 flex items-center justify-between">
                   <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-xs font-semibold">
@@ -356,7 +362,7 @@
               <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-semibold text-[#31572c]">Latest recipes</h3>
               </div>
-              <ul class="divide-y divide-slate-100">
+              <ul v-if="latestRecipes && latestRecipes.length" class="divide-y divide-slate-100">
                 <li v-for="r in latestRecipes" :key="r.id" class="py-2.5 flex items-center justify-between">
                   <div class="overflow-hidden">
                     <p class="text-sm font-medium text-slate-900 truncate">{{ r.title }}</p>
@@ -373,6 +379,7 @@
                   </div>
                 </li>
               </ul>
+              <p v-else class="text-xs text-slate-400">No recipes yet.</p>
             </div>
           </section>
 
@@ -381,7 +388,7 @@
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-sm font-semibold text-[#31572c]">Most saved recipes</h3>
             </div>
-            <div v-if="mostSaved.length" class="overflow-x-auto">
+            <div v-if="mostSaved && mostSaved.length" class="overflow-x-auto">
               <table class="min-w-full text-xs">
                 <thead>
                   <tr class="uppercase text-[10px] text-slate-400 border-b">
@@ -425,14 +432,13 @@ const isSidebarOpen = ref(true)
 const activeMenu = ref('dashboard')
 
 const adminName = 'Admin'
-const userInitial = computed(() => adminName[0])
+const userInitial = computed(() => adminName[0] || 'A')
 
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
   { key: 'recipes',   label: 'Recipes',   icon: 'recipes',   to: '/admin/recipes' },
   { key: 'users',     label: 'Users',     icon: 'users',     to: '/admin/users' }
 ]
-
 
 const logout = () => {
   if (process.client) {
@@ -509,6 +515,7 @@ const loadAll = async () => {
       if (!savedCountMap[f.recipeId]) savedCountMap[f.recipeId] = 0
       savedCountMap[f.recipeId]++
     })
+
     const withCounts = recipes
       .map(r => ({
         ...r,
@@ -517,9 +524,10 @@ const loadAll = async () => {
       .filter(r => r.savedCount > 0)
       .sort((a, b) => b.savedCount - a.savedCount)
       .slice(0, 5)
+
     mostSaved.value = withCounts
 
-    // NEW RECIPES LIST
+    // New recipes list
     newRecipesList.value = recipes
       .filter(r => diffDays(r.createdAt) <= 7)
       .sort((a, b) => {
@@ -528,7 +536,7 @@ const loadAll = async () => {
         return bD - aD
       })
 
-    // SAVED DETAILS
+    // Saved details
     savedDetails.value = favorites
       .map(f => {
         const recipe = recipes.find(r => r.id === f.recipeId)
@@ -541,8 +549,9 @@ const loadAll = async () => {
       })
       .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
 
-    // LATEST USERS
+    // Latest users
     const allUsers = new Map()
+
     favorites.forEach(f => {
       if (f.username) {
         allUsers.set(f.userId, {
@@ -553,6 +562,7 @@ const loadAll = async () => {
         })
       }
     })
+
     recipes.forEach(r => {
       if (r.userId && !allUsers.has(r.userId)) {
         allUsers.set(r.userId, {
@@ -563,6 +573,7 @@ const loadAll = async () => {
         })
       }
     })
+
     stats.totalUsers = allUsers.size
     latestUsers.value = Array.from(allUsers.values())
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -577,12 +588,12 @@ const loadAll = async () => {
 }
 
 const openSavedDetails = () => {
-  if (!savedDetails.value.length) return
+  if (!savedDetails.value || !savedDetails.value.length) return
   detailMode.value = 'saved'
 }
 
 const openNewRecipesDetails = () => {
-  if (!newRecipesList.value.length) return
+  if (!newRecipesList.value || !newRecipesList.value.length) return
   detailMode.value = 'new'
 }
 

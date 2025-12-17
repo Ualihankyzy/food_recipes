@@ -32,61 +32,26 @@
             class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
             :class="[activeMenu === item.key && isSidebarOpen ? 'translate-x-0' : '-translate-x-full']"
           ></span>
-         <span
-  class="relative z-10 flex-shrink-0"
-  :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
->
-  <!-- Dashboard icon -->
-  <svg
-    v-if="item.icon === 'dashboard'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
-    />
-  </svg>
+          
+          <span
+            class="relative z-10 flex-shrink-0"
+            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
+          >
+            <!-- Dashboard icon -->
+            <svg v-if="item.icon === 'dashboard'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"/>
+            </svg>
 
-  <!-- Recipes (BOOK) icon -->
-  <svg
-    v-else-if="item.icon === 'recipes'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"
-    />
-  </svg>
+            <!-- Recipes icon -->
+            <svg v-else-if="item.icon === 'recipes'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"/>
+            </svg>
 
-  <!-- Users icon -->
-  <svg
-    v-else-if="item.icon === 'users'"
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
-    />
-  </svg>
-</span>
+            <!-- Users icon -->
+            <svg v-else-if="item.icon === 'users'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"/>
+            </svg>
+          </span>
 
           <span
             v-if="isSidebarOpen"
@@ -125,13 +90,17 @@
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
           <div class="text-sm text-slate-500">
-            Total: {{ filteredRecipes.length }}
+            Total: {{ filteredRecipes.length || 0 }}
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md">
+          <button
+            type="button"
+            class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
+            @click="router.push('/admin/profile')"
+          >
             {{ userInitial }}
-          </div>
+          </button>
         </div>
       </header>
 
@@ -141,19 +110,8 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-6 mb-8">
           <div class="flex-1">
             <div class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5 text-slate-400 flex-shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"/>
               </svg>
               <input
                 v-model="searchQuery"
@@ -200,11 +158,7 @@
         </div>
 
         <!-- Recipes Grid -->
-     <div
-  v-else
-  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10  mt-14"
->
-
+        <div v-else class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-14">
           <div
             v-for="recipe in filteredRecipes"
             :key="recipe.id"
@@ -219,29 +173,21 @@
                   :alt="recipe.title"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div
-                  v-else
-                  class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center"
-                >
+                <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
                   <span class="text-2xl">📖</span>
                 </div>
               </div>
 
               <!-- NEW badge -->
               <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                <span
-                  v-if="isNewRecipe(recipe)"
-                  class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg"
-                >
+                <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
                   NEW
                 </span>
               </div>
 
-              <!-- Public / Private badge (MockAPI‑ден бәрін Public ретінде көрсетеміз) -->
+              <!-- Public badge -->
               <div class="absolute top-2 right-3 text-[11px] font-semibold">
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white"
-                >
+                <span class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white">
                   Public
                 </span>
               </div>
@@ -256,7 +202,7 @@
                 </p>
               </div>
 
-              <!-- Bottom actions: 3 ақ иконка -->
+              <!-- Bottom actions -->
               <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]">
                 <!-- View -->
                 <button
@@ -265,66 +211,33 @@
                   class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
                   title="View"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                    <circle cx="12" cy="12" r="3" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
                   </svg>
                 </button>
 
-                <!-- Edit (ақ “карандаш” иконка) -->
+                <!-- Edit -->
                 <button
                   type="button"
                   @click.stop="openEditModal(recipe)"
                   class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
                   title="Edit"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15.232 5.232l3.536 3.536M4 20h4.586L19.414 9.172a2 2 0 000-2.828l-2.758-2.758a2 2 0 00-2.828 0L4 14.586V20z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 20h4.586L19.414 9.172a2 2 0 000-2.828l-2.758-2.758a2 2 0 00-2.828 0L4 14.586V20z"/>
                   </svg>
                 </button>
 
-                <!-- Delete (ақ “trash” иконка) -->
+                <!-- Delete -->
                 <button
                   type="button"
                   @click.stop="deleteRecipe(recipe.id)"
                   class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors"
                   title="Delete"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"/>
                   </svg>
                 </button>
               </div>
@@ -336,56 +249,30 @@
 
     <!-- QUICK VIEW MODAL -->
     <transition name="fade">
-      <div
-        v-if="showQuickViewModal"
-        class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
-        @click.self="showQuickViewModal = false"
-      >
+      <div v-if="showQuickViewModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6" @click.self="showQuickViewModal = false">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
           <div class="p-6 border-b border-[#d0d3c8] flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-[#31572c]">
-              {{ quickViewRecipe?.title }}
-            </h2>
-            <button @click="showQuickViewModal = false" class="text-2xl hover:text-[#588157]">
-              ✕
-            </button>
+            <h2 class="text-2xl font-bold text-[#31572c]">{{ quickViewRecipe?.title }}</h2>
+            <button @click="showQuickViewModal = false" class="text-2xl hover:text-[#588157]">✕</button>
           </div>
           <div class="p-6 max-h-[70vh] overflow-y-auto space-y-4">
             <div class="w-full h-64 rounded-2xl overflow-hidden bg-slate-100 mb-4">
-              <img
-                v-if="quickViewRecipe?.imageUrl"
-                :src="quickViewRecipe.imageUrl"
-                :alt="quickViewRecipe.title"
-                class="w-full h-full object-cover"
-              />
+              <img v-if="quickViewRecipe?.imageUrl" :src="quickViewRecipe.imageUrl" :alt="quickViewRecipe.title" class="w-full h-full object-cover"/>
             </div>
 
             <div class="flex flex-wrap gap-2 text-xs">
-              <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
-                {{ quickViewRecipe?.category }}
-              </span>
-              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-                {{ quickViewRecipe?.area }}
-              </span>
-              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-                Public
-              </span>
+              <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">{{ quickViewRecipe?.category }}</span>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">{{ quickViewRecipe?.area }}</span>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold">Public</span>
             </div>
 
             <div v-if="quickViewRecipe?.instructions">
               <h3 class="text-lg font-semibold text-[#31572c] mb-2">Instructions</h3>
-              <p class="text-sm text-slate-700 whitespace-pre-line leading-relaxed">
-                {{ quickViewRecipe.instructions }}
-              </p>
+              <p class="text-sm text-slate-700 whitespace-pre-line leading-relaxed">{{ quickViewRecipe.instructions }}</p>
             </div>
 
             <div v-if="quickViewRecipe?.youtubeUrl" class="pt-2">
-              <a
-                :href="quickViewRecipe.youtubeUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#588157] hover:bg-[#476747] text-white font-semibold text-sm transition-colors"
-              >
+              <a :href="quickViewRecipe.youtubeUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#588157] hover:bg-[#476747] text-white font-semibold text-sm transition-colors">
                 Open YouTube
               </a>
             </div>
@@ -399,29 +286,27 @@
       <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeModal">
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
-            <h3 class="text-lg font-semibold text-[#31572c]">
-              {{ showCreateModal ? 'Create Recipe' : 'Edit Recipe' }}
-            </h3>
+            <h3 class="text-lg font-semibold text-[#31572c]">{{ showCreateModal ? 'Create Recipe' : 'Edit Recipe' }}</h3>
             <button @click="closeModal" class="text-[#6c7570] hover:text-black text-xl">✕</button>
           </div>
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Title</label>
-              <input v-model="currentForm.title" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+              <input v-model="currentForm.title" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"/>
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="block text-xs font-semibold text-[#31572c] mb-1">Category</label>
-                <input v-model="currentForm.category" placeholder="e.g. Beef" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+                <input v-model="currentForm.category" placeholder="e.g. Beef" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"/>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-[#31572c] mb-1">Area</label>
-                <input v-model="currentForm.area" placeholder="e.g. Italian" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+                <input v-model="currentForm.area" placeholder="e.g. Italian" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"/>
               </div>
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Image URL</label>
-              <input v-model="currentForm.imageUrl" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+              <input v-model="currentForm.imageUrl" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"/>
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">Instructions</label>
@@ -429,7 +314,7 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#31572c] mb-1">YouTube Link</label>
-              <input v-model="currentForm.youtubeUrl" placeholder="https://youtube.com/..." class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
+              <input v-model="currentForm.youtubeUrl" placeholder="https://youtube.com/..." class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"/>
             </div>
             <div class="flex items-center gap-3 pt-2">
               <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
@@ -450,7 +335,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeMount } from 'vue'
+import { ref, computed, onMounted, onBeforeMount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -476,11 +361,9 @@ const userInitial = computed(() => userName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
-  { key: 'recipes',   label: 'Recipes',   icon: 'recipes',   to: '/admin/recipes' },
-  { key: 'users',     label: 'Users',     icon: 'users',     to: '/admin/users' }
+  { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
+  { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
-
-
 
 const logout = () => {
   if (process.client) localStorage.clear()
@@ -498,8 +381,7 @@ const loadRecipes = async () => {
   isLoading.value = true
   try {
     const data = await $fetch(`${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`)
-    // Барлық MockAPI рецептерін filtered‑ке сол күйі береміз (public фильтрсіз)
-    recipes.value = data
+    recipes.value = Array.isArray(data) ? data : []
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
     console.error('Failed to load recipes:', error)
@@ -511,10 +393,16 @@ const loadRecipes = async () => {
 }
 
 const filterRecipes = () => {
+  if (!recipes.value.length) {
+    filteredRecipes.value = []
+    return
+  }
+  
   if (!searchQuery.value.trim()) {
     filteredRecipes.value = [...recipes.value]
     return
   }
+  
   const q = searchQuery.value.toLowerCase()
   filteredRecipes.value = recipes.value.filter(recipe =>
     recipe.title?.toLowerCase().includes(q) ||
@@ -534,7 +422,7 @@ const isNewRecipe = (recipe) => {
 }
 
 const openEditModal = (recipe) => {
-  currentForm.value = { ...recipe }
+  currentForm.value = { ...recipe, isPublic: recipe.isPublic !== false }
   showEditModal.value = true
   showCreateModal.value = false
 }
@@ -554,7 +442,8 @@ const saveRecipe = async () => {
       const newRecipe = {
         ...currentForm.value,
         userId: clientUserId,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        isPublic: currentForm.value.isPublic !== false
       }
       await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: newRecipe })
     } else {
@@ -588,6 +477,9 @@ const openQuickView = (recipe) => {
   quickViewRecipe.value = recipe
   showQuickViewModal.value = true
 }
+
+// Watch search query changes
+watch(searchQuery, filterRecipes)
 
 onBeforeMount(() => initClientData())
 onMounted(() => {
