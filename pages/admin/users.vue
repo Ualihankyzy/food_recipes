@@ -347,7 +347,6 @@
     </transition>
   </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from '#app'
@@ -381,7 +380,7 @@ const menuItems = [
   { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
 
-// Users from favorites + created users
+// ✅ ТҮЗЕТІЛГЕН USERS COMPUTED
 const users = computed(() => {
   const byUser = new Map()
   
@@ -423,6 +422,7 @@ const users = computed(() => {
     }
   }
   
+  // ✅ RETURN ДҰРЫС ЖЕРДЕ!
   return Array.from(byUser.values()).map(u => ({
     ...u,
     initial: u.username ? u.username[0].toUpperCase() : 'U',
@@ -440,8 +440,7 @@ const openCreateUser = () => {
 const editUser = (user) => {
   registerForm.value = { 
     name: user.username, 
-    email: user.email,
-    password: ''
+    email: user.email 
   }
   editingUser.value = user
   showCreateModal.value = true
@@ -451,6 +450,7 @@ const closeCreateModal = () => {
   showCreateModal.value = false
   editingUser.value = null
   registerForm.value = { name: '', email: '', password: '' }
+  registerError.value = ''
 }
 
 const handleRegister = async () => {
@@ -459,7 +459,7 @@ const handleRegister = async () => {
     return
   }
 
-  if (!editingUser.value && registerForm.value.password.length < 6) {
+  if (!editingUser.value && (!registerForm.value.password || registerForm.value.password.length < 6)) {
     registerError.value = 'Password must be at least 6 characters'
     return
   }
@@ -469,7 +469,7 @@ const handleRegister = async () => {
 
   try {
     if (editingUser.value) {
-      // Update existing user in createdUsers
+      // Update existing user
       const index = createdUsers.value.findIndex(u => u.email === editingUser.value.email)
       if (index !== -1) {
         createdUsers.value[index] = {
@@ -513,7 +513,6 @@ const deleteUser = (userId) => {
   if (confirm('Remove this user from list?')) {
     // Remove from favorites
     favorites.value = favorites.value.filter(f => (f.userId || f.id) !== userId)
-    
     // Remove from createdUsers
     createdUsers.value = createdUsers.value.filter(u => `created_${u.email}` !== userId)
   }
