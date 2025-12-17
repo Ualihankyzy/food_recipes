@@ -383,7 +383,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -403,8 +403,9 @@ const showEditModal = ref(false)
 const quickViewRecipe = ref(null)
 const currentForm = ref({})
 
-// User
-const userName = ref(localStorage.getItem('userName') || 'Admin')
+// User - SSR қауіпсіз
+const userName = ref('Admin')
+const userId = ref('')
 const userInitial = computed(() => userName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
@@ -415,8 +416,18 @@ const menuItems = [
 ]
 
 const logout = () => {
-  localStorage.clear()
+  if (process.client) {
+    localStorage.clear()
+  }
   router.push('/login')
+}
+
+// Client-side data
+const initClientData = () => {
+  if (process.client) {
+    userName.value = localStorage.getItem('userName') || 'Admin'
+    userId.value = localStorage.getItem('userId') || 'admin'
+  }
 }
 
 // Load recipes
@@ -427,6 +438,8 @@ const loadRecipes = async () => {
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
     console.error('Failed to load recipes:', error)
+    recipes.value = []
+    filteredRecipes.value = []
   } finally {
     isLoading.value = false
   }
@@ -440,28 +453,36 @@ const filterRecipes = () => {
   }
   const query = searchQuery.value.toLowerCase()
   filteredRecipes.value = recipes.value.filter(recipe =>
-    recipe.title.toLowerCase().includes(query) ||
-    recipe.category.toLowerCase().includes(query) ||
-    recipe.area.toLowerCase().includes(query)
+    recipe.title?.toLowerCase().includes(query) ||
+    recipe.category?.toLowerCase().includes(query) ||
+    recipe.area?.toLowerCase().includes(query)
   )
 }
 
 // New recipe check
 const isNewRecipe = (recipe) => {
-  if (!recipe.createdAt) return false
-  const created = new Date(recipe.createdAt)
-  return (Date.now() - created) < 7 * 24 * 60 * 60 * 1000
+  if (!recipe?.createdAt) return false
+  try {
+    const created = new Date(recipe.createdAt)
+    return (Date.now() - created) < 7 * 24 * 60 * 60 * 1000
+  } catch {
+    return false
+  }
 }
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('kk-KZ', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  try {
+    return new Date(dateStr).toLocaleDateString('kk-KZ', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return '—'
+  }
 }
 
 // Toggle expand
@@ -493,10 +514,12 @@ const closeModal = () => {
 const saveRecipe = async () => {
   isLoading.value = true
   try {
+    const clientUserId = process.client ? (localStorage.getItem('userId') || 'admin') : userId.value
+    
     if (showCreateModal.value) {
       const newRecipe = {
         ...currentForm.value,
-        userId: localStorage.getItem('userId') || 'admin',
+        userId: clientUserId,
         createdAt: new Date().toISOString()
       }
       await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: newRecipe })
@@ -510,6 +533,7 @@ const saveRecipe = async () => {
     closeModal()
   } catch (error) {
     console.error('Save failed:', error)
+    alert('Save failed. Please try again.')
   } finally {
     isLoading.value = false
   }
@@ -526,13 +550,28 @@ const deleteRecipe = async (id) => {
     }
   } catch (error) {
     console.error('Delete failed:', error)
+    alert('Delete failed. Please try again.')
   }
 }
 
+// Lifecycle
+onBeforeMount(() => {
+  initClientData()
+})
+
 onMounted(() => {
+  // Admin check
+  if (process.client) {
+    const role = localStorage.getItem('role')
+    if (role !== 'admin') {
+      router.push('/')
+      return
+    }
+  }
   loadRecipes()
 })
 </script>
+
 
 <style scoped>
 .line-clamp-2 {
