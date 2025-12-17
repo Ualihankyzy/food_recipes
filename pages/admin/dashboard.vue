@@ -440,6 +440,18 @@ const logout = () => {
   router.push('/login')
 }
 
+// pages/admin/dashboard.vue onMounted
+onMounted(async () => {
+  if (process.client) {
+    const role = localStorage.getItem('role')
+    if (role !== 'admin') {
+      router.push('/')  // немесе /login
+      return
+    }
+  }
+  await loadAll()  // dashboard data
+})
+
 const isLoading = ref(true)
 const error = ref('')
 

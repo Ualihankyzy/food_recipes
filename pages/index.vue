@@ -8,15 +8,28 @@
 
 
     <!-- 🔥 3. Auth/Guest логикасы (template ЖОҚ!) -->
-    <div v-if="isAuth" class="flex items-center gap-4 ml-4">
-      <a href="/dashboard" class="hover:underline">Dashboard</a>
-      <!-- Аватарка -->
-      <a href="/profile" class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
-          {{ userInitial }}
-        </div>
-      </a>
+ <!-- NAVBAR ішінде -->
+<div v-if="isAuth" class="flex items-center gap-4 ml-4">
+  <!-- 🔥 ROLE БОЙЫША DASHBOARD -->
+  <a 
+    :href="isAdmin ? '/admin/dashboard' : '/dashboard'" 
+    class="hover:underline font-semibold text-lg"
+  >
+    {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
+  </a>
+  
+  <!-- 🔥 АВАТАРКА – ROLE БОЙЫША -->
+  <a 
+    :href="isAdmin ? '/admin/dashboard' : '/profile'" 
+    class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
+  >
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
+      {{ userInitial }}
     </div>
+  </a>
+</div>
+
+
     
     <div v-else class="flex items-center gap-4">
       <a href="/login" class="hover:underline">Login</a>
@@ -561,9 +574,32 @@ const router = useRouter()
 
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
+
+
 // 🔥 SCRIPT БАСЫНА (MOCK_API_URL-ден КЕЙІН) қосыңыз
 const userName = ref('')
 const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
+
+// 🔥 USER + ROLE state
+
+const userRole = ref('')
+
+const isAdmin = ref(false)  
+
+// 🔥 onMounted-ты осылай өзгерт
+onMounted(async () => {
+   if (typeof window !== 'undefined') {
+    userName.value = localStorage.getItem('userName') || ''
+    userRole.value = localStorage.getItem('role') || ''
+    isAuth.value = !!localStorage.getItem('userId')
+    isAdmin.value = userRole.value === 'admin'
+  }
+  
+  window.addEventListener('scroll', handleScroll)
+  await Promise.all([fetchRecipes(), fetchPopularMeals()])
+  if (userId.value) await loadFavorites()
+})
+
 
 // 🔥 onMounted-ты осылай өзгертіңіз (setupUser жоқ болса)
 onMounted(async () => {
@@ -589,7 +625,6 @@ const selectedRecipe = ref(null)
 const showSearch = ref(false)
 const searchQuery = ref('')
 const recipesSection = ref(null)
-const lettersOpen = ref(false)
 const activeLetter = ref(null)
 const userId = ref('')
 const isAuth = ref(false)
