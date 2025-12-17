@@ -152,7 +152,7 @@
         <!-- Recipes Grid -->
      <div
   v-else
-  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12"
+  class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-14"
 >
 
           <div
