@@ -699,16 +699,24 @@ const openPopularModal = meal => {
 
 const loadFavorites = async () => {
   if (!userId.value) return
+
   try {
     const data = await $fetch(
       `${MOCK_API_URL}/favorites?userId=${encodeURIComponent(userId.value)}`
     )
     favorites.value = Array.isArray(data) ? data : []
   } catch (e) {
+    // Егер MockAPI 404 қайтарса – жай ғана favorites жоқ деп қабылдаймыз
+    if (e?.statusCode === 404 || e?.response?.status === 404) {
+      favorites.value = []
+      return
+    }
+
     console.error('Load favorites error:', e)
     favorites.value = []
   }
 }
+
 
 const toggleFavorite = async recipeId => {
   if (!isAuth.value || !userId.value) {
