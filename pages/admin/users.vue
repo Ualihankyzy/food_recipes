@@ -75,7 +75,7 @@
       <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-[#31572c]">Users Management</h1>
-          <div class="text-sm text-slate-500">Total: {{ users.length || 0 }}</div>
+          <div class="text-sm text-slate-500">Total: {{ users.length }}</div>
         </div>
         <div class="flex items-center gap-3">
           <button class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors" @click="router.push('/profile')">
@@ -92,7 +92,7 @@
             <p class="text-xs text-slate-500">Showing {{ users.length }} customers</p>
           </div>
           <button @click="openCreateUser" class="px-6 py-3 bg-[#588157] text-white rounded-2xl font-semibold hover:bg-[#476747] shadow-md transition-all flex items-center gap-2">
-            ➕ Create User
+            + Create User
           </button>
         </div>
 
@@ -123,7 +123,7 @@
                     </div>
                   </td>
                   <td class="px-4 py-3 text-slate-900 font-medium">{{ user.username }}</td>
-                  <td class="px-4 py-3 text-slate-500">{{ user.email || '—' }}</td>
+                  <td class="px-4 py-3 text-slate-500">{{ user.email || '-' }}</td>
                   <td class="px-4 py-3 text-slate-700">{{ user.savedCount }}</td>
                   <td class="px-4 py-3">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium" :class="user.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500'">
@@ -134,7 +134,7 @@
                   <td class="px-4 py-3 text-right">
                     <div class="flex items-center justify-end gap-2">
                       <button class="p-1.5 rounded-full hover:bg-slate-100 text-blue-500 hover:text-blue-600" title="View" @click="showUserInfo(user)">
-                        👁️
+                        👁
                       </button>
                       <button class="p-1.5 rounded-full hover:bg-slate-100 text-red-500 hover:text-red-600" title="Remove from list" @click="deleteUser(user.userId)">
                         🗑
@@ -158,7 +158,7 @@
       </main>
     </div>
 
-    <!-- 🔥 CREATE USER MODAL (signup дизайнымен + register API) -->
+    <!-- CREATE USER MODAL -->
     <transition name="fade">
       <div
         v-if="showCreateModal"
@@ -216,7 +216,7 @@
 
             <!-- Credentials preview -->
             <div v-if="registerForm.email && registerForm.password" class="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-              <p class="text-xs font-medium text-blue-800 mb-2">📋 Login credentials:</p>
+              <p class="text-xs font-medium text-blue-800 mb-2">Login credentials:</p>
               <div class="text-xs space-y-1 text-blue-700">
                 <div><strong>Email:</strong> {{ registerForm.email }}</div>
                 <div><strong>Password:</strong> {{ registerForm.password }}</div>
@@ -244,7 +244,7 @@
                 class="px-8 py-3 rounded-xl text-sm font-bold bg-[#f8961e] text-white hover:bg-[#e6850b] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
               >
                 <span v-if="registerLoading">Creating...</span>
-                <span v-else>✅ Create User</span>
+                <span v-else>Create User</span>
               </button>
             </div>
           </form>
@@ -295,9 +295,11 @@ const activeMenu = ref('users')
 const loading = ref(false)
 const favorites = ref([])
 
-// Users from favorites
+// Users from favorites + created users
 const users = computed(() => {
   const byUser = new Map()
+  
+  // Existing favorites users
   for (const fav of favorites.value) {
     const key = fav.userId || 'unknown'
     if (!key || !fav.username) continue
@@ -319,6 +321,22 @@ const users = computed(() => {
       u.lastSaved = savedAt.toLocaleDateString()
     }
   }
+  
+  // Add created users (local state)
+  for (const createdUser of createdUsers.value) {
+    const key = `created_${createdUser.email}`
+    if (!byUser.has(key)) {
+      byUser.set(key, {
+        userId: key,
+        username: createdUser.name,
+        email: createdUser.email,
+        avatarUrl: '',
+        savedCount: 0,
+        lastSaved: new Date().toLocaleDateString()
+      })
+    }
+  }
+  
   return Array.from(byUser.values()).map(u => ({
     ...u,
     initial: u.username ? u.username[0].toUpperCase() : 'U',
@@ -339,11 +357,12 @@ const menuItems = [
 const showInfoModal = ref(false)
 const selectedUser = ref(null)
 
-// 🔥 CREATE USER MODAL + REGISTER API
+// CREATE USER MODAL + REGISTER API
 const showCreateModal = ref(false)
 const registerForm = ref({ name: '', email: '', password: '' })
 const registerLoading = ref(false)
 const registerError = ref('')
+const createdUsers = ref([])
 
 const openCreateUser = () => {
   registerForm.value = { name: '', email: '', password: '' }
@@ -357,12 +376,12 @@ const closeCreateModal = () => {
 
 const handleRegister = async () => {
   if (!registerForm.value.name?.trim() || !registerForm.value.email?.trim() || !registerForm.value.password?.trim()) {
-    registerError.value = 'Барлық өрістерді толтырыңыз!'
+    registerError.value = 'Please fill all fields'
     return
   }
 
   if (registerForm.value.password.length < 6) {
-    registerError.value = 'Пароль кемінде 6 символ болуы керек!'
+    registerError.value = 'Password must be at least 6 characters'
     return
   }
 
@@ -370,20 +389,26 @@ const handleRegister = async () => {
   registerLoading.value = true
 
   try {
-    // 🔥 СЕНІҢ REGISTER API
+    // Register API
     await $fetch('https://medical-backend-54hp.onrender.com/api/auth/register', {
       method: 'POST',
       body: registerForm.value
     })
 
-    alert(`✅ User "${registerForm.value.name}" created successfully!\n\n📧 Email: ${registerForm.value.email}\n🔑 Password: ${registerForm.value.password}\n\nUser login бетінде осы мәліметпен кіре алады!`)
+    // Add to local created users list (will appear in table)
+    createdUsers.value.push({
+      name: registerForm.value.name,
+      email: registerForm.value.email
+    })
+
+    registerError.value = ''
     closeCreateModal()
   } catch (error) {
     console.error('Register error:', error)
     if (error.statusCode === 409 || error.statusCode === 400) {
-      registerError.value = '❌ Бұл email адресі бұрын тіркелген!'
+      registerError.value = 'This email address is already registered'
     } else {
-      registerError.value = error.data?.message || '❌ Регистрация қатесі!'
+      registerError.value = error.data?.message || 'Registration failed'
     }
   } finally {
     registerLoading.value = false
@@ -396,7 +421,7 @@ const showUserInfo = (user) => {
 }
 
 const deleteUser = (userId) => {
-  if (confirm('Бұл user-ді favorites тізімінен өшіру?')) {
+  if (confirm('Remove this user from list?')) {
     favorites.value = favorites.value.filter(f => (f.userId || f.id) !== userId)
   }
 }
