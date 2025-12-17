@@ -127,7 +127,7 @@
         <!-- No results -->
         <div v-else-if="filteredRecipes.length === 0" class="text-center py-20 max-w-md mx-auto">
           <div class="w-24 h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center">
-            <span class="text-4xl">📖</span>
+            <span class="text-4xl">book-open</span>
           </div>
           <h3 class="text-2xl font-bold text-[#31572c] mb-2">{{ searchQuery ? 'No recipes found' : 'No recipes yet' }}</h3>
           <p class="text-slate-500 mb-6">{{ searchQuery ? 'Try different keywords' : 'Create your first recipe' }}</p>
@@ -155,16 +155,28 @@
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30">
-                <i class="text-4xl opacity-70">book-open</i>
+                <span class="text-4xl opacity-70">book-open</span>
               </div>
 
-              <!-- Quick View Button (СТИКЕР ЖОЙЫЛДЫ, ICON ҚАЛДЫ) -->
+              <!-- NEW Badge -->
+              <div v-if="isNewRecipe(recipe)" 
+                   class="absolute top-4 left-4 bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+                NEW
+              </div>
+
+              <!-- Public/Private Badge -->
+              <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full text-xs font-semibold shadow-md"
+                   :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'">
+                {{ recipe.isPublic ? 'Public' : 'Private' }}
+              </div>
+
+              <!-- Quick View Button (КӨЗ ІКОНКАСЫ) -->
               <button
                 @click.stop="openQuickView(recipe)"
                 class="absolute bottom-3 right-3 w-12 h-12 bg-white/90 hover:bg-white rounded-2xl shadow-lg flex items-center justify-center text-[#588157] text-xl transition-all group-hover:scale-110"
                 title="Quick view"
               >
-                <i>visibility</i>
+                👁
               </button>
             </div>
 
@@ -185,6 +197,7 @@
                   <button
                     @click.stop="toggleExpand(recipe)"
                     class="w-10 h-10 bg-[#588157]/80 hover:bg-[#588157] text-white rounded-xl flex items-center justify-center transition-all"
+                    title="Expand"
                   >
                     {{ expandedRecipe?.id === recipe.id ? '✕' : '📄' }}
                   </button>
@@ -194,27 +207,27 @@
               <!-- Meta -->
               <div class="flex items-center justify-between mb-4 text-xs text-slate-500">
                 <span>{{ formatDate(recipe.createdAt) }}</span>
-                <span>{{ recipe.userId?.slice(-4) || '—' }}</span>
+                <span>#{{ recipe.userId?.slice(-4) || '—' }}</span>
               </div>
 
-              <!-- Actions (карточка жабық кезде) -->
+              <!-- Actions -->
               <div v-if="expandedRecipe?.id !== recipe.id" class="flex items-center gap-2">
                 <button
                   @click.stop="openEditModal(recipe)"
                   class="flex-1 px-4 py-2.5 bg-[#588157] text-white text-sm font-semibold rounded-xl hover:bg-[#476747] transition-colors"
                 >
-                  ✏️ Edit
+                  Edit
                 </button>
                 <button
                   @click.stop="deleteRecipe(recipe.id)"
                   class="px-4 py-2.5 bg-[#bc4749] text-white text-sm font-semibold rounded-xl hover:bg-[#a33a3d] transition-colors"
                 >
-                  🗑️ Delete
+                  Delete
                 </button>
               </div>
             </div>
 
-            <!-- EXPANDED DETAIL VIEW (Inline) -->
+            <!-- EXPANDED DETAIL VIEW -->
             <div v-if="expandedRecipe?.id === recipe.id" class="border-t border-[#d0d3c8]/50 bg-slate-50">
               <div class="p-6 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
@@ -232,14 +245,12 @@
                   </div>
                   <div>
                     <span class="text-slate-500 font-medium">Author:</span>
-                    <p class="font-semibold text-[#31572c] ml-2">{{ recipe.userId?.slice(-4) }}</p>
+                    <p class="font-semibold text-[#31572c] ml-2">#{{ recipe.userId?.slice(-4) }}</p>
                   </div>
                 </div>
 
                 <div v-if="recipe.instructions" class="space-y-3">
-                  <h4 class="font-semibold text-lg text-[#31572c] flex items-center gap-2">
-                    📝 Instructions
-                  </h4>
+                  <h4 class="font-semibold text-lg text-[#31572c]">Instructions</h4>
                   <div class="bg-white p-4 rounded-xl border border-[#d0d3c8]/30">
                     <p class="text-slate-700 leading-relaxed whitespace-pre-wrap">{{ recipe.instructions }}</p>
                   </div>
@@ -248,7 +259,7 @@
                 <div v-if="recipe.youtubeUrl" class="pt-2">
                   <a :href="recipe.youtubeUrl" target="_blank" rel="noopener" 
                      class="inline-flex items-center gap-2 px-6 py-3 bg-[#588157] text-white rounded-xl font-semibold hover:bg-[#476747] shadow-md transition-all">
-                    <i>play_circle</i> Watch on YouTube
+                    Watch on YouTube
                   </a>
                 </div>
 
@@ -257,19 +268,19 @@
                     @click.stop="openEditModal(recipe)"
                     class="flex-1 px-6 py-3 bg-[#588157] text-white font-semibold rounded-xl hover:bg-[#476747]"
                   >
-                    ✏️ Edit Recipe
+                    Edit Recipe
                   </button>
                   <button
                     @click.stop="deleteRecipe(recipe.id)"
                     class="px-6 py-3 bg-[#bc4749] text-white font-semibold rounded-xl hover:bg-[#a33a3d]"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                   <button
                     @click.stop="toggleExpand(recipe)"
                     class="px-6 py-3 bg-slate-500 text-white font-semibold rounded-xl hover:bg-slate-600"
                   >
-                    ⏪ Back
+                    Back
                   </button>
                 </div>
               </div>
@@ -287,10 +298,7 @@
           <button @click="showQuickViewModal = false" class="text-3xl hover:text-[#588157]">✕</button>
         </div>
         <div class="p-8 max-h-[70vh] overflow-y-auto">
-          <!-- Image -->
           <img v-if="quickViewRecipe?.imageUrl" :src="quickViewRecipe.imageUrl" class="w-full h-80 object-cover rounded-2xl shadow-xl mb-6" />
-          
-          <!-- Details -->
           <div class="grid grid-cols-2 gap-6 mb-6">
             <div>
               <span class="text-slate-500 block mb-1">Area</span>
@@ -301,83 +309,78 @@
               <p class="text-2xl font-bold text-[#31572c]">{{ quickViewRecipe?.category }}</p>
             </div>
           </div>
-
           <div v-if="quickViewRecipe?.instructions" class="mb-6">
             <h4 class="text-xl font-bold text-[#31572c] mb-4">Instructions</h4>
             <div class="bg-slate-50 p-6 rounded-2xl border-l-4 border-[#588157]">
               <p class="text-lg text-slate-700 leading-relaxed">{{ quickViewRecipe.instructions }}</p>
             </div>
           </div>
-
           <div v-if="quickViewRecipe?.youtubeUrl" class="text-center">
             <a :href="quickViewRecipe.youtubeUrl" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-[#588157] text-white rounded-2xl font-bold text-lg hover:bg-[#476747] shadow-xl">
-              <i>play_circle</i> Watch Video
+              Watch Video
             </a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CREATE/EDIT MODAL (ДҚҚЫЙ MODAL САҚТАЛДЫ) -->
-    <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6" @click.self="closeModal">
-      <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-        <div class="px-8 py-6 border-b border-[#d0d3c8] flex justify-between items-center">
-          <h2 class="text-3xl font-bold text-[#31572c]">
-            {{ showCreateModal ? 'Create New Recipe' : 'Edit Recipe' }}
-          </h2>
-          <button @click="closeModal" class="text-3xl hover:text-[#588157]">✕</button>
-        </div>
-        <div class="p-8 max-h-[60vh] overflow-y-auto space-y-6">
-          <!-- Form fields -->
-          <div class="space-y-4">
+    <!-- ДҰРЫС CREATE/EDIT MODAL (кішігірім стиль) -->
+    <transition name="fade">
+      <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeModal">
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
+            <h3 class="text-lg font-semibold text-[#31572c]">
+              {{ showCreateModal ? 'Create Recipe' : 'Edit Recipe' }}
+            </h3>
+            <button @click="closeModal" class="text-[#6c7570] hover:text-black text-xl">✕</button>
+          </div>
+          <div class="p-6 space-y-4 overflow-y-auto">
             <div>
-              <label class="block text-sm font-bold text-[#31572c] mb-2">Recipe Title</label>
-              <input v-model="currentForm.title" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl text-lg focus:outline-none focus:border-[#588157] focus:ring-4 focus:ring-[#588157]/20" />
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Title</label>
+              <input v-model="currentForm.title" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-bold text-[#31572c] mb-2">Category</label>
-                <input v-model="currentForm.category" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl focus:outline-none focus:border-[#588157]" />
+                <label class="block text-xs font-semibold text-[#31572c] mb-1">Category</label>
+                <input v-model="currentForm.category" placeholder="e.g. Beef" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
               </div>
               <div>
-                <label class="block text-sm font-bold text-[#31572c] mb-2">Area</label>
-                <input v-model="currentForm.area" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl focus:outline-none focus:border-[#588157]" />
+                <label class="block text-xs font-semibold text-[#31572c] mb-1">Area</label>
+                <input v-model="currentForm.area" placeholder="e.g. Italian" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
               </div>
             </div>
             <div>
-              <label class="block text-sm font-bold text-[#31572c] mb-2">Image URL</label>
-              <input v-model="currentForm.imageUrl" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl focus:outline-none focus:border-[#588157]" />
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Image URL</label>
+              <input v-model="currentForm.imageUrl" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
             </div>
             <div>
-              <label class="block text-sm font-bold text-[#31572c] mb-2">Instructions</label>
-              <textarea v-model="currentForm.instructions" rows="6" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl focus:outline-none focus:border-[#588157] resize-vertical font-medium"></textarea>
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">Instructions</label>
+              <textarea v-model="currentForm.instructions" rows="4" class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"></textarea>
             </div>
             <div>
-              <label class="block text-sm font-bold text-[#31572c] mb-2">YouTube URL (optional)</label>
-              <input v-model="currentForm.youtubeUrl" class="w-full px-5 py-4 border-2 border-[#d0d3c8] rounded-2xl focus:outline-none focus:border-[#588157]" />
+              <label class="block text-xs font-semibold text-[#31572c] mb-1">YouTube Link</label>
+              <input v-model="currentForm.youtubeUrl" placeholder="https://youtube.com/..." class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]" />
             </div>
-            <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-              <input type="checkbox" v-model="currentForm.isPublic" class="w-6 h-6 rounded-lg text-[#588157] focus:ring-[#588157]" />
-              <span class="text-lg font-bold text-[#31572c]">Make public (show on Home page)</span>
-            </label>
+            <div class="flex items-center gap-3 pt-2">
+              <label class="text-xs font-semibold text-[#31572c] flex items-center gap-2">
+                <input type="checkbox" v-model="currentForm.isPublic" class="w-4 h-4 rounded"/>
+                <span>Public (show on Home)</span>
+              </label>
+              <span class="text-xs text-[#6c7570]">(Only You = private)</span>
+            </div>
+          </div>
+          <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
+            <button @click="closeModal" class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white">Cancel</button>
+            <button @click="saveRecipe" class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]">Save</button>
           </div>
         </div>
-        <div class="px-8 py-6 border-t border-[#d0d3c8] flex justify-end gap-4 bg-slate-50">
-          <button @click="closeModal" class="px-10 py-4 border-2 border-slate-300 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all">
-            Cancel
-          </button>
-          <button @click="saveRecipe" class="px-12 py-4 bg-[#588157] text-white rounded-2xl font-bold text-lg hover:bg-[#476747] shadow-xl hover:shadow-2xl transition-all">
-            {{ showCreateModal ? 'Create Recipe' : 'Update Recipe' }}
-          </button>
-        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
-<!-- SCRIPT БӨЛМІМІЗ ӨЗГЕРМЕДІ (САҚТАЛДЫ) -->
 <script setup>
-import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -397,16 +400,16 @@ const showEditModal = ref(false)
 const quickViewRecipe = ref(null)
 const currentForm = ref({})
 
-// User - SSR қауіпсіз
+// User
 const userName = ref('Admin')
 const userId = ref('')
 const userInitial = computed(() => userName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠', to: '/admin/dashboard' },
-  { key: 'recipes', label: 'Recipes', icon: '📖',  to: '/admin/recipes'  },
-  { key: 'users', label: 'Users', icon: '👥',to: '/admin/users' },
-  { key: 'saved', label: 'Saved', icon: '⭐' , to: '/admin/saved'}
+  { key: 'recipes', label: 'Recipes', icon: '📖', to: '/admin/recipes' },
+  { key: 'users', label: 'Users', icon: '👥', to: '/admin/users' },
+  { key: 'saved', label: 'Saved', icon: '⭐', to: '/admin/saved' }
 ]
 
 const logout = () => {
@@ -416,7 +419,6 @@ const logout = () => {
   router.push('/login')
 }
 
-// Client-side data
 const initClientData = () => {
   if (process.client) {
     userName.value = localStorage.getItem('userName') || 'Admin'
@@ -424,7 +426,6 @@ const initClientData = () => {
   }
 }
 
-// Load recipes
 const loadRecipes = async () => {
   isLoading.value = true
   try {
@@ -439,7 +440,6 @@ const loadRecipes = async () => {
   }
 }
 
-// Filter
 const filterRecipes = () => {
   if (!searchQuery.value.trim()) {
     filteredRecipes.value = [...recipes.value]
@@ -453,7 +453,6 @@ const filterRecipes = () => {
   )
 }
 
-// New recipe check
 const isNewRecipe = (recipe) => {
   if (!recipe?.createdAt) return false
   try {
@@ -479,18 +478,15 @@ const formatDate = (dateStr) => {
   }
 }
 
-// Toggle expand
 const toggleExpand = (recipe) => {
   expandedRecipe.value = expandedRecipe.value?.id === recipe.id ? null : recipe
 }
 
-// Quick view
 const openQuickView = (recipe) => {
   quickViewRecipe.value = recipe
   showQuickViewModal.value = true
 }
 
-// Edit modal
 const openEditModal = (recipe) => {
   currentForm.value = { ...recipe }
   showEditModal.value = true
@@ -504,7 +500,6 @@ const closeModal = () => {
   currentForm.value = {}
 }
 
-// Save recipe
 const saveRecipe = async () => {
   isLoading.value = true
   try {
@@ -533,7 +528,6 @@ const saveRecipe = async () => {
   }
 }
 
-// Delete
 const deleteRecipe = async (id) => {
   if (!confirm('Delete this recipe?')) return
   try {
@@ -548,13 +542,11 @@ const deleteRecipe = async (id) => {
   }
 }
 
-// Lifecycle
 onBeforeMount(() => {
   initClientData()
 })
 
 onMounted(() => {
-  // Admin check
   if (process.client) {
     const role = localStorage.getItem('role')
     if (role !== 'admin') {
@@ -576,6 +568,16 @@ onMounted(() => {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 @keyframes spin {
