@@ -1,13 +1,12 @@
 <template>
   <div class="min-h-screen flex bg-[#f5f6f1] font-sans">
-    <!-- SIDEBAR (бұрынғыдай) -->
+    <!-- SIDEBAR -->
     <aside
       :class="[
         'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300 border-r border-white/10',
         isSidebarOpen ? 'w-64 bg-[#588157]' : 'w-20 bg-[#588157]'
       ]"
     >
-      <!-- Sidebar ішкі коды (бұрынғыдай) -->
       <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
         <div class="flex items-center gap-3">
           <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">Admin</span>
@@ -18,9 +17,21 @@
       </div>
 
       <nav class="flex-1 py-5 space-y-1">
-        <button v-for="item in menuItems" :key="item.key" @click="() => { activeMenu = item.key; item.to && router.push(item.to); }" class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors duration-200">
-          <span class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200" :class="[activeMenu === item.key && isSidebarOpen ? 'translate-x-0' : '-translate-x-full']"></span>
-          <span class="relative z-10 flex-shrink-0" :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'">
+        <button
+          v-for="item in menuItems"
+          :key="item.key"
+          @click="() => { activeMenu = item.key; item.to && router.push(item.to); }"
+          class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors duration-200"
+        >
+          <span
+            class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
+            :class="[activeMenu === item.key && isSidebarOpen ? 'translate-x-0' : '-translate-x-full']"
+          ></span>
+
+          <span
+            class="relative z-10 flex-shrink-0"
+            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
+          >
             <svg v-if="item.icon === 'dashboard'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"/>
             </svg>
@@ -31,7 +42,12 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"/>
             </svg>
           </span>
-          <span v-if="isSidebarOpen" class="relative z-10" :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/80 hover:text-white'">
+
+          <span
+            v-if="isSidebarOpen"
+            class="relative z-10"
+            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/80 hover:text-white'"
+          >
             {{ item.label }}
           </span>
         </button>
@@ -39,7 +55,9 @@
 
       <div class="p-4 border-t border-white/10">
         <div v-if="isSidebarOpen" class="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/10">
-          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">{{ adminInitial }}</div>
+          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">
+            {{ adminInitial }}
+          </div>
           <div>
             <p class="font-semibold text-sm">{{ adminName }}</p>
             <p class="text-xs text-emerald-100/80">Admin</p>
@@ -140,7 +158,101 @@
       </main>
     </div>
 
-    <!-- User Info Modal (тек ақпарат көрсету үшін) -->
+    <!-- 🔥 CREATE USER MODAL (signup дизайнымен + register API) -->
+    <transition name="fade">
+      <div
+        v-if="showCreateModal"
+        class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
+        @click.self="closeCreateModal"
+      >
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl">
+          <!-- Header -->
+          <div class="px-6 py-5 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
+            <div>
+              <h3 class="text-xl font-bold text-[#31572c]">Create User Account</h3>
+              <p class="text-sm text-slate-600 mt-1">User will login with these credentials</p>
+            </div>
+            <button @click="closeCreateModal" class="text-[#6c7570] hover:text-black text-xl">✕</button>
+          </div>
+
+          <!-- Form -->
+          <form @submit.prevent="handleRegister" class="p-6 space-y-6">
+            <!-- Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+              <input
+                v-model="registerForm.name"
+                type="text"
+                required
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
+                placeholder="User name"
+              />
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input
+                v-model="registerForm.email"
+                type="email"
+                required
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
+                placeholder="user@example.com"
+              />
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input
+                v-model="registerForm.password"
+                type="password"
+                required
+                minlength="6"
+                class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#f8961e] focus:border-transparent"
+                placeholder="Create a password"
+              />
+            </div>
+
+            <!-- Credentials preview -->
+            <div v-if="registerForm.email && registerForm.password" class="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+              <p class="text-xs font-medium text-blue-800 mb-2">📋 Login credentials:</p>
+              <div class="text-xs space-y-1 text-blue-700">
+                <div><strong>Email:</strong> {{ registerForm.email }}</div>
+                <div><strong>Password:</strong> {{ registerForm.password }}</div>
+              </div>
+            </div>
+
+            <!-- Error -->
+            <div v-if="registerError" class="p-3 bg-red-100 border border-red-300 rounded-xl">
+              <p class="text-sm text-red-700">{{ registerError }}</p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                @click="closeCreateModal"
+                class="px-6 py-3 rounded-xl text-sm font-semibold border border-[#d0d3c8] text-[#31572c] hover:bg-gray-50 transition-colors"
+                :disabled="registerLoading"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="registerLoading"
+                class="px-8 py-3 rounded-xl text-sm font-bold bg-[#f8961e] text-white hover:bg-[#e6850b] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+              >
+                <span v-if="registerLoading">Creating...</span>
+                <span v-else>✅ Create User</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </transition>
+
+    <!-- User Info Modal -->
     <transition name="fade">
       <div v-if="showInfoModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="showInfoModal = false">
         <div class="bg-white rounded-3xl max-w-md w-full max-h-[70vh] overflow-hidden shadow-2xl">
@@ -151,7 +263,11 @@
           <div class="p-6 space-y-4">
             <div><strong>Email:</strong> {{ selectedUser?.email }}</div>
             <div><strong>Saved recipes:</strong> {{ selectedUser?.savedCount }}</div>
-            <div><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-medium" :class="selectedUser?.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'">{{ selectedUser?.status }}</span></div>
+            <div><strong>Status:</strong> 
+              <span class="px-2 py-1 rounded-full text-xs font-medium" :class="selectedUser?.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'">
+                {{ selectedUser?.status }}
+              </span>
+            </div>
             <div><strong>Last activity:</strong> {{ selectedUser?.lastSaved }}</div>
             <div class="pt-4 border-t">
               <p class="text-xs text-slate-500 mb-2">Login credentials:</p>
@@ -179,7 +295,7 @@ const activeMenu = ref('users')
 const loading = ref(false)
 const favorites = ref([])
 
-// 🔥 ТЕК FAVORITES-тен users шығарамыз
+// Users from favorites
 const users = computed(() => {
   const byUser = new Map()
   for (const fav of favorites.value) {
@@ -219,35 +335,68 @@ const menuItems = [
   { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
 
-// 🔥 Info modal
+// Info modal
 const showInfoModal = ref(false)
 const selectedUser = ref(null)
 
-const logout = () => {
-  if (typeof window !== 'undefined') localStorage.clear()
-  router.push('/login')
-}
+// 🔥 CREATE USER MODAL + REGISTER API
+const showCreateModal = ref(false)
+const registerForm = ref({ name: '', email: '', password: '' })
+const registerLoading = ref(false)
+const registerError = ref('')
 
-// 🔥 Create User → signup бетіне redirect
 const openCreateUser = () => {
-  router.push({
-    path: '/signup',
-    query: {
-      admin: 'true',
-      returnUrl: '/admin/users'
-    }
-  })
+  registerForm.value = { name: '', email: '', password: '' }
+  registerError.value = ''
+  showCreateModal.value = true
 }
 
-// 🔥 View user info
+const closeCreateModal = () => {
+  showCreateModal.value = false
+}
+
+const handleRegister = async () => {
+  if (!registerForm.value.name?.trim() || !registerForm.value.email?.trim() || !registerForm.value.password?.trim()) {
+    registerError.value = 'Барлық өрістерді толтырыңыз!'
+    return
+  }
+
+  if (registerForm.value.password.length < 6) {
+    registerError.value = 'Пароль кемінде 6 символ болуы керек!'
+    return
+  }
+
+  registerError.value = ''
+  registerLoading.value = true
+
+  try {
+    // 🔥 СЕНІҢ REGISTER API
+    await $fetch('https://medical-backend-54hp.onrender.com/api/auth/register', {
+      method: 'POST',
+      body: registerForm.value
+    })
+
+    alert(`✅ User "${registerForm.value.name}" created successfully!\n\n📧 Email: ${registerForm.value.email}\n🔑 Password: ${registerForm.value.password}\n\nUser login бетінде осы мәліметпен кіре алады!`)
+    closeCreateModal()
+  } catch (error) {
+    console.error('Register error:', error)
+    if (error.statusCode === 409 || error.statusCode === 400) {
+      registerError.value = '❌ Бұл email адресі бұрын тіркелген!'
+    } else {
+      registerError.value = error.data?.message || '❌ Регистрация қатесі!'
+    }
+  } finally {
+    registerLoading.value = false
+  }
+}
+
 const showUserInfo = (user) => {
   selectedUser.value = user
   showInfoModal.value = true
 }
 
-// 🔥 Delete from favorites list (тек UI-дан)
 const deleteUser = (userId) => {
-  if (confirm('Бұл user-ді тізімнен өшіру? (favorites-тен)')) {
+  if (confirm('Бұл user-ді favorites тізімінен өшіру?')) {
     favorites.value = favorites.value.filter(f => (f.userId || f.id) !== userId)
   }
 }
@@ -265,6 +414,11 @@ const loadFavorites = async () => {
   }
 }
 
+const logout = () => {
+  if (typeof window !== 'undefined') localStorage.clear()
+  router.push('/login')
+}
+
 onMounted(async () => {
   if (typeof window !== 'undefined') {
     adminName.value = localStorage.getItem('userName') || 'Admin'
@@ -279,6 +433,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: scale(0.95); }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
 </style>
