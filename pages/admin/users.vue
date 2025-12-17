@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex bg-[#f5f6f1] font-sans">
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR (admin recipes-тегідей стиль) -->
     <aside
       :class="[
         'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300 border-r border-white/10',
@@ -11,7 +11,7 @@
       <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
         <div class="flex items-center gap-3">
           <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">
-            Recipes
+            Admin
           </span>
         </div>
         <button
@@ -40,55 +40,17 @@
             class="relative z-10 flex-shrink-0"
             :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
           >
-            <!-- Dashboard icon -->
-            <svg
-              v-if="item.icon === 'dashboard'"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
-              />
+            <!-- Иконкалар -->
+            <svg v-if="item.icon === 'dashboard'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"/>
             </svg>
 
-            <!-- Recipes icon -->
-            <svg
-              v-else-if="item.icon === 'recipes'"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"
-              />
+            <svg v-else-if="item.icon === 'recipes'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"/>
             </svg>
 
-            <!-- Users icon -->
-            <svg
-              v-else-if="item.icon === 'users'"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
-              />
+            <svg v-else-if="item.icon === 'users'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"/>
             </svg>
           </span>
 
@@ -102,19 +64,14 @@
         </button>
       </nav>
 
-      <!-- User info -->
+      <!-- User info + logout -->
       <div class="p-4 border-t border-white/10">
-        <div
-          v-if="isSidebarOpen"
-          class="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/10"
-        >
-          <div
-            class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg"
-          >
-            {{ userInitial }}
+        <div v-if="isSidebarOpen" class="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/10">
+          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">
+            {{ adminInitial }}
           </div>
           <div>
-            <p class="font-semibold text-sm">{{ userName }}</p>
+            <p class="font-semibold text-sm">{{ adminName }}</p>
             <p class="text-xs text-emerald-100/80">Admin</p>
           </div>
         </div>
@@ -122,452 +79,218 @@
           class="w-full flex items-center gap-2 text-xs text-emerald-50 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
           @click="logout"
         >
-          <span>⏻</span>
-          <span v-if="isSidebarOpen">Logout</span>
+          <span>⏻</span><span v-if="isSidebarOpen">Logout</span>
         </button>
       </div>
     </aside>
 
     <!-- MAIN -->
-    <div class="flex-1 flex flex-col bg-slate-50">
-      <!-- Top bar -->
-      <header
-        class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8"
-      >
-        <div class="flex items-center gap-4">
-          <h1 class="text-2xl font-bold text-[#31572c]">
-            Recipes Management
-          </h1>
-          <div class="text-sm text-slate-500">
-            Total: {{ filteredRecipes.length || 0 }}
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button
-            type="button"
-            class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
-            @click="router.push('/profile')"
-          >
-            {{ userInitial }}
-          </button>
-        </div>
-      </header>
-
-      <!-- Content -->
-      <main class="flex-1 px-8 py-8 overflow-y-auto">
-        <!-- Search + Create -->
-        <div
-          class="max-w-7xl mx-auto flex items-center justify-between gap-6 mb-8"
-        >
-          <div class="flex-1">
-            <div
-              class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5 text-slate-400 flex-shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
-                />
-              </svg>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Іздеу..."
-                class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
-                @input="filterRecipes"
-              />
-            </div>
-          </div>
-
-          <button
-            @click="openCreateModal"
-            class="flex items-center gap-2 px-6 py-3 bg-[#588157] text-white rounded-2xl font-semibold hover:bg-[#476747] shadow-md transition-all"
-          >
-            ➕ Create Recipe
-          </button>
-        </div>
-
-        <!-- Loading -->
-        <div v-if="isLoading" class="flex justify-center py-20">
-          <div class="relative w-20 h-20">
-            <div
-              class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#588157] animate-spin"
-            ></div>
-          </div>
-        </div>
-
-        <!-- No results -->
-        <div
-          v-else-if="filteredRecipes.length === 0"
-          class="text-center py-20 max-w-md mx-auto"
-        >
-          <div
-            class="w-24 h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center"
-          >
-            <span class="text-4xl">📖</span>
-          </div>
-          <h3 class="text-2xl font-bold text-[#31572c] mb-2">
-            {{ searchQuery ? 'No recipes found' : 'No recipes yet' }}
-          </h3>
-          <p class="text-slate-500 mb-6">
-            {{
-              searchQuery
-                ? 'Try different keywords'
-                : 'Create your first recipe'
-            }}
+    <main class="flex-1 p-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">New Customer</h1>
+          <p class="text-xs text-slate-500 mt-1">
+            Showing {{ users.length }} customers
           </p>
-          <button
-            @click="openCreateModal"
-            class="px-8 py-3 bg-[#588157] text-white rounded-2xl font-bold hover:bg-[#476747] shadow-lg"
-          >
-            ➕ Create Recipe
-          </button>
         </div>
 
-        <!-- Recipes Grid -->
-        <div
-          v-else
-          class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-14"
+        <button
+          type="button"
+          @click="openCreateUser"
+          class="px-4 py-2 rounded-full bg-[#7c3aed] text-white text-sm font-semibold shadow hover:bg-[#6d28d9]"
         >
-          <div
-            v-for="recipe in filteredRecipes"
-            :key="recipe.id"
-            class="group relative"
-          >
-            <div
-              class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center"
+          + New Customer
+        </button>
+      </div>
+
+      <!-- Filters (алып тастау керек десе, просто display-none жасап қойдық) -->
+      <div class="hidden"></div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-left text-xs text-slate-500">
+            <tr>
+              <th class="w-10 px-4 py-3">
+                <input type="checkbox" class="rounded border-slate-300" />
+              </th>
+              <th class="px-4 py-3">Avatar</th>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Email</th>
+              <th class="px-4 py-3">Saved recipes</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Last activity</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="user in users"
+              :key="user.id"
+              class="border-t border-slate-100 hover:bg-slate-50/80"
             >
-              <!-- Round image -->
-              <div
-                class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]"
-              >
-                <img
-                  v-if="recipe.imageUrl"
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div
-                  v-else
-                  class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center"
-                >
-                  <span class="text-2xl">📖</span>
+              <td class="px-4 py-3">
+                <input type="checkbox" class="rounded border-slate-300" />
+              </td>
+              <td class="px-4 py-3">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200">
+                  <img
+                    v-if="user.avatarUrl"
+                    :src="user.avatarUrl"
+                    alt=""
+                    class="w-full h-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="w-full h-full flex items-center justify-center text-[11px] font-semibold bg-gradient-to-br from-indigo-500 to-sky-400 text-white"
+                  >
+                    {{ user.initial }}
+                  </div>
                 </div>
-              </div>
-
-              <!-- NEW badge -->
-              <div
-                class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]"
-              >
+              </td>
+              <td class="px-4 py-3 text-slate-900 font-medium">
+                {{ user.name }}
+              </td>
+              <td class="px-4 py-3 text-slate-500">
+                {{ user.email || '—' }}
+              </td>
+              <td class="px-4 py-3 text-slate-700">
+                {{ user.savedCount }}
+              </td>
+              <td class="px-4 py-3">
                 <span
-                  v-if="isNewRecipe(recipe)"
-                  class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg"
+                  class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium"
+                  :class="user.status === 'Active'
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : user.status === 'Inactive'
+                      ? 'bg-slate-50 text-slate-500'
+                      : 'bg-violet-50 text-violet-600'"
                 >
-                  NEW
+                  {{ user.status }}
                 </span>
-              </div>
-
-              <!-- Public badge -->
-              <div class="absolute top-2 right-3 text-[11px] font-semibold">
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs shadow-md bg-emerald-500 text-white"
-                >
-                  Public
-                </span>
-              </div>
-
-              <!-- Text -->
-              <div
-                class="mt-12 w-full text-center flex flex-col gap-2"
-              >
-                <h3
-                  class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2"
-                >
-                  {{ recipe.title }}
-                </h3>
-                <p class="text-[11px] text-slate-400">
-                  {{ recipe.category }} • {{ recipe.area }}
-                </p>
-              </div>
-
-              <!-- Bottom actions -->
-              <div
-                class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]"
-              >
-                <!-- View -->
-                <button
-                  type="button"
-                  @click="openQuickView(recipe)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
-                  title="View"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+              </td>
+              <td class="px-4 py-3 text-slate-500">
+                {{ user.lastSaved }}
+              </td>
+              <td class="px-4 py-3 text-right">
+                <div class="flex items-center justify-end gap-2 text-slate-400">
+                  <button
+                    class="p-1.5 rounded-full hover:bg-slate-100"
+                    @click="openEditUser(user)"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
-
-                <!-- Edit -->
-                <button
-                  type="button"
-                  @click.stop="openEditModal(recipe)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30"
-                  title="Edit"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    🖊
+                  </button>
+                  <button
+                    class="p-1.5 rounded-full hover:bg-slate-100"
+                    @click="deleteUser(user.id)"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15.232 5.232l3.536 3.536M4 20h4.586L19.414 9.172a2 2 0 000-2.828l-2.758-2.758a2 2 0 00-2.828 0L4 14.586V20z"
-                    />
-                  </svg>
-                </button>
+                    🗑
+                  </button>
+                </div>
+              </td>
+            </tr>
 
-                <!-- Delete -->
-                <button
-                  type="button"
-                  @click.stop="deleteRecipe(recipe.id)"
-                  class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors"
-                  title="Delete"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+            <tr v-if="!users.length && !loading">
+              <td colspan="8" class="px-4 py-6 text-center text-slate-400 text-sm">
+                No users with favorites yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-    <!-- QUICK VIEW MODAL -->
-    <transition name="fade">
-      <div
-        v-if="showQuickViewModal"
-        class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
-        @click.self="showQuickViewModal = false"
-      >
         <div
-          class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+          class="flex items-center justify-between px-4 py-3 text-xs text-slate-500 border-t border-slate-100"
         >
-          <div
-            class="p-6 border-b border-[#d0d3c8] flex justify-between items-center"
-          >
-            <h2 class="text-2xl font-bold text-[#31572c]">
-              {{ quickViewRecipe?.title }}
-            </h2>
-            <button
-              @click="showQuickViewModal = false"
-              class="text-2xl hover:text-[#588157]"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="p-6 max-h-[70vh] overflow-y-auto space-y-4">
-            <div
-              class="w-full h-64 rounded-2xl overflow-hidden bg-slate-100 mb-4"
-            >
-              <img
-                v-if="quickViewRecipe?.imageUrl"
-                :src="quickViewRecipe.imageUrl"
-                :alt="quickViewRecipe.title"
-                class="w-full h-full object-cover"
-              />
-            </div>
-
-            <div class="flex flex-wrap gap-2 text-xs">
-              <span
-                class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
-              >
-                {{ quickViewRecipe?.category }}
-              </span>
-              <span
-                class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
-              >
-                {{ quickViewRecipe?.area }}
-              </span>
-              <span
-                class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
-              >
-                Public
-              </span>
-            </div>
-
-            <div v-if="quickViewRecipe?.instructions">
-              <h3 class="text-lg font-semibold text-[#31572c] mb-2">
-                Instructions
-              </h3>
-              <p
-                class="text-sm text-slate-700 whitespace-pre-line leading-relaxed"
-              >
-                {{ quickViewRecipe.instructions }}
-              </p>
-            </div>
-
-            <div v-if="quickViewRecipe?.youtubeUrl" class="pt-2">
-              <a
-                :href="quickViewRecipe.youtubeUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#588157] hover:bg-[#476747] text-white font-semibold text-sm transition-colors"
-              >
-                Open YouTube
-              </a>
-            </div>
+          <span>Showing {{ users.length }} customers</span>
+          <div class="flex items-center gap-2">
+            <span>25 per page</span>
           </div>
         </div>
       </div>
-    </transition>
+    </main>
 
-    <!-- CREATE/EDIT MODAL -->
+    <!-- CREATE / EDIT USER MODAL -->
     <transition name="fade">
       <div
-        v-if="showCreateModal || showEditModal"
+        v-if="showUserModal"
         class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-        @click.self="closeModal"
+        @click.self="closeUserModal"
       >
         <div
           class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col"
         >
           <div
-            class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]"
+            class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50"
           >
-            <h3 class="text-lg font-semibold text-[#31572c]">
-              {{ showCreateModal ? 'Create Recipe' : 'Edit Recipe' }}
+            <h3 class="text-lg font-semibold text-slate-900">
+              {{ editingUser ? 'Edit User' : 'Create User' }}
             </h3>
             <button
-              @click="closeModal"
-              class="text-[#6c7570] hover:text-black text-xl"
+              @click="closeUserModal"
+              class="text-slate-500 hover:text-slate-900 text-xl"
             >
               ✕
             </button>
           </div>
+
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
-              <label
-                class="block text-xs font-semibold text-[#31572c] mb-1"
-              >Title</label>
-              <input
-                v-model="currentForm.title"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              />
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label
-                  class="block text-xs font-semibold text-[#31572c] mb-1"
-                >Category</label>
-                <input
-                  v-model="currentForm.category"
-                  placeholder="e.g. Beef"
-                  class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-                />
-              </div>
-              <div>
-                <label
-                  class="block text-xs font-semibold text-[#31572c] mb-1"
-                >Area</label>
-                <input
-                  v-model="currentForm.area"
-                  placeholder="e.g. Italian"
-                  class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-                />
-              </div>
-            </div>
-            <div>
-              <label
-                class="block text-xs font-semibold text-[#31572c] mb-1"
-              >Image URL</label>
-              <input
-                v-model="currentForm.imageUrl"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              />
-            </div>
-            <div>
-              <label
-                class="block text-xs font-semibold text-[#31572c] mb-1"
-              >Instructions</label>
-              <textarea
-                v-model="currentForm.instructions"
-                rows="4"
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              ></textarea>
-            </div>
-            <div>
-              <label
-                class="block text-xs font-semibold text-[#31572c] mb-1"
-              >YouTube Link</label>
-              <input
-                v-model="currentForm.youtubeUrl"
-                placeholder="https://youtube.com/..."
-                class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-              />
-            </div>
-            <div class="flex items-center gap-3 pt-2">
-              <label
-                class="text-xs font-semibold text-[#31572c] flex items-center gap-2"
-              >
-                <input
-                  type="checkbox"
-                  v-model="currentForm.isPublic"
-                  class="w-4 h-4 rounded"
-                />
-                <span>Public (show on Home)</span>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Name
               </label>
-              <span class="text-xs text-[#6c7570]">
-                (Only You = private)
-              </span>
+              <input
+                v-model="userForm.name"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Email
+              </label>
+              <input
+                v-model="userForm.email"
+                type="email"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Password
+              </label>
+              <input
+                v-model="userForm.password"
+                type="password"
+                placeholder="Set login password"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Role
+              </label>
+              <select
+                v-model="userForm.role"
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
           </div>
+
           <div
-            class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3"
+            class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3"
           >
             <button
-              @click="closeModal"
-              class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white"
+              @click="closeUserModal"
+              class="px-4 py-2 rounded-xl text-sm border border-slate-200 text-slate-700 hover:bg-white"
             >
               Cancel
             </button>
             <button
-              @click="saveRecipe"
+              @click="saveUser"
               class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747]"
             >
               Save
@@ -580,215 +303,198 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeMount, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from '#app'
 
 const router = useRouter()
-const MOCK_API_URL =
-  'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
+const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
 const isSidebarOpen = ref(true)
-const activeMenu = ref('recipes')
-const searchQuery = ref('')
-const isLoading = ref(false)
-const recipes = ref([])
-const filteredRecipes = ref([])
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const currentForm = ref({})
+const activeMenu = ref('users')
 
-const showQuickViewModal = ref(false)
-const quickViewRecipe = ref(null)
+const loading = ref(false)
+const favorites = ref([])
+const rawUsers = ref([]) // users API‑ден (auth сервисінен) келетіндер
 
-// User
-const userName = ref('Admin')
-const userId = ref('')
-const userInitial = computed(
-  () => userName.value[0]?.toUpperCase() || 'A'
-)
+// Admin info
+const adminName = ref('Admin')
+const adminInitial = computed(() => adminName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
-  {
-    key: 'dashboard',
-    label: 'Dashboard',
-    icon: 'dashboard',
-    to: '/admin/dashboard'
-  },
-  {
-    key: 'recipes',
-    label: 'Recipes',
-    icon: 'recipes',
-    to: '/admin/recipes'
-  },
+  { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
+  { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
   { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
 
-const logout = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.clear()
+// Modal state
+const showUserModal = ref(false)
+const editingUser = ref(null)
+const userForm = ref({
+  name: '',
+  email: '',
+  password: '',
+  role: 'user'
+})
+
+// users – users API + favorites‑тен статистика merge
+const users = computed(() => {
+  // favorites бойынша group-by userId
+  const favMap = new Map()
+  for (const fav of favorites.value) {
+    const key = fav.userId
+    if (!key) continue
+    if (!favMap.has(key)) {
+      favMap.set(key, {
+        savedCount: 0,
+        lastSaved: ''
+      })
+    }
+    const obj = favMap.get(key)
+    obj.savedCount++
+    if (fav.savedAt && new Date(fav.savedAt) > new Date(obj.lastSaved || 0)) {
+      obj.lastSaved = new Date(fav.savedAt).toLocaleDateString()
+    }
   }
+
+  return rawUsers.value.map(u => {
+    const stats = favMap.get(u.id) || { savedCount: 0, lastSaved: '' }
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      avatarUrl: u.avatarUrl,
+      initial: u.name ? u.name[0].toUpperCase() : 'U',
+      savedCount: stats.savedCount,
+      lastSaved: stats.lastSaved,
+      status: stats.savedCount > 0 ? 'Active' : 'Inactive'
+    }
+  })
+})
+
+const logout = () => {
+  if (typeof window !== 'undefined') localStorage.clear()
   router.push('/login')
 }
 
-const initClientData = () => {
-  if (typeof window !== 'undefined') {
-    userName.value = localStorage.getItem('userName') || 'Admin'
-    userId.value = localStorage.getItem('userId') || 'admin'
+const openCreateUser = () => {
+  editingUser.value = null
+  userForm.value = {
+    name: '',
+    email: '',
+    password: '',
+    role: 'user'
   }
+  showUserModal.value = true
 }
 
-const loadRecipes = async () => {
-  isLoading.value = true
+const openEditUser = (user) => {
+  editingUser.value = user
+  userForm.value = {
+    name: user.name,
+    email: user.email,
+    password: '',
+    role: 'user' // backend‑тен role келе бастаса, соған теңестіресің
+  }
+  showUserModal.value = true
+}
+
+const closeUserModal = () => {
+  showUserModal.value = false
+  editingUser.value = null
+}
+
+// Мұнда нақты auth backend API‑ңды қолданасың.
+// Төмендегі URL–ды өзіңнің /users немесе /auth/users endpoint‑іңе ауыстыр.
+const loadUsers = async () => {
+  loading.value = true
   try {
-    const data = await $fetch(
-      `${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`
-    )
-    recipes.value = Array.isArray(data) ? data : []
-    filteredRecipes.value = [...recipes.value]
-  } catch (error) {
-    console.error('Failed to load recipes:', error)
-    recipes.value = []
-    filteredRecipes.value = []
+    const data = await $fetch(`${MOCK_API_URL}/users`)
+    rawUsers.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('Users load error', e)
+    rawUsers.value = []
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 
-const filterRecipes = () => {
-  if (!recipes.value.length) {
-    filteredRecipes.value = []
+// Favorites (save жасалғандар)
+const loadFavorites = async () => {
+  try {
+    const data = await $fetch(`${MOCK_API_URL}/favorites`)
+    favorites.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    favorites.value = []
+  }
+}
+
+// Create / Update user
+const saveUser = async () => {
+  if (!userForm.value.name || !userForm.value.email || !userForm.value.password) {
+    alert('Name, email, password толтыр.')
     return
   }
 
-  if (!searchQuery.value.trim()) {
-    filteredRecipes.value = [...recipes.value]
-    return
-  }
-
-  const q = searchQuery.value.toLowerCase()
-  filteredRecipes.value = recipes.value.filter(
-    (recipe) =>
-      recipe.title?.toLowerCase().includes(q) ||
-      recipe.category?.toLowerCase().includes(q) ||
-      recipe.area?.toLowerCase().includes(q)
-  )
-}
-
-const isNewRecipe = (recipe) => {
-  if (!recipe?.createdAt) return false
   try {
-    const created = new Date(recipe.createdAt)
-    return Date.now() - created.getTime() <
-      7 * 24 * 60 * 60 * 1000
-  } catch {
-    return false
-  }
-}
-
-const openCreateModal = () => {
-  currentForm.value = {
-    title: '',
-    category: '',
-    area: '',
-    imageUrl: '',
-    instructions: '',
-    youtubeUrl: '',
-    isPublic: true
-  }
-  showCreateModal.value = true
-  showEditModal.value = false
-}
-
-const openEditModal = (recipe) => {
-  currentForm.value = {
-    ...recipe,
-    isPublic: recipe.isPublic !== false
-  }
-  showEditModal.value = true
-  showCreateModal.value = false
-}
-
-const closeModal = () => {
-  showCreateModal.value = false
-  showEditModal.value = false
-  currentForm.value = {}
-}
-
-const saveRecipe = async () => {
-  isLoading.value = true
-  try {
-    const clientUserId =
-      typeof window !== 'undefined'
-        ? localStorage.getItem('userId') || 'admin'
-        : userId.value
-
-    if (showCreateModal.value) {
-      const newRecipe = {
-        ...currentForm.value,
-        userId: clientUserId,
-        createdAt: new Date().toISOString(),
-        isPublic: currentForm.value.isPublic !== false
-      }
-      await $fetch(`${MOCK_API_URL}/recipes`, {
-        method: 'POST',
-        body: newRecipe
-      })
-    } else if (showEditModal.value && currentForm.value.id) {
-      await $fetch(`${MOCK_API_URL}/recipes/${currentForm.value.id}`, {
+    if (editingUser.value) {
+      // UPDATE user
+      await $fetch(`${MOCK_API_URL}/users/${editingUser.value.id}`, {
         method: 'PUT',
-        body: currentForm.value
+        body: {
+          name: userForm.value.name,
+          email: userForm.value.email,
+          password: userForm.value.password,
+          role: userForm.value.role
+        }
+      })
+    } else {
+      // CREATE user
+      await $fetch(`${MOCK_API_URL}/users`, {
+        method: 'POST',
+        body: {
+          name: userForm.value.name,
+          email: userForm.value.email,
+          password: userForm.value.password,
+          role: userForm.value.role
+        }
       })
     }
-    await loadRecipes()
-    closeModal()
-  } catch (error) {
-    console.error('Save failed:', error)
-    alert('Save failed. Please try again.')
-  } finally {
-    isLoading.value = false
+    await loadUsers()
+    closeUserModal()
+  } catch (e) {
+    console.error('User save error', e)
+    alert('User save error')
   }
 }
 
-const deleteRecipe = async (id) => {
-  if (!confirm('Delete this recipe?')) return
+// Delete user
+const deleteUser = async (id) => {
+  if (!confirm('Delete this user?')) return
   try {
-    await $fetch(`${MOCK_API_URL}/recipes/${id}`, {
+    await $fetch(`${MOCK_API_URL}/users/${id}`, {
       method: 'DELETE'
     })
-    await loadRecipes()
-  } catch (error) {
-    console.error('Delete failed:', error)
-    alert('Delete failed. Please try again.')
+    await loadUsers()
+  } catch (e) {
+    console.error('User delete error', e)
+    alert('User delete error')
   }
 }
 
-const openQuickView = (recipe) => {
-  quickViewRecipe.value = recipe
-  showQuickViewModal.value = true
-}
-
-watch(searchQuery, filterRecipes)
-
-onBeforeMount(() => initClientData())
-onMounted(() => {
+onMounted(async () => {
   if (typeof window !== 'undefined') {
+    adminName.value = localStorage.getItem('userName') || 'Admin'
     const role = localStorage.getItem('role')
     if (role !== 'admin') {
       router.push('/')
       return
     }
   }
-  loadRecipes()
+  await Promise.all([loadUsers(), loadFavorites()])
 })
 </script>
 
 <style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -797,13 +503,5 @@ onMounted(() => {
 .fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
 }
 </style>
