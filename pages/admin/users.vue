@@ -184,12 +184,6 @@
                   class="bg-slate-50 text-left text-xs text-slate-500"
                 >
                   <tr>
-                    <th class="w-10 px-4 py-3">
-                      <input
-                        type="checkbox"
-                        class="rounded border-slate-300"
-                      />
-                    </th>
                     <th class="px-4 py-3">Avatar</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Email</th>
@@ -205,12 +199,6 @@
                     :key="user.userId"
                     class="border-t border-slate-100 hover:bg-slate-50/80"
                   >
-                    <td class="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        class="rounded border-slate-300"
-                      />
-                    </td>
                     <td class="px-4 py-3">
                       <div
                         class="w-8 h-8 rounded-full overflow-hidden bg-slate-200"
@@ -269,7 +257,7 @@
                   </tr>
                   <tr v-if="!users.length && !loading">
                     <td
-                      colspan="8"
+                      colspan="7"
                       class="px-4 py-6 text-center text-slate-400 text-sm"
                     >
                       No users with favorites yet. Create first user!
