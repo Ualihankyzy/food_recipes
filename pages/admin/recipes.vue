@@ -28,7 +28,11 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="activeMenu = item.key"
+         @click="() => { 
+  activeMenu = item.key; 
+  item.to && router.push(item.to); 
+}"
+
           class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors duration-200"
         >
           <span
@@ -409,10 +413,10 @@ const userId = ref('')
 const userInitial = computed(() => userName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
-  { key: 'dashboard', label: 'Dashboard', icon: '🏠', to: '/admin' },
-  { key: 'recipes', label: 'Recipes', icon: '📖' },
-  { key: 'users', label: 'Users', icon: '👥' },
-  { key: 'saved', label: 'Saved', icon: '⭐' }
+  { key: 'dashboard', label: 'Dashboard', icon: '🏠', to: '/admin/dashboard' },
+  { key: 'recipes', label: 'Recipes', icon: '📖',  to: '/admin/recipes'  },
+  { key: 'users', label: 'Users', icon: '👥',to: '/admin/users' },
+  { key: 'saved', label: 'Saved', icon: '⭐' , to: '/admin/saved'}
 ]
 
 const logout = () => {
