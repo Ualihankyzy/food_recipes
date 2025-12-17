@@ -19,14 +19,14 @@
   </a>
   
   <!-- 🔥 АВАТАРКА – ROLE БОЙЫША -->
-  <a 
-    :href="isAdmin ? '/admin/dashboard' : '/profile'" 
-    class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
-  >
-    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
-      {{ userInitial }}
-    </div>
-  </a>
+<button 
+  @click="router.push('/profile')"
+  class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
+>
+  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-sm shadow-md">
+    {{ userInitial }}
+  </div>
+</button>
 </div>
 
 
