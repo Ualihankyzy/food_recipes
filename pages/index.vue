@@ -698,7 +698,7 @@ const fetchPopularMeals = async () => {
     const res = await $fetch(
       'https://www.themealdb.com/api/json/v1/1/search.php?f=g'
     )
-    topMeals.value = (res.meals || []).slice(0, 5)
+    topMeals.value = (res.meals || []).slice(0, 4)
   } catch (e) {
     console.error(e)
   }
