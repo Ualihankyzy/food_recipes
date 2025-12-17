@@ -134,16 +134,20 @@
           >
             <!-- Image -->
             <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center">
-              <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
-                <img
-                  :src="recipe.imageUrl"
-                  :alt="recipe.title"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
-                  <span class="text-2xl">📖</span>
-                </div>
-              </div>
+           <!-- Image container - ДҰРЫС v-else -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
+  <img
+    v-if="recipe.imageUrl"
+    :src="recipe.imageUrl"
+    :alt="recipe.title"
+    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  />
+  <!-- ✅ v-else іконкасы дұрыс жерде -->
+  <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
+    <span class="text-2xl">📖</span>
+  </div>
+</div>
+
 
               <!-- NEW Badge -->
               <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
