@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex bg-[#588157]">
-    <!-- SIDEBAR - Оригинал күйінде қалды -->
+    <!-- SIDEBAR -->
 <aside
   :class="[
     'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300 bg-[#588157]',
@@ -9,12 +9,12 @@
 >
   <!-- Brand + toggle -->
   <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
-    <h1 v-if="isSidebarOpen" class="text-xl font-bold tracking-wide">
+    <h1 v-if="isSidebarOpen" class="text-xl font-bold tracking-wide text-[#fca311]/90">
       Recipes
     </h1>
 
     <button
-      class="text-white/80 hover:text-white"
+      class="text-white/80 hover:text-white hover:text-[#fca311]"
       @click="isSidebarOpen = !isSidebarOpen"
     >
       <span v-if="isSidebarOpen">⟨</span>
@@ -30,21 +30,21 @@
       @click="item.type === 'route'
         ? router.push(item.to)
         : (activeTab = item.key)"
-      class="relative w-full flex items-center gap-3 px-4 py-3 text-left text-sm font-medium transition-colors"
+      class="relative w-full flex items-center gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-white/10"
     >
       <!-- Active background -->
       <span
         v-if="item.type === 'tab'"
-        class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
+        class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1]/90 shadow-md transition-transform duration-200"
         :class="activeTab === item.key && isSidebarOpen
-          ? 'translate-x-0'
+          ? 'translate-x-0 bg-[#fca311]/20'
           : '-translate-x-full'"
       ></span>
 
       <!-- Icon -->
       <span
-        class="relative z-10 text-lg"
-        :class="activeTab === item.key ? 'text-[#31572c]' : 'text-white/90'"
+        class="relative z-10 text-lg transition-colors"
+        :class="activeTab === item.key ? 'text-[#fca311]' : 'text-white/90 hover:text-[#fca311]/90'"
       >
         {{ item.icon }}
       </span>
@@ -52,8 +52,8 @@
       <!-- Label -->
       <span
         v-if="isSidebarOpen"
-        class="relative z-10"
-        :class="activeTab === item.key ? 'text-[#31572c]' : 'text-white/80'"
+        class="relative z-10 transition-colors"
+        :class="activeTab === item.key ? 'text-[#fca311]' : 'text-white/80 hover:text-[#fca311]/90'"
       >
         {{ item.label }}
       </span>
@@ -63,18 +63,18 @@
   <!-- Bottom user + logout -->
   <div class="p-4 border-t border-white/10">
     <div class="flex items-center gap-3 mb-3">
-      <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold">
+      <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold ring-2 ring-[#fca311]/30">
         {{ userInitial }}
       </div>
       <div v-if="isSidebarOpen" class="text-sm">
-        <p class="font-semibold">{{ userName }}</p>
+        <p class="font-semibold text-[#fca311]/90">{{ userName }}</p>
         <p class="text-xs text-white/70">Logged in</p>
       </div>
     </div>
 
     <button
       @click="logout"
-      class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
+      class="flex items-center gap-2 text-xs text-emerald-50 hover:text-[#fca311] transition-colors"
     >
       <span>⏻</span>
       <span v-if="isSidebarOpen">Logout</span>
@@ -255,7 +255,7 @@
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl ring-2 ring-[#fca311]/20">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-gradient-to-r from-[#f5f6f1] to-[#fca311]/5">
             <h3 class="text-lg font-semibold text-[#31572c]">Edit Recipe</h3>
-            <button @click="showEditModal = false" class="text-[#6c7570] hover:text-[#fca311] transition-colors">✕</button>
+            <button @click="showEditModal = false" class="text-[#6c757d] hover:text-[#fca311] transition-colors">✕</button>
           </div>
           <div class="p-6 space-y-4 overflow-y-auto">
             <div>
@@ -408,13 +408,16 @@ const createRecipe = async () => {
   }
 
   try {
+    // серверге жібереміз
     await $fetch(`${MOCK_API_URL}/recipes`, {
       method: 'POST',
       body: recipe
     })
 
+    // 🔥 локалды тізімнің БАСЫНА қосамыз
     myRecipes.value.unshift(recipe)
 
+    // модалды жабу, форманы тазалау
     closeCreateModal()
   } catch (e) {
     console.error(e)
@@ -464,6 +467,7 @@ const saveEditedRecipe = async () => {
   finally{ isLoading.value = false }
 }
 
+// Бұл функцияны <script setup> ішіне қосыңыз
 const isNewRecipe = (recipe) => {
   if (!recipe.createdAt) return false
   const createdDate = new Date(recipe.createdAt)
