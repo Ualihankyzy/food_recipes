@@ -181,7 +181,7 @@
                 <input
                   v-model="searchQuery"
                   type="text"
-                  placeholder="Іздеу..."
+                  placeholder="Search Recipes "
                   class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
                   @input="filterRecipes"
                 />

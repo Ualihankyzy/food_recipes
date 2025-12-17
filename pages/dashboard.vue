@@ -77,17 +77,7 @@
         </nav>
 
         <div class="p-4 border-t border-white/10">
-          <div class="flex items-center gap-3 mb-3">
-            <div
-              class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold"
-            >
-              {{ userInitial }}
-            </div>
-            <div v-if="isSidebarOpen" class="text-sm">
-              <p class="font-semibold">{{ userName }}</p>
-              <p class="text-xs text-white/70">Logged in</p>
-            </div>
-          </div>
+      
 
           <button
             @click="logout"
