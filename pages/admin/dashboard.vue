@@ -64,7 +64,7 @@
               />
             </svg>
 
-            <!-- Recipes (BOOK) icon -->
+            <!-- Recipes icon -->
             <svg
               v-else-if="item.icon === 'recipes'"
               xmlns="http://www.w3.org/2000/svg"
@@ -124,18 +124,17 @@
     <!-- MAIN -->
     <div class="flex-1 flex flex-col">
       <!-- Top bar -->
-    <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8">
-  <div class="flex items-center gap-3">
-    <button
-      type="button"
-      class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm shadow-md hover:bg-[#476747] transition-colors"
-      @click="router.push('/profile')"
-    >
-      {{ userInitial }}
-    </button>
-  </div>
-</header>
-
+      <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm shadow-md hover:bg-[#476747] transition-colors"
+            @click="router.push('/profile')"
+          >
+            {{ userInitial }}
+          </button>
+        </div>
+      </header>
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-y-auto">
@@ -375,39 +374,6 @@
               <p v-else class="text-xs text-slate-400">No recipes yet.</p>
             </div>
           </section>
-
-          <!-- Most saved recipes -->
-          <section class="bg-white rounded-2xl shadow-sm p-4">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-sm font-semibold text-[#31572c]">Most saved recipes</h3>
-            </div>
-            <div v-if="mostSaved && mostSaved.length" class="overflow-x-auto">
-              <table class="min-w-full text-xs">
-                <thead>
-                  <tr class="uppercase text-[10px] text-slate-400 border-b">
-                    <th class="py-2 text-left">Recipe</th>
-                    <th class="py-2 text-left">Saved</th>
-                    <th class="py-2 text-left">Visibility</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in mostSaved" :key="item.id" class="border-b last:border-0">
-                    <td class="py-2 pr-4 text-slate-900">{{ item.title }}</td>
-                    <td class="py-2 pr-4 text-slate-800">⭐ {{ item.savedCount }}</td>
-                    <td class="py-2">
-                      <span
-                        class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                        :class="item.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
-                      >
-                        {{ item.isPublic ? 'Public' : 'Only you' }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p v-else class="text-xs text-slate-400">No favorites yet.</p>
-          </section>
         </section>
       </main>
     </div>
@@ -440,18 +406,6 @@ const logout = () => {
   router.push('/login')
 }
 
-// pages/admin/dashboard.vue onMounted
-onMounted(async () => {
-  if (process.client) {
-    const role = localStorage.getItem('role')
-    if (role !== 'admin') {
-      router.push('/')  // немесе /login
-      return
-    }
-  }
-  await loadAll()  // dashboard data
-})
-
 const isLoading = ref(true)
 const error = ref('')
 
@@ -466,9 +420,8 @@ const stats = reactive({
 
 const latestUsers = ref([])
 const latestRecipes = ref([])
-const mostSaved = ref([])
 
-const detailMode = ref(null)
+const detailMode = ref(null)      // 'saved' | 'new' | null
 const savedDetails = ref([])
 const newRecipesList = ref([])
 
@@ -514,34 +467,7 @@ const loadAll = async () => {
       })
       .slice(0, 5)
 
-    // Most saved
-    const savedCountMap = {}
-    favorites.forEach(f => {
-      if (!savedCountMap[f.recipeId]) savedCountMap[f.recipeId] = 0
-      savedCountMap[f.recipeId]++
-    })
-
-    const withCounts = recipes
-      .map(r => ({
-        ...r,
-        savedCount: savedCountMap[r.id] || 0
-      }))
-      .filter(r => r.savedCount > 0)
-      .sort((a, b) => b.savedCount - a.savedCount)
-      .slice(0, 5)
-
-    mostSaved.value = withCounts
-
-    // New recipes list
-    newRecipesList.value = recipes
-      .filter(r => diffDays(r.createdAt) <= 7)
-      .sort((a, b) => {
-        const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
-        const bD = b.createdAt ? new Date(b.createdAt).getTime() : 0
-        return bD - aD
-      })
-
-    // Saved details
+    // Saved details (for detail view)
     savedDetails.value = favorites
       .map(f => {
         const recipe = recipes.find(r => r.id === f.recipeId)
@@ -554,7 +480,16 @@ const loadAll = async () => {
       })
       .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
 
-    // Latest users
+    // New recipes list
+    newRecipesList.value = recipes
+      .filter(r => diffDays(r.createdAt) <= 7)
+      .sort((a, b) => {
+        const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bD = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bD - aD
+      })
+
+    // Latest users (from favorites + recipes)
     const allUsers = new Map()
 
     favorites.forEach(f => {
