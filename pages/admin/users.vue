@@ -85,11 +85,8 @@
 
       <main class="flex-1 px-8 py-8 overflow-y-auto">
         <!-- Create button -->
-        <div class="max-w-7xl mx-auto flex justify-between items-center mb-8">
-          <div>
-            <h2 class="text-xl font-bold text-slate-900">Users</h2>
-          
-          </div>
+        <div class="max-w-7xl mx-auto flex justify-end items-center mb-8">
+        
           <button @click="openCreateUser" class="px-6 py-3 bg-[#588157] text-white rounded-2xl font-semibold hover:bg-[#476747] shadow-md transition-all flex items-center gap-2">
             + Create User
           </button>
