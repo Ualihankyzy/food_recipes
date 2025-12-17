@@ -566,74 +566,44 @@
   </div>
 </template>
 
+
+
+
+
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from '#app'
 
 const router = useRouter()
-
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-
-
-// 🔥 SCRIPT БАСЫНА (MOCK_API_URL-ден КЕЙІН) қосыңыз
-
-const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
-
-// 🔥 USER + ROLE state
-
+/* ---------- USER / AUTH ---------- */
+const userId = ref('')
+const userName = ref('')
+const userEmail = ref('')
 const userRole = ref('')
+const isAuth = ref(false)
+const isAdmin = ref(false)
 
+const userInitial = computed(() =>
+  userName.value ? userName.value[0]?.toUpperCase() : 'U'
+)
 
-// 🔥 onMounted-ты осылай өзгерт
-onMounted(async () => {
-   if (typeof window !== 'undefined') {
-    userName.value = localStorage.getItem('userName') || ''
-    userRole.value = localStorage.getItem('role') || ''
-    isAuth.value = !!localStorage.getItem('userId')
-    isAdmin.value = userRole.value === 'admin'
-  }
-  
-  window.addEventListener('scroll', handleScroll)
-  await Promise.all([fetchRecipes(), fetchPopularMeals()])
-  if (userId.value) await loadFavorites()
-})
-
-
-// 🔥 onMounted-ты осылай өзгертіңіз (setupUser жоқ болса)
-// 🔥 onMounted ішінде userId-ны EMAIL ретінде алу
-onMounted(async () => {
-  if (typeof window !== 'undefined') {
-    userName.value = localStorage.getItem('userName') || 'User'
-    userId.value = localStorage.getItem('userId') || localStorage.getItem('userEmail') || ''  // ✅ EMAIL
-    const token = localStorage.getItem('token')
-    isAuth.value = !!userId.value || !!token
-    isAdmin.value = localStorage.getItem('role') === 'admin'
-  }
-  
-  window.addEventListener('scroll', handleScroll)
-  await Promise.all([fetchRecipes(), fetchPopularMeals()])
-  if (userId.value) await loadFavorites()
-})
-
-
-// State
-const recipes = ref([])
-const pending = ref(true)
-const errorMessage = ref(null)
-const selectedRecipe = ref(null)
+/* ---------- UI STATE ---------- */
 const showSearch = ref(false)
 const searchQuery = ref('')
 const recipesSection = ref(null)
 const activeLetter = ref(null)
-const userId = ref('')
-const userName = ref('')
-const userEmail = ref('')
-const isAuth = ref(false)
-const isAdmin = ref(false)
 
+/* ---------- DATA ---------- */
+const recipes = ref([])
+const pending = ref(true)
+const errorMessage = ref(null)
 
-// POPULAR (TheMealDB)
+/* ---------- FAVORITES ---------- */
+const favorites = ref([])
+
+/* ---------- POPULAR (TheMealDB) ---------- */
 const topMeals = ref([])
 const popularSelected = ref(null)
 
@@ -651,138 +621,19 @@ const popularIngredients = computed(() => {
   return arr
 })
 
-const fetchPopularMeals = async () => {
-  try {
-    const res = await $fetch('https://www.themealdb.com/api/json/v1/1/search.php?f=g')
-    topMeals.value = (res.meals || []).slice(0, 4)
-  } catch (e) {
-    console.error(e)
-  }
-}
+/* ---------- LOCAL MODAL (LOCAL RECIPES) ---------- */
+const selectedRecipe = ref(null)
 
-const openPopularModal = (meal) => {
-  popularSelected.value = meal
-}
+/* ---------- PAGINATION ---------- */
+const currentPage = ref(1)
+const pageSize = 8
 
-// User
-const setupUser = () => {
-  if (typeof window !== 'undefined') {
-    userId.value = localStorage.getItem('userId') || ''
-    const token = localStorage.getItem('token')
-    isAuth.value = !!userId.value || !!token
-  }
-}
-
-// Recipes
-// 🔥 fetchRecipes ФУНКЦИЯСЫН ОSY ШЕКІЛДІ ӨЗГЕРТІҢІЗ
-const fetchRecipes = async () => {
-  try {
-    pending.value = true
-    errorMessage.value = null
-    
-    const apiRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
-    
-    // 🔥 LOCAL СҰРЫПТАУ - SERVER-ден БҰҢЫС!
-    recipes.value = apiRecipes
-      .filter(recipe => recipe.isPublic !== false)
-      .sort((a, b) => {
-        // 1. createdAt бар жаңаларды БАСЫНА
-        const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
-        const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
-        
-        // Жаңасы (үлкен timestamp) алда болады
-        return bDate - aDate
-      })
-      
-  } catch (e) {
-    errorMessage.value = 'Recipes жүктелмеді'
-  } finally {
-    pending.value = false
-  }
-}
-
-
-
-onMounted(async () => {
-  if (typeof window !== 'undefined') {
-    // ✅ ПРИОРИТЕТ: userId → userEmail → ''
-    userId.value = localStorage.getItem('userId') || localStorage.getItem('userEmail') || localStorage.getItem('email') || ''
-    userName.value = localStorage.getItem('userName') || localStorage.getItem('username') || 'User'
-    userEmail.value = localStorage.getItem('userEmail') || localStorage.getItem('email') || userId.value
-    isAuth.value = !!userId.value
-    isAdmin.value = localStorage.getItem('role') === 'admin'
-    
-    console.log('User setup:', { userId: userId.value, userName: userName.value }) // DEBUG
-  }
-  
-  window.addEventListener('scroll', handleScroll)
-  await Promise.all([fetchRecipes(), fetchPopularMeals()])
-  if (userId.value) await loadFavorites()
-})
-
-// Favorites
-const loadFavorites = async () => {
-  if (!userId.value) return
-  
-  try {
-    favorites.value = await $fetch(
-      `${MOCK_API_URL}/favorites?userId=${encodeURIComponent(userId.value)}`
-    ) || []
-    console.log('Loaded favorites:', favorites.value) // DEBUG
-  } catch (e) {
-    console.error('Load favorites error:', e)
-    favorites.value = []
-  }
-}
-
-
-const toggleFavorite = async (recipeId) => {
-  // ✅ userId бар екенін DOUBLE CHECK
-  if (!userId.value || !userName.value) {
-    console.error('No userId:', userId.value) // DEBUG
-    router.push('/login')
-    return
-  }
-  
-  try {
-    const exists = favorites.value.find((f) => f.recipeId === recipeId)
-    
-    if (exists) {
-      // DELETE
-      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
-    } else {
-      // ✅ CREATE: ДҰРЫС userId + email
-      console.log('Saving favorite with userId:', userId.value) // DEBUG
-      
-      await $fetch(`${MOCK_API_URL}/favorites`, {
-        method: 'POST',
-        body: {
-          recipeId,
-          userId: userId.value,           // ✅ shariphanovva@gmail.com
-          username: userName.value,       // ✅ shariphanovva aqgul  
-          email: userEmail.value,         // ✅ shariphanovva@gmail.com (ДҰРЫС!)
-          savedAt: new Date().toISOString()
-        }
-      })
-    }
-    
-    await loadFavorites()
-  } catch (e) {
-    console.error('Favorite error:', e)
-  }
-}
-
-
-
-const isFavorite = (recipeId) =>
-  favorites.value.some((f) => f.recipeId === recipeId)
-
-// Filters
+/* ---------- COMPUTEDS ---------- */
 const filteredRecipes = computed(() => {
   let result = recipes.value
 
   if (activeLetter.value) {
-    result = result.filter((r) =>
+    result = result.filter(r =>
       r.title.toLowerCase().startsWith(activeLetter.value.toLowerCase())
     )
   }
@@ -790,7 +641,7 @@ const filteredRecipes = computed(() => {
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
     result = result.filter(
-      (r) =>
+      r =>
         r.title.toLowerCase().includes(q) ||
         r.area.toLowerCase().includes(q) ||
         r.category.toLowerCase().includes(q)
@@ -799,35 +650,6 @@ const filteredRecipes = computed(() => {
 
   return result
 })
-
-// Modal & scroll
-const openModal = (recipe) => (selectedRecipe.value = recipe)
-const closeModal = () => (selectedRecipe.value = null)
-const scrollToRecipes = () =>
-  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
-
-const handleScroll = () => {
-  if (window.scrollY < 100) showSearch.value = false
-}
-
-watch(searchQuery, () => {
-  activeLetter.value = null
-})
-
-onMounted(async () => {
-  setupUser()
-  window.addEventListener('scroll', handleScroll)
-  await Promise.all([fetchRecipes(), fetchPopularMeals()])
-  if (userId.value) await loadFavorites()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
-
-// Pagination
-const currentPage = ref(1)
-const pageSize = 8
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize))
@@ -838,7 +660,122 @@ const paginatedRecipes = computed(() => {
   return filteredRecipes.value.slice(start, start + pageSize)
 })
 
-const goToPage = (page) => {
+/* ---------- HELPERS ---------- */
+const isNewRecipe = recipe => {
+  if (!recipe.createdAt) return false
+  const createdDate = new Date(recipe.createdAt)
+  const now = new Date()
+  const diffTime = now - createdDate
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays <= 7
+}
+
+/* ---------- API: RECIPES ---------- */
+const fetchRecipes = async () => {
+  try {
+    pending.value = true
+    errorMessage.value = null
+
+    const apiRecipes = await $fetch(`${MOCK_API_URL}/recipes`)
+    recipes.value = apiRecipes
+      .filter(r => r.isPublic !== false)
+      .sort((a, b) => {
+        const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bDate - aDate
+      })
+  } catch (e) {
+    console.error(e)
+    errorMessage.value = 'Recipes жүктелмеді'
+  } finally {
+    pending.value = false
+  }
+}
+
+/* ---------- API: POPULAR (TheMealDB) ---------- */
+const fetchPopularMeals = async () => {
+  try {
+    const res = await $fetch(
+      'https://www.themealdb.com/api/json/v1/1/search.php?f=g'
+    )
+    topMeals.value = (res.meals || []).slice(0, 5)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const openPopularModal = meal => {
+  popularSelected.value = meal
+}
+
+/* ---------- API: FAVORITES ---------- */
+const loadFavorites = async () => {
+  if (!userId.value) return
+  try {
+    const data = await $fetch(
+      `${MOCK_API_URL}/favorites?userId=${encodeURIComponent(userId.value)}`
+    )
+    favorites.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('Load favorites error:', e)
+    favorites.value = []
+  }
+}
+
+const toggleFavorite = async recipeId => {
+  if (!isAuth.value || !userId.value) {
+    router.push('/login')
+    return
+  }
+
+  try {
+    const exists = favorites.value.find(f => f.recipeId === recipeId)
+
+    if (exists) {
+      await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, {
+        method: 'DELETE'
+      })
+    } else {
+      await $fetch(`${MOCK_API_URL}/favorites`, {
+        method: 'POST',
+        body: {
+          recipeId,
+          userId: userId.value,
+          username: userName.value,
+          email: userEmail.value,
+          savedAt: new Date().toISOString()
+        }
+      })
+    }
+
+    await loadFavorites()
+  } catch (e) {
+    console.error('Favorite error:', e)
+  }
+}
+
+const isFavorite = recipeId =>
+  favorites.value.some(f => f.recipeId === recipeId)
+
+/* ---------- MODALS / SCROLL ---------- */
+const openModal = recipe => {
+  selectedRecipe.value = recipe
+}
+
+const closeModal = () => {
+  selectedRecipe.value = null
+}
+
+const scrollToRecipes = () => {
+  recipesSection.value?.scrollIntoView({ behavior: 'smooth' })
+}
+
+const handleScroll = () => {
+  if (window.scrollY < 100) showSearch.value = false
+}
+
+/* ---------- PAGINATION ACTION ---------- */
+const goToPage = page => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
   nextTick(() => {
@@ -848,20 +785,54 @@ const goToPage = (page) => {
   })
 }
 
-// 🔥 HOME PAGE SCRIPT-ІНЕ ҚОСЫҢЫЗ (onMounted алдында)
-const isNewRecipe = (recipe) => {
-  if (!recipe.createdAt) return false
-  const createdDate = new Date(recipe.createdAt)
-  const now = new Date()
-  const diffTime = now - createdDate
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays <= 7 // 7 күннен жаңа
+/* ---------- AUTH SETUP ---------- */
+const setupUser = () => {
+  if (typeof window === 'undefined') return
+
+  userId.value =
+    localStorage.getItem('userId') ||
+    localStorage.getItem('userEmail') ||
+    localStorage.getItem('email') ||
+    ''
+
+  userName.value =
+    localStorage.getItem('userName') ||
+    localStorage.getItem('username') ||
+    'User'
+
+  userEmail.value =
+    localStorage.getItem('userEmail') ||
+    localStorage.getItem('email') ||
+    userId.value
+
+  userRole.value = localStorage.getItem('role') || ''
+  isAuth.value = !!userId.value
+  isAdmin.value = userRole.value === 'admin'
 }
 
+/* ---------- LIFECYCLE (БІР-АҚ onMounted!) ---------- */
+onMounted(async () => {
+  setupUser()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', handleScroll)
+  }
 
+  await Promise.all([fetchRecipes(), fetchPopularMeals()])
+  if (userId.value) await loadFavorites()
+})
 
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', handleScroll)
+  }
+})
 
+/* ---------- WATCHERS ---------- */
+watch(searchQuery, () => {
+  activeLetter.value = null
+})
 </script>
+
 
 <style>
 * {
