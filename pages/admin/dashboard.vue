@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen w-full bg-[#f5f6f1] font-sans">
-    <!-- TOP BAR (mobile) -->
     <header
       class="md:hidden flex items-center justify-between px-4 h-14 bg-[#588157] text-white"
     >
@@ -14,14 +13,12 @@
     </header>
 
     <div class="flex flex-col md:flex-row min-h-screen">
-      <!-- SIDEBAR (desktop) -->
       <aside
         :class="[
           'hidden md:flex h-screen sticky top-0 flex-col text-white shadow-xl transition-all duration-300',
           isSidebarOpen ? 'w-64 bg-[#588157]' : 'w-20 bg-[#588157]'
         ]"
       >
-        <!-- Brand + toggle -->
         <div
           class="h-20 flex items-center justify-between px-4 border-b border-white/10"
         >
@@ -42,7 +39,6 @@
           </button>
         </div>
 
-        <!-- Menu -->
         <nav class="flex-1 py-5 space-y-1 overflow-y-auto">
           <button
             v-for="item in menuItems"
@@ -66,7 +62,7 @@
               class="relative z-10 flex-shrink-0"
               :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
             >
-              <!-- Dashboard icon -->
+
               <svg
                 v-if="item.icon === 'dashboard'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +79,6 @@
                 />
               </svg>
 
-              <!-- Recipes icon -->
               <svg
                 v-else-if="item.icon === 'recipes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +95,6 @@
                 />
               </svg>
 
-              <!-- Users icon -->
               <svg
                 v-else-if="item.icon === 'users'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +122,7 @@
           </button>
         </nav>
 
-        <!-- Bottom user info -->
+
         <div class="p-4 border-t border-white/10">
           <button
             class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
@@ -140,9 +134,9 @@
         </div>
       </aside>
 
-      <!-- MAIN -->
+
       <div class="flex-1 flex flex-col">
-        <!-- Top bar -->
+
         <header
           class="h-16 md:h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between md:justify-end px-4 md:px-8"
         >
@@ -160,9 +154,8 @@
           </div>
         </header>
 
-        <!-- Content -->
+
         <main class="flex-1 p-4 md:p-6 overflow-y-auto">
-          <!-- Loading / error -->
           <div v-if="isLoading" class="flex justify-center py-20">
             <div
               class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"
@@ -184,9 +177,8 @@
             </button>
           </div>
 
-          <!-- DASHBOARD -->
+
           <section v-else class="space-y-8">
-            <!-- DETAIL VIEW -->
             <section v-if="detailMode" class="mb-6">
               <div
                 class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between"
@@ -216,7 +208,6 @@
                 </button>
               </div>
 
-              <!-- Saved details table -->
               <div
                 v-if="detailMode === 'saved'"
                 class="mt-4 bg-white rounded-2xl shadow-sm p-4 overflow-x-auto"
@@ -251,7 +242,6 @@
                 </table>
               </div>
 
-              <!-- New recipes list -->
               <div
                 v-else-if="detailMode === 'new'"
                 class="mt-4 bg-white rounded-2xl shadow-sm p-4"
@@ -291,7 +281,6 @@
               </div>
             </section>
 
-            <!-- Stats cards -->
             <section>
               <h2
                 class="text-base font-semibold text-[#31572c] mb-4"
@@ -302,7 +291,6 @@
               <div
                 class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
               >
-                <!-- Total users -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer"
                   @click="router.push('/admin/users')"
@@ -333,7 +321,6 @@
                   </span>
                 </div>
 
-                <!-- Total recipes -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer"
                   @click="router.push('/admin/recipes')"
@@ -364,7 +351,6 @@
                   </span>
                 </div>
 
-                <!-- Public recipes -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition"
                 >
@@ -394,7 +380,6 @@
                   </span>
                 </div>
 
-                <!-- Private recipes -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition"
                 >
@@ -424,12 +409,9 @@
                   </span>
                 </div>
               </div>
-
-              <!-- Total saved & new recipes -->
               <div
                 class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4"
               >
-                <!-- Total saved -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                   @click="openSavedDetails"
@@ -454,7 +436,6 @@
                   </p>
                 </div>
 
-                <!-- New recipes (7 days) -->
                 <div
                   class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                   @click="openNewRecipesDetails"
@@ -476,12 +457,9 @@
                 </div>
               </div>
             </section>
-
-            <!-- Latest users & recipes -->
             <section
               class="grid grid-cols-1 lg:grid-cols-2 gap-4"
             >
-              <!-- Latest users -->
               <div class="bg-white rounded-2xl shadow-sm p-4">
                 <h3
                   class="text-sm font-semibold text-[#31572c] mb-3"
@@ -527,7 +505,6 @@
                 </p>
               </div>
 
-              <!-- Latest recipes -->
               <div class="bg-white rounded-2xl shadow-sm p-4">
                 <div
                   class="flex items-center justify-between mb-3"
@@ -583,7 +560,6 @@
       </div>
     </div>
 
-    <!-- MOBILE DRAWER -->
     <transition name="fade">
       <div
         v-if="isMobileMenuOpen"
@@ -731,7 +707,7 @@ const stats = reactive({
 const latestUsers = ref([])
 const latestRecipes = ref([])
 
-const detailMode = ref(null) // 'saved' | 'new' | null
+const detailMode = ref(null) 
 const savedDetails = ref([])
 const newRecipesList = ref([])
 
@@ -761,14 +737,14 @@ const loadAll = async () => {
     const recipes = Array.isArray(recipesRes) ? recipesRes : []
     const favorites = Array.isArray(favoritesRes) ? favoritesRes : []
 
-    // Stats
+
     stats.totalRecipes = recipes.length
     stats.publicRecipes = recipes.filter(r => r.isPublic !== false).length
     stats.privateRecipes = recipes.filter(r => r.isPublic === false).length
     stats.totalSaved = favorites.length
     stats.newRecipes7d = recipes.filter(r => diffDays(r.createdAt) <= 7).length
 
-    // Latest recipes
+
     latestRecipes.value = [...recipes]
       .sort((a, b) => {
         const aD = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -777,7 +753,6 @@ const loadAll = async () => {
       })
       .slice(0, 5)
 
-    // Saved details
     savedDetails.value = favorites
       .map(f => {
         const recipe = recipes.find(r => r.id === f.recipeId)
@@ -790,7 +765,6 @@ const loadAll = async () => {
       })
       .sort((a, b) => (b.userName || '').localeCompare(a.userName || ''))
 
-    // New recipes list
     newRecipesList.value = recipes
       .filter(r => diffDays(r.createdAt) <= 7)
       .sort((a, b) => {
@@ -799,7 +773,6 @@ const loadAll = async () => {
         return bD - aD
       })
 
-    // Latest users from favorites + recipes
     const allUsers = new Map()
 
     favorites.forEach(f => {

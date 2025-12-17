@@ -1,11 +1,9 @@
-<template>
+<template> 
   <div class="flex min-h-screen font-sans">
-    <!-- Сол жақ: full screen сурет -->
     <div class="hidden md:block w-1/2 h-screen">
       <img src="../public/images/food.jpg" class="w-full h-full object-cover" />
     </div>
 
-    <!-- Оң жақ: Login форма -->
     <div class="flex items-center justify-center bg-white md:w-1/2 w-full">
       <div class="w-full max-w-lg px-8 md:px-12">
         <div class="mb-10">
@@ -55,7 +53,6 @@
           <a href="/signup" class="font-semibold text-[#f8961e] hover:underline">Signup</a>
         </p>
 
-        <!-- Хабар шығару -->
         <p v-if="error" class="mt-4 text-red-600">{{ error }}</p>
       </div>
     </div>
@@ -77,41 +74,39 @@ const form = ref({
 const error = ref("");
 
 const handleLogin = async () => {
-  error.value = ""
+  error.value = "";
 
   if (!form.value.email || !form.value.password) {
-    error.value = "Email және пароль толтырыңыз"
-    return
+    error.value = "Please enter both email and password";
+    return;
   }
 
   try {
     const response = await axios.post(
       "https://medical-backend-54hp.onrender.com/api/auth/login",
       form.value
-    )
+    );
 
-    const user = response.data?.data?.user
-    const token = response.data?.data?.token
+    const user = response.data?.data?.user;
+    const token = response.data?.data?.token;
 
     if (user?.id && token) {
-      localStorage.setItem("userId", user.id)
-      localStorage.setItem("userName", user.name)
-      localStorage.setItem("token", token)
-      localStorage.setItem("email", user.email)
-      localStorage.setItem("role", user.role) // "admin" немесе "user"
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("userName", user.name);
+      localStorage.setItem("token", token);
+      localStorage.setItem("email", user.email);
+      localStorage.setItem("role", user.role);
 
-      // 🔥 РОЛЬ БОЙЫНША КАЙ ЖЕРГЕ БАРАДЫ
       if (user.role === "admin") {
-        router.push("/admin/dashboard")
+        router.push("/admin/dashboard");
       } else {
-        router.push("/")
+        router.push("/");
       }
     } else {
-      error.value = "Email немесе пароль дұрыс емес"
+      error.value = "Invalid email or password";
     }
   } catch (err) {
-    error.value = err.response?.data?.message || "Email немесе пароль дұрыс емес"
+    error.value = err.response?.data?.message || "Invalid email or password";
   }
-}
-
+};
 </script>

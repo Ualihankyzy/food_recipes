@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen w-full bg-[#f5f6f1] font-sans">
-    <!-- TOP BAR (mobile) -->
     <header
       class="md:hidden flex items-center justify-between px-4 h-14 bg-[#588157] text-white"
     >
@@ -14,14 +13,12 @@
     </header>
 
     <div class="flex flex-col md:flex-row min-h-screen">
-      <!-- SIDEBAR (desktop) -->
       <aside
         :class="[
           'hidden md:flex h-screen sticky top-0 flex-col text-white shadow-xl transition-all duration-300',
           isSidebarOpen ? 'w-64 bg-[#588157]' : 'w-20 bg-[#588157]'
         ]"
       >
-        <!-- Brand + toggle -->
         <div
           class="h-20 flex items-center justify-between px-4 border-b border-white/10"
         >
@@ -42,7 +39,6 @@
           </button>
         </div>
 
-        <!-- Menu -->
         <nav class="flex-1 py-5 space-y-1 overflow-y-auto">
           <button
             v-for="item in menuItems"
@@ -66,7 +62,6 @@
               class="relative z-10 flex-shrink-0"
               :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
             >
-              <!-- Dashboard icon -->
               <svg
                 v-if="item.icon === 'dashboard'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +78,6 @@
                 />
               </svg>
 
-              <!-- Recipes icon -->
               <svg
                 v-else-if="item.icon === 'recipes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +94,6 @@
                 />
               </svg>
 
-              <!-- Users icon -->
               <svg
                 v-else-if="item.icon === 'users'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +121,6 @@
           </button>
         </nav>
 
-        <!-- Bottom user info -->
         <div class="p-4 border-t border-white/10">
           <button
             class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
@@ -140,9 +132,7 @@
         </div>
       </aside>
 
-      <!-- MAIN -->
       <div class="flex-1 flex flex-col bg-slate-50">
-        <!-- Header -->
         <header
           class="h-16 md:h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-4 md:px-8"
         >
@@ -162,7 +152,6 @@
         </header>
 
         <main class="flex-1 px-4 md:px-8 py-6 md:py-8 overflow-y-auto">
-          <!-- Create button -->
           <div
             class="max-w-7xl mx-auto flex justify-end items-center mb-6 md:mb-8"
           >
@@ -174,7 +163,6 @@
             </button>
           </div>
 
-          <!-- Table -->
           <div class="max-w-7xl mx-auto">
             <div
               class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto"
@@ -276,7 +264,6 @@
       </div>
     </div>
 
-    <!-- MOBILE DRAWER -->
     <transition name="fade">
       <div
         v-if="isMobileMenuOpen"
@@ -380,7 +367,6 @@
       </div>
     </transition>
 
-    <!-- CREATE USER MODAL -->
     <transition name="fade">
       <div
         v-if="showCreateModal"
@@ -390,7 +376,6 @@
         <div
           class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl"
         >
-          <!-- Header -->
           <div
             class="px-6 py-5 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]"
           >
@@ -399,7 +384,7 @@
                 Create User Account
               </h3>
               <p class="text-sm text-slate-600 mt-1">
-                User will login with these credentials
+                User will log in with these credentials
               </p>
             </div>
             <button
@@ -410,12 +395,10 @@
             </button>
           </div>
 
-          <!-- Form -->
           <form
             @submit.prevent="handleRegister"
             class="p-6 space-y-6"
           >
-            <!-- Name -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 mb-2"
@@ -430,7 +413,6 @@
               />
             </div>
 
-            <!-- Email -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 mb-2"
@@ -445,7 +427,6 @@
               />
             </div>
 
-            <!-- Password -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 mb-2"
@@ -461,7 +442,6 @@
               />
             </div>
 
-            <!-- Credentials preview -->
             <div
               v-if="registerForm.email && registerForm.password"
               class="p-4 bg-blue-50 border border-blue-200 rounded-2xl"
@@ -485,7 +465,6 @@
               </div>
             </div>
 
-            <!-- Error -->
             <div
               v-if="registerError"
               class="p-3 bg-red-100 border border-red-300 rounded-xl"
@@ -495,7 +474,6 @@
               </p>
             </div>
 
-            <!-- Buttons -->
             <div class="flex justify-end gap-3 pt-4">
               <button
                 type="button"
@@ -521,7 +499,6 @@
       </div>
     </transition>
 
-    <!-- User Info Modal -->
     <transition name="fade">
       <div
         v-if="showInfoModal"
@@ -602,23 +579,19 @@ const router = useRouter()
 const MOCK_API_URL =
   'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// UI state
 const isSidebarOpen = ref(true)
 const isMobileMenuOpen = ref(false)
 const activeMenu = ref('users')
 const loading = ref(false)
 
-// Data
-const favorites = ref([]) // favorites API-дан келетiндер
-const createdUsers = ref([]) // admin осы беттен құрған юзерлер
+const favorites = ref([])
+const createdUsers = ref([])
 
-// Admin info
 const adminName = ref('Admin')
 const adminInitial = computed(
   () => adminName.value[0]?.toUpperCase() || 'A'
 )
 
-// Sidebar menu
 const menuItems = [
   {
     key: 'dashboard',
@@ -640,11 +613,9 @@ const menuItems = [
   }
 ]
 
-// Users list (favorites + createdUsers)
 const users = computed(() => {
   const byUser = new Map()
 
-  // 1. Favorites-тен юзерлер
   for (const fav of favorites.value) {
     const key = fav.userId || 'unknown'
     if (!key || !fav.username) continue
@@ -668,7 +639,6 @@ const users = computed(() => {
     }
   }
 
-  // 2. Admin құрған юзерлер (favorites жоқ болса да көріну үшін)
   for (const created of createdUsers.value) {
     const key = `created_${created.email}`
     if (!byUser.has(key)) {
@@ -691,7 +661,6 @@ const users = computed(() => {
   }))
 })
 
-// Info modal
 const showInfoModal = ref(false)
 const selectedUser = ref(null)
 
@@ -700,7 +669,6 @@ const showUserInfo = user => {
   showInfoModal.value = true
 }
 
-// Create user modal
 const showCreateModal = ref(false)
 const registerForm = ref({ name: '', email: '', password: '' })
 const registerLoading = ref(false)
@@ -716,7 +684,6 @@ const closeCreateModal = () => {
   showCreateModal.value = false
 }
 
-// Register (тек backend-ке жiбередi, favorites-ке емес)
 const handleRegister = async () => {
   if (
     !registerForm.value.name?.trim() ||
@@ -744,7 +711,6 @@ const handleRegister = async () => {
       }
     )
 
-    // Local list-ке қосу (0 favorites-пен)
     createdUsers.value.push({
       name: registerForm.value.name,
       email: registerForm.value.email,
@@ -766,9 +732,8 @@ const handleRegister = async () => {
   }
 }
 
-// Delete from list (favorites + createdUsers)
 const deleteUser = userId => {
-  if (!confirm('Remove this user from list?')) return
+  if (!confirm('Remove this user from the list?')) return
 
   favorites.value = favorites.value.filter(
     f => (f.userId || f.id) !== userId
@@ -778,7 +743,6 @@ const deleteUser = userId => {
   )
 }
 
-// Load all favorites (admin overview)
 const loadFavorites = async () => {
   loading.value = true
   try {
@@ -792,7 +756,6 @@ const loadFavorites = async () => {
   }
 }
 
-// Logout
 const logout = () => {
   if (typeof window !== 'undefined') {
     localStorage.clear()
@@ -800,7 +763,6 @@ const logout = () => {
   router.push('/login')
 }
 
-// Mounted
 onMounted(async () => {
   if (typeof window !== 'undefined') {
     adminName.value = localStorage.getItem('userName') || 'Admin'

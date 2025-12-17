@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen w-full bg-gray-50">
-    <!-- TOP BAR (mobile) -->
     <header
       class="md:hidden flex items-center justify-between px-4 h-14 bg-[#588157] text-white"
     >
@@ -14,7 +13,6 @@
     </header>
 
     <div class="flex flex-col md:flex-row min-h-screen">
-      <!-- DESKTOP SIDEBAR -->
       <aside
         class="hidden md:flex w-full max-w-xs bg-white border-r px-6 py-8 flex-col items-center"
       >
@@ -112,7 +110,6 @@
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="flex-1 px-4 md:px-8 py-6 md:py-10">
         <div
           v-if="isLoading"
@@ -240,7 +237,6 @@
       </main>
     </div>
 
-    <!-- MOBILE DRAWER -->
     <transition name="fade">
       <div
         v-if="isMobileMenuOpen"

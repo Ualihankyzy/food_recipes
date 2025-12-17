@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen w-full bg-[#f5f6f1] font-sans">
-    <!-- TOP BAR (mobile) -->
     <header
       class="md:hidden flex items-center justify-between px-4 h-14 bg-[#588157] text-white"
     >
@@ -14,7 +13,6 @@
     </header>
 
     <div class="flex flex-col md:flex-row min-h-screen">
-      <!-- DESKTOP SIDEBAR -->
       <aside
         :class="[
           'hidden md:flex h-screen sticky top-0 flex-col text-white shadow-xl transition-all duration-300',
@@ -142,7 +140,6 @@
         </div>
       </aside>
 
-      <!-- MAIN -->
       <div class="flex-1 flex flex-col bg-slate-50">
         <header
           class="h-16 md:h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-4 md:px-8"
@@ -409,7 +406,6 @@
       </div>
     </div>
 
-    <!-- MOBILE DRAWER SIDEBAR -->
     <transition name="fade">
       <div
         v-if="isMobileMenuOpen"
@@ -528,9 +524,7 @@
       </div>
     </transition>
 
-    <!-- QUICK VIEW MODAL -->
-    <!-- (қалған модалдар, логика — сендікімен бірдей, өзгеріссіз қалдырдым) -->
-    <!-- QUICK VIEW MODAL -->
+
     <transition name="fade">
       <div
         v-if="showQuickViewModal"
@@ -613,7 +607,7 @@
       </div>
     </transition>
 
-    <!-- CREATE/EDIT MODAL -->
+    
     <transition name="fade">
       <div
         v-if="showCreateModal || showEditModal"
@@ -743,7 +737,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeMount, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter } from '#app'
 
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'

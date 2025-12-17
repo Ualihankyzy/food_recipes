@@ -291,7 +291,7 @@
               v-else
               class="text-center text-[#6c7570] py-10 text-sm md:text-base"
             >
-              No saved recipes yet. Save some from home page! ✨
+              No saved recipes yet. Save some from the home page!
             </p>
           </div>
         </section>
@@ -487,7 +487,7 @@
                 <span>Public (show on Home)</span>
               </label>
               <span class="text-xs text-[#6c7570]">
-                (Only You = private)
+                (Only you = private)
               </span>
             </div>
           </div>
@@ -630,7 +630,7 @@
                 <span>Public (show on Home)</span>
               </label>
               <span class="text-xs text-[#6c7570]">
-                (Only You = private)
+                (Only you = private)
               </span>
             </div>
           </div>
@@ -718,9 +718,9 @@ const userInitial = computed(() =>
 )
 
 const menuItems = [
-  { key: 'home', label: ' Home', type: 'route', to: '/', icon: '🏠' },
-  { key: 'my-recipes', label: ' My recipes', type: 'tab', icon: '📖' },
-  { key: 'saved', label: ' Saved', type: 'tab', icon: '💾' }
+  { key: 'home', label: 'Home', type: 'route', to: '/', icon: '🏠' },
+  { key: 'my-recipes', label: 'My recipes', type: 'tab', icon: '📖' },
+  { key: 'saved', label: 'Saved', type: 'tab', icon: '💾' }
 ]
 
 const setupUser = () => {
