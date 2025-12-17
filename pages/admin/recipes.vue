@@ -69,150 +69,194 @@
     </aside>
 
     <!-- MAIN -->
-    <div class="flex-1 flex flex-col">
-      <!-- Top bar -->
-      <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
-        <div class="flex items-center gap-4">
-          <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
-          <div class="text-sm text-slate-500">Total: {{ filteredRecipes.length }}</div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button
-            @click="showCreateModal = true"
-            class="flex items-center gap-2 px-6 py-2.5 bg-[#588157] text-white rounded-xl font-semibold hover:bg-[#476747] shadow-md transition-all"
-          >
-            ➕ Create Recipe
-          </button>
-          <div class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md">
-            {{ userInitial }}
-          </div>
-        </div>
-      </header>
+   <!-- MAIN -->
+<div class="flex-1 flex flex-col bg-slate-50">
+  <!-- Top bar -->
+  <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
+    <div class="flex items-center gap-4">
+      <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
+      <div class="text-sm text-slate-500">
+        Total: {{ filteredRecipes.length }}
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 px-6 py-2.5 bg-[#588157] text-white rounded-xl font-semibold hover:bg-[#476747] shadow-md transition-all"
+      >
+        ➕ Create Recipe
+      </button>
+      <div class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md">
+        {{ userInitial }}
+      </div>
+    </div>
+  </header>
 
-      <!-- Content -->
-      <main class="flex-1 p-8 overflow-y-auto bg-slate-50">
-        <!-- Search -->
-        <div class="w-full ml-12 mb-10 max-w-xl">
-          <div class="w-full flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"/>
-            </svg>
-            <input
-              v-model="searchQuery"
-              placeholder="Іздеу..."
-              class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
-              @input="filterRecipes"
+  <!-- Content -->
+  <main class="flex-1 px-8 py-8 overflow-y-auto">
+    <!-- Search + Create (бір сызықта) -->
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-6 mb-8">
+      <div class="flex-1">
+        <div class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 text-slate-400 flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"
             />
-          </div>
+          </svg>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Іздеу..."
+            class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
+            @input="filterRecipes"
+          />
         </div>
+      </div>
+      <!-- Қосымша Create керек болса, осында қоюға болады, әзірге тек үстінде -->
+    </div>
 
-        <!-- Loading -->
-        <div v-if="isLoading" class="flex justify-center py-20">
-          <div class="relative w-20 h-20">
-            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#588157] animate-spin"></div>
-          </div>
-        </div>
+    <!-- Loading -->
+    <div v-if="isLoading" class="flex justify-center py-20">
+      <div class="relative w-20 h-20">
+        <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#588157] animate-spin"></div>
+      </div>
+    </div>
 
-        <!-- No results -->
-        <div v-else-if="filteredRecipes.length === 0" class="text-center py-20 max-w-md mx-auto">
-          <div class="w-24 h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center">
-            <span class="text-4xl">📖</span>
-          </div>
-          <h3 class="text-2xl font-bold text-[#31572c] mb-2">{{ searchQuery ? 'No recipes found' : 'No recipes yet' }}</h3>
-          <p class="text-slate-500 mb-6">{{ searchQuery ? 'Try different keywords' : 'Create your first recipe' }}</p>
-          <button @click="showCreateModal = true" class="px-8 py-3 bg-[#588157] text-white rounded-2xl font-bold hover:bg-[#476747] shadow-lg">
-            ➕ Create Recipe
-          </button>
-        </div>
+    <!-- No results -->
+    <div v-else-if="filteredRecipes.length === 0" class="text-center py-20 max-w-md mx-auto">
+      <div class="w-24 h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center">
+        <span class="text-4xl">📖</span>
+      </div>
+      <h3 class="text-2xl font-bold text-[#31572c] mb-2">
+        {{ searchQuery ? 'No recipes found' : 'No recipes yet' }}
+      </h3>
+      <p class="text-slate-500 mb-6">
+        {{ searchQuery ? 'Try different keywords' : 'Create your first recipe' }}
+      </p>
+      <button
+        @click="showCreateModal = true"
+        class="px-8 py-3 bg-[#588157] text-white rounded-2xl font-bold hover:bg-[#476747] shadow-lg"
+      >
+        ➕ Create Recipe
+      </button>
+    </div>
 
-        <!-- Recipes Grid (HOME STYLE) -->
-        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div
-            v-for="recipe in filteredRecipes"
-            :key="recipe.id"
-            class="group relative"
-          >
-            <!-- Image -->
-            <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center">
-           <!-- Image container - ДҰРЫС v-else -->
-<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
-  <img
-    v-if="recipe.imageUrl"
-    :src="recipe.imageUrl"
-    :alt="recipe.title"
-    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-  />
-  <!-- ✅ v-else іконкасы дұрыс жерде -->
-  <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
-    <span class="text-2xl">📖</span>
-  </div>
-</div>
-
-
-              <!-- NEW Badge -->
-              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
-                <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
-                  NEW
-                </span>
-              </div>
-
-              <!-- Public/Private Badge -->
-              <div class="absolute top-2 right-3 text-[11px] font-semibold">
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs shadow-md"
-                  :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'"
-                >
-                  {{ recipe.isPublic ? 'Public' : 'Private' }}
-                </span>
-              </div>
-
-              <!-- Content -->
-              <div class="mt-12 w-full text-center flex flex-col gap-2">
-                <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
-                  {{ recipe.title }}
-                </h3>
-                <p class="text-[11px] text-slate-400">
-                  {{ recipe.category }} • {{ recipe.area }}
-                </p>
-              </div>
-
-              <!-- Actions (HOME STYLE + Edit/Delete) -->
-              <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden">
-                <!-- YouTube -->
-                <a
-                  v-if="recipe.youtubeUrl"
-                  :href="recipe.youtubeUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] transition-colors py-2.5"
-                >
-                  YouTube
-                </a>
-                <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
-
-                <!-- Edit -->
-                <button
-                  @click.stop="openEditModal(recipe)"
-                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] border-l border-white/40 transition-colors py-2.5"
-                  title="Edit"
-                >
-                  ✏️
-                </button>
-
-                <!-- Delete -->
-                <button
-                  @click.stop="deleteRecipe(recipe.id)"
-                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40 transition-colors py-2.5"
-                  title="Delete"
-                >
-                  🗑️
-                </button>
-              </div>
+    <!-- Recipes Grid -->
+    <div v-else class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div
+        v-for="recipe in filteredRecipes"
+        :key="recipe.id"
+        class="group relative"
+      >
+        <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center">
+          <!-- Round image -->
+          <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
+            <img
+              v-if="recipe.imageUrl"
+              :src="recipe.imageUrl"
+              :alt="recipe.title"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div
+              v-else
+              class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center"
+            >
+              <span class="text-2xl">📖</span>
             </div>
           </div>
+
+          <!-- NEW badge -->
+          <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+            <span
+              v-if="isNewRecipe(recipe)"
+              class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg"
+            >
+              NEW
+            </span>
+          </div>
+
+          <!-- Public / Private badge -->
+          <div class="absolute top-2 right-3 text-[11px] font-semibold">
+            <span
+              class="px-2 py-0.5 rounded-full text-xs shadow-md"
+              :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'"
+            >
+              {{ recipe.isPublic ? 'Public' : 'Private' }}
+            </span>
+          </div>
+
+          <!-- Text -->
+          <div class="mt-12 w-full text-center flex flex-col gap-2">
+            <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
+              {{ recipe.title }}
+            </h3>
+            <p class="text-[11px] text-slate-400">
+              {{ recipe.category }} • {{ recipe.area }}
+            </p>
+          </div>
+
+          <!-- Bottom actions: 👁 + Edit/Delete -->
+          <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden">
+            <!-- 👁 eye icon button (YouTube орнына) -->
+            <button
+              type="button"
+              @click="openQuickView(recipe)"
+              class="flex-1 flex items-center justify-center bg-[#588157] hover:bg-[#476747] text-white transition-colors py-2.5"
+              title="View"
+            >
+              <!-- Inline SVG eye -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+
+            <!-- Edit -->
+            <button
+              type="button"
+              @click.stop="openEditModal(recipe)"
+              class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] border-l border-white/40 transition-colors py-2.5"
+              title="Edit"
+            >
+              ✏️
+            </button>
+
+            <!-- Delete -->
+            <button
+              type="button"
+              @click.stop="deleteRecipe(recipe.id)"
+              class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40 transition-colors py-2.5"
+              title="Delete"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
+  </main>
+</div>
+
 
     <!-- CREATE/EDIT MODAL (Кіші стиль) -->
     <transition name="fade">
@@ -410,6 +454,14 @@ onMounted(() => {
   }
   loadRecipes()
 })
+const showQuickViewModal = ref(false)
+const quickViewRecipe = ref(null)
+
+const openQuickView = (recipe) => {
+  quickViewRecipe.value = recipe
+  showQuickViewModal.value = true
+}
+
 </script>
 
 <style scoped>
