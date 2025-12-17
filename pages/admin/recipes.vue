@@ -1,22 +1,25 @@
 <template>
   <div class="min-h-screen flex bg-[#f5f6f1] font-sans">
     <!-- SIDEBAR -->
-    <aside
+      <aside
       :class="[
-        'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300 border-r border-white/10',
+        'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300',
         isSidebarOpen ? 'w-64 bg-[#588157]' : 'w-20 bg-[#588157]'
       ]"
     >
       <!-- Brand + toggle -->
       <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">Recipes</span>
+          <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">
+            Admin
+          </span>
         </div>
         <button
-          class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+          class="text-white/80 hover:text-white"
           @click="isSidebarOpen = !isSidebarOpen"
         >
-          <span v-if="isSidebarOpen">⟨</span><span v-else>⟩</span>
+          <span v-if="isSidebarOpen">⟨</span>
+          <span v-else>⟩</span>
         </button>
       </div>
 
@@ -25,60 +28,95 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="() => { activeMenu = item.key; item.to && router.push(item.to); }"
-          class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors duration-200"
+          @click="() => { 
+            activeMenu = item.key; 
+            item.to && router.push(item.to); 
+          }"
+          class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors"
         >
           <span
             class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
-            :class="[activeMenu === item.key && isSidebarOpen ? 'translate-x-0' : '-translate-x-full']"
+            :class="[
+              activeMenu === item.key && isSidebarOpen
+                ? 'translate-x-0'
+                : '-translate-x-full'
+            ]"
           ></span>
-          
+
           <span
             class="relative z-10 flex-shrink-0"
             :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/90 hover:text-white'"
           >
             <!-- Dashboard icon -->
-            <svg v-if="item.icon === 'dashboard'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"/>
+            <svg
+              v-if="item.icon === 'dashboard'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-8h8V3h-8v10zM3 21h8v-6H3v6z"
+              />
             </svg>
 
             <!-- Recipes icon -->
-            <svg v-else-if="item.icon === 'recipes'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"/>
+            <svg
+              v-else-if="item.icon === 'recipes'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 5a2 2 0 012-2h9a2 2 0 012 2v13a1 1 0 01-1.447.894L12 18.618l-3.553 1.276A1 1 0 017 19V5a2 2 0 00-2-2H4z"
+              />
             </svg>
 
             <!-- Users icon -->
-            <svg v-else-if="item.icon === 'users'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"/>
+            <svg
+              v-else-if="item.icon === 'users'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2m18 0v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 11a4 4 0 100-8 4 4 0 000 8z"
+              />
             </svg>
           </span>
 
           <span
             v-if="isSidebarOpen"
             class="relative z-10"
-            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/80 hover:text-white'"
+            :class="activeMenu === item.key ? 'text-[#31572c]' : 'text-white/80'"
           >
             {{ item.label }}
           </span>
         </button>
       </nav>
 
-      <!-- User info -->
+      <!-- Bottom user info -->
       <div class="p-4 border-t border-white/10">
-        <div v-if="isSidebarOpen" class="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/10">
-          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">
-            {{ userInitial }}
-          </div>
-          <div>
-            <p class="font-semibold text-sm">{{ userName }}</p>
-            <p class="text-xs text-emerald-100/80">Admin</p>
-          </div>
-        </div>
         <button
-          class="w-full flex items-center gap-2 text-xs text-emerald-50 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          class="flex items-center gap-2 text-xs text-emerald-50 hover:text-white"
           @click="logout"
         >
-          <span>⏻</span><span v-if="isSidebarOpen">Logout</span>
+          <span>⏻</span>
+          <span v-if="isSidebarOpen">Logout</span>
         </button>
       </div>
     </aside>
