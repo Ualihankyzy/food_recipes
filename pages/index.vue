@@ -3,14 +3,13 @@
    <header 
   class="w-full text-white flex items-center justify-between h-16 px-4 sm:px-8 lg:px-20 absolute top-0 left-0 z-40 mt-4"
 >
-  <!-- ЛОГО / ТИТЛ -->
+
   <h1 class="text-lg sm:text-2xl font-bold mr-4 sm:mr-20">
     Recipes
   </h1>
 
-  <!-- NAV -->
   <nav class="flex items-center gap-3 sm:gap-6 text-sm sm:text-lg relative">
-    <!-- AUTH -->
+
     <div
       v-if="isAuth"
       class="flex items-center gap-2 sm:gap-4 ml-1 sm:ml-4"
