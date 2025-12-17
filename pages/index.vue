@@ -33,7 +33,7 @@
       </button>
     </div>
 
-    <!-- GUEST -->
+
     <div
       v-else
       class="flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-6 text-xs sm:text-2xl font-semibold"
