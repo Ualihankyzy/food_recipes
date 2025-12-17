@@ -70,18 +70,13 @@
     <!-- MAIN -->
     <div class="flex-1 flex flex-col">
       <!-- Top bar -->
-      <header
-  class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8"
->
-  <!-- Тек оң жақтағы аватар қалады -->
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
-      {{ userInitial }}
-    </div>
- 
-  </div>
-</header>
-
+      <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm">
+            {{ userInitial }}
+          </div>
+        </div>
+      </header>
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-y-auto">
@@ -102,21 +97,18 @@
 
         <!-- DASHBOARD -->
         <section v-else class="space-y-8">
-          <!-- DETAIL VIEW (Total saved / New recipes / Active users) -->
+          <!-- DETAIL VIEW -->
           <section v-if="detailMode" class="mb-6">
             <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
               <div>
                 <h2 class="text-base font-semibold text-[#31572c]" v-if="detailMode === 'saved'">
-                  Saved activity – who saved which recipe
+                  Saved activity
                 </h2>
                 <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'new'">
-                  New recipes – created in last 7 days
-                </h2>
-                <h2 class="text-base font-semibold text-[#31572c]" v-else-if="detailMode === 'users'">
-                  Active users – last 30 days activity
+                  New recipes (7 days)
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
-                  Click "Back to overview" to return to main dashboard.
+                  Click "Back to overview" to return.
                 </p>
               </div>
               <button
@@ -157,26 +149,14 @@
             <!-- New recipes list -->
             <div v-else-if="detailMode === 'new'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
               <ul class="divide-y divide-slate-100">
-                <li
-                  v-for="r in newRecipesList"
-                  :key="r.id"
-                  class="py-2.5 flex items-center justify-between"
-                >
+                <li v-for="r in newRecipesList" :key="r.id" class="py-2.5 flex items-center justify-between">
                   <div class="overflow-hidden">
-                    <p class="text-sm font-medium text-slate-900 truncate">
-                      {{ r.title }}
-                    </p>
-                    <p class="text-xs text-slate-500">
-                      {{ r.area }} • {{ r.category }}
-                    </p>
+                    <p class="text-sm font-medium text-slate-900 truncate">{{ r.title }}</p>
+                    <p class="text-xs text-slate-500">{{ r.area }} • {{ r.category }}</p>
                   </div>
                   <div class="text-right">
-                    <p class="text-[11px] text-slate-400">
-                      {{ formatDate(r.createdAt) }}
-                    </p>
-                    <p class="text-[11px] text-slate-500">
-                      User ID: {{ r.userId || '—' }}
-                    </p>
+                    <p class="text-[11px] text-slate-400">{{ formatDate(r.createdAt) }}</p>
+                    <p class="text-[11px] text-slate-500">User ID: {{ r.userId || '—' }}</p>
                   </div>
                 </li>
               </ul>
@@ -184,125 +164,90 @@
                 No new recipes in last 7 days.
               </p>
             </div>
-
-            <!-- Active users list -->
-            <div v-else-if="detailMode === 'users'" class="mt-4 bg-white rounded-2xl shadow-sm p-4">
-              <ul class="divide-y divide-slate-100">
-                <li v-for="user in latestUsers" :key="user.id" class="py-2.5 flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-[#588157]/10 text-[#588157] flex items-center justify-center text-sm font-semibold">
-                      {{ (user.name || 'U')[0]?.toUpperCase() }}
-                    </div>
-                    <div>
-                      <p class="font-medium text-sm text-slate-900">{{ user.name || 'Unknown' }}</p>
-                      <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-[11px] text-slate-400">{{ formatDateShort(user.created_at) }}</p>
-                    <p class="text-[11px] text-slate-500">{{ stats.activeUsersApprox }} ішінде</p>
-                  </div>
-                </li>
-              </ul>
-              <p v-if="!latestUsers.length" class="text-xs text-slate-400 mt-2 text-center py-4">
-                No user activity yet.
-              </p>
-            </div>
           </section>
 
           <!-- Stats cards -->
           <section>
-            <h2 class="text-base font-semibold text-[#31572c] mb-4">
-              Overall statistics
-            </h2>
-           <!-- Grid ішіндегі StatCard-ты мынадай алмастыр: -->
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-  <!-- Total users -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/users')">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <p class="text-xs text-slate-500 mb-1">Total users</p>
-        <p class="text-2xl font-semibold text-slate-900">{{ stats.totalUsers }}</p>
-      </div>
-      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
-        <span>👥</span>
-      </div>
-    </div>
-    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-      from activity
-    </span>
-  </div>
-
-  <!-- Total recipes -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/recipes')">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <p class="text-xs text-slate-500 mb-1">Total recipes</p>
-        <p class="text-2xl font-semibold text-slate-900">{{ stats.totalRecipes }}</p>
-      </div>
-      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
-        <span>📖</span>
-      </div>
-    </div>
-    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-      mockapi
-    </span>
-  </div>
-
-  <!-- Public recipes -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <p class="text-xs text-slate-500 mb-1">Public recipes</p>
-        <p class="text-2xl font-semibold text-slate-900">{{ stats.publicRecipes }}</p>
-      </div>
-      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
-        <span>🌍</span>
-      </div>
-    </div>
-    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">
-      visible on home
-    </span>
-  </div>
-
-  <!-- Private recipes -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <p class="text-xs text-slate-500 mb-1">Private recipes</p>
-        <p class="text-2xl font-semibold text-slate-900">{{ stats.privateRecipes }}</p>
-      </div>
-      <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
-        <span>🔒</span>
-      </div>
-    </div>
-    <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
-      only owner
-    </span>
-  </div>
-</div>
-
+            <h2 class="text-base font-semibold text-[#31572c] mb-4">Overall statistics</h2>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <!-- Total users -->
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/users')">
+                <div class="flex items-start justify-between mb-2">
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Total users</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.totalUsers }}</p>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+                    <span>👥</span>
+                  </div>
+                </div>
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                  from activity
+                </span>
+              </div>
+
+              <!-- Total recipes -->
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition cursor-pointer" @click="router.push('/admin/recipes')">
+                <div class="flex items-start justify-between mb-2">
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Total recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.totalRecipes }}</p>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+                    <span>📖</span>
+                  </div>
+                </div>
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                  mockapi
+                </span>
+              </div>
+
+              <!-- Public recipes -->
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
+                <div class="flex items-start justify-between mb-2">
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Public recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.publicRecipes }}</p>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+                    <span>🌍</span>
+                  </div>
+                </div>
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">
+                  visible on home
+                </span>
+              </div>
+
+              <!-- Private recipes -->
+              <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between hover:shadow-md transition">
+                <div class="flex items-start justify-between mb-2">
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Private recipes</p>
+                    <p class="text-2xl font-semibold text-slate-900">{{ stats.privateRecipes }}</p>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
+                    <span>🔒</span>
+                  </div>
+                </div>
+                <span class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                  only owner
+                </span>
+              </div>
+            </div>
+
+            <!-- 🔥 TOTAL SAVED ONLY (Active users өшірілді) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
               <!-- Total saved -->
               <div
                 class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
                 @click="openSavedDetails"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-sm font-semibold text-[#31572c]">
-                    Total saved
-                  </h3>
-                  <span class="text-[11px] text-slate-400">
-                    all time
-                  </span>
+                  <h3 class="text-sm font-semibold text-[#31572c]">Total saved</h3>
+                  <span class="text-[11px] text-slate-400">all time</span>
                 </div>
-                <p class="text-3xl font-semibold text-slate-900">
-                  {{ stats.totalSaved }}
-                </p>
-                <p class="text-xs text-slate-500 mt-1">
-                  Favorites added by all users (click to see who saved what)
-                </p>
+                <p class="text-3xl font-semibold text-slate-900">{{ stats.totalSaved }}</p>
               </div>
 
               <!-- New recipes (7 days) -->
@@ -311,33 +256,9 @@
                 @click="openNewRecipesDetails"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-sm font-semibold text-[#31572c]">
-                    New recipes (7 days)
-                  </h3>
+                  <h3 class="text-sm font-semibold text-[#31572c]">New recipes (7 days)</h3>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900">
-                  {{ stats.newRecipes7d }}
-                </p>
-                <p class="text-xs text-slate-500 mt-1">
-                  Created in the last 7 days (click to see list)
-                </p>
-              </div>
-
-              <!-- Active users (detailMode арқылы) -->
-              <div
-                class="bg-white rounded-2xl shadow-sm p-4 cursor-pointer hover:shadow-md transition"
-                @click="openActiveUsersDetails"
-              >
-                <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-sm font-semibold text-[#31572c]">
-                    Active users (approx.)
-                  </h3>
-                  <span class="text-[11px] text-slate-400">30 күнде</span>
-                </div>
-                <p class="text-2xl font-semibold text-[#588157]">{{ stats.activeUsersApprox }}</p>
-                <p class="text-xs text-slate-500 mt-1">
-                  Users who have activity (click to see list)
-                </p>
+                <p class="text-2xl font-semibold text-slate-900">{{ stats.newRecipes7d }}</p>
               </div>
             </div>
           </section>
@@ -367,38 +288,22 @@
             <!-- Latest recipes -->
             <div class="bg-white rounded-2xl shadow-sm p-4">
               <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-semibold text-[#31572c]">
-                  Latest recipes
-                </h3>
+                <h3 class="text-sm font-semibold text-[#31572c]">Latest recipes</h3>
               </div>
               <ul class="divide-y divide-slate-100">
-                <li
-                  v-for="r in latestRecipes"
-                  :key="r.id"
-                  class="py-2.5 flex items-center justify-between"
-                >
+                <li v-for="r in latestRecipes" :key="r.id" class="py-2.5 flex items-center justify-between">
                   <div class="overflow-hidden">
-                    <p class="text-sm font-medium text-slate-900 truncate">
-                      {{ r.title }}
-                    </p>
-                    <p class="text-xs text-slate-500">
-                      {{ r.area }} • {{ r.category }}
-                    </p>
+                    <p class="text-sm font-medium text-slate-900 truncate">{{ r.title }}</p>
+                    <p class="text-xs text-slate-500">{{ r.area }} • {{ r.category }}</p>
                   </div>
                   <div class="flex items-center gap-2">
                     <span
                       class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                      :class="
-                        r.isPublic
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-slate-100 text-slate-600'
-                      "
+                      :class="r.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
                     >
                       {{ r.isPublic ? 'Public' : 'Only you' }}
                     </span>
-                    <p class="text-[11px] text-slate-400">
-                      {{ formatDate(r.createdAt) }}
-                    </p>
+                    <p class="text-[11px] text-slate-400">{{ formatDate(r.createdAt) }}</p>
                   </div>
                 </li>
               </ul>
@@ -408,9 +313,7 @@
           <!-- Most saved recipes -->
           <section class="bg-white rounded-2xl shadow-sm p-4">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="text-sm font-semibold text-[#31572c]">
-                Most saved recipes
-              </h3>
+              <h3 class="text-sm font-semibold text-[#31572c]">Most saved recipes</h3>
             </div>
             <div v-if="mostSaved.length" class="overflow-x-auto">
               <table class="min-w-full text-xs">
@@ -422,25 +325,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="item in mostSaved"
-                    :key="item.id"
-                    class="border-b last:border-0"
-                  >
-                    <td class="py-2 pr-4 text-slate-900">
-                      {{ item.title }}
-                    </td>
-                    <td class="py-2 pr-4 text-slate-800">
-                      ⭐ {{ item.savedCount }}
-                    </td>
+                  <tr v-for="item in mostSaved" :key="item.id" class="border-b last:border-0">
+                    <td class="py-2 pr-4 text-slate-900">{{ item.title }}</td>
+                    <td class="py-2 pr-4 text-slate-800">⭐ {{ item.savedCount }}</td>
                     <td class="py-2">
                       <span
                         class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                        :class="
-                          item.isPublic
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-slate-100 text-slate-600'
-                        "
+                        :class="item.isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'"
                       >
                         {{ item.isPublic ? 'Public' : 'Only you' }}
                       </span>
@@ -449,9 +340,7 @@
                 </tbody>
               </table>
             </div>
-            <p v-else class="text-xs text-slate-400">
-              No favorites yet.
-            </p>
+            <p v-else class="text-xs text-slate-400">No favorites yet.</p>
           </section>
         </section>
       </main>
@@ -460,7 +349,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -470,8 +359,7 @@ const isSidebarOpen = ref(true)
 const activeMenu = ref('dashboard')
 
 const adminName = 'Admin'
-const adminInitial = computed(() => adminName[0])
-const userInitial = computed(() => adminInitial.value)
+const userInitial = computed(() => adminName[0])
 
 const menuItems = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠' },
@@ -497,16 +385,14 @@ const stats = reactive({
   publicRecipes: 0,
   privateRecipes: 0,
   totalSaved: 0,
-  newRecipes7d: 0,
-  activeUsersApprox: 0
+  newRecipes7d: 0
 })
 
 const latestUsers = ref([])
 const latestRecipes = ref([])
 const mostSaved = ref([])
 
-// detail state
-const detailMode = ref(null) // 'saved' | 'new' | 'users' | null
+const detailMode = ref(null)
 const savedDetails = ref([])
 const newRecipesList = ref([])
 
@@ -521,15 +407,6 @@ const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const d = new Date(dateStr)
   return d.toLocaleDateString()
-}
-
-const formatDateShort = (dateStr) => {
-  if (!dateStr) return '—'
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('kk-KZ', { 
-    day: 'numeric', 
-    month: 'short' 
-  })
 }
 
 const loadAll = async () => {
@@ -551,11 +428,6 @@ const loadAll = async () => {
     stats.privateRecipes = recipes.filter(r => r.isPublic === false).length
     stats.totalSaved = favorites.length
     stats.newRecipes7d = recipes.filter(r => diffDays(r.createdAt) <= 7).length
-
-    const userIds = new Set()
-    recipes.forEach(r => r.userId && userIds.add(r.userId))
-    favorites.forEach(f => f.userId && userIds.add(f.userId))
-    stats.activeUsersApprox = userIds.size
 
     // Latest recipes
     latestRecipes.value = [...recipes]
@@ -606,7 +478,6 @@ const loadAll = async () => {
 
     // LATEST USERS
     const allUsers = new Map()
-
     favorites.forEach(f => {
       if (f.username) {
         allUsers.set(f.userId, {
@@ -617,7 +488,6 @@ const loadAll = async () => {
         })
       }
     })
-
     recipes.forEach(r => {
       if (r.userId && !allUsers.has(r.userId)) {
         allUsers.set(r.userId, {
@@ -628,7 +498,6 @@ const loadAll = async () => {
         })
       }
     })
-
     stats.totalUsers = allUsers.size
     latestUsers.value = Array.from(allUsers.values())
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -652,11 +521,6 @@ const openNewRecipesDetails = () => {
   detailMode.value = 'new'
 }
 
-const openActiveUsersDetails = () => {
-  if (!latestUsers.value.length) return
-  detailMode.value = 'users'
-}
-
 const backToOverview = () => {
   detailMode.value = null
 }
@@ -670,40 +534,6 @@ onMounted(async () => {
     }
   }
   await loadAll()
-})
-
-const StatCard = defineComponent({
-  name: 'StatCard',
-  props: {
-    title: String,
-    value: [String, Number],
-    icon: String,
-    badge: String
-  },
-  setup(props) {
-    return { props }
-  },
-  template: `
-    <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between">
-      <div class="flex items-start justify-between mb-2">
-        <div>
-          <p class="text-xs text-slate-500 mb-1">{{ props.title }}</p>
-          <p class="text-2xl font-semibold text-slate-900">
-            {{ props.value }}
-          </p>
-        </div>
-        <div class="w-9 h-9 rounded-xl bg-[#588157]/10 flex items-center justify-center text-lg">
-          <span>{{ props.icon }}</span>
-        </div>
-      </div>
-      <span
-        v-if="props.badge"
-        class="inline-flex mt-2 self-start px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600"
-      >
-        {{ props.badge }}
-      </span>
-    </div>
-  `
 })
 </script>
 
