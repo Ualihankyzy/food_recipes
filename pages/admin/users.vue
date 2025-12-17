@@ -299,7 +299,7 @@ const favorites = ref([])
 const users = computed(() => {
   const byUser = new Map()
   
-  // Existing favorites users
+  // 1. Favorites users (savedCount санау)
   for (const fav of favorites.value) {
     const key = fav.userId || 'unknown'
     if (!key || !fav.username) continue
@@ -315,14 +315,14 @@ const users = computed(() => {
       })
     }
     const u = byUser.get(key)
-    u.savedCount++
+    u.savedCount++  // ✅ favorites болса +1
     const savedAt = fav.savedAt ? new Date(fav.savedAt) : null
     if (savedAt && (!u.lastSaved || savedAt > new Date(u.lastSaved))) {
       u.lastSaved = savedAt.toLocaleDateString()
     }
   }
   
-  // Add created users (local state)
+  // 2. Created users (savedCount = 0)
   for (const createdUser of createdUsers.value) {
     const key = `created_${createdUser.email}`
     if (!byUser.has(key)) {
@@ -331,8 +331,8 @@ const users = computed(() => {
         username: createdUser.name,
         email: createdUser.email,
         avatarUrl: '',
-        savedCount: 0,
-        lastSaved: new Date().toLocaleDateString()
+        savedCount: 0,        // ✅ 0 recipes
+        lastSaved: new Date(createdUser.createdAt || Date.now()).toLocaleDateString()
       })
     }
   }
@@ -389,28 +389,19 @@ const handleRegister = async () => {
   registerLoading.value = true
 
   try {
-    // ✅ 1. Register API (нақты backend)
+    // ✅ 1. Тек Register API (favorites-ке ЖІБЕРМЕ!)
     await $fetch('https://medical-backend-54hp.onrender.com/api/auth/register', {
       method: 'POST',
       body: registerForm.value
     })
 
-    // ✅ 2. MockAPI favorites-ке қосу (table-да көрінсін)
-    await $fetch(`${MOCK_API_URL}/favorites`, {
-      method: 'POST',
-      body: {
-        userId: registerForm.value.email,        // unique ID
-        username: registerForm.value.name,       // Name
-        email: registerForm.value.email,         // ✅ EMAIL САҚТАЛАДЫ
-        avatarUrl: '',
-        savedCount: 0,
-        savedAt: new Date().toISOString()        // Last activity
-      }
+    // ✅ 2. Local createdUsers-ке сақта (table-да көрінсін, savedCount = 0)
+    createdUsers.value.push({
+      name: registerForm.value.name,
+      email: registerForm.value.email,
+      createdAt: new Date().toISOString()
     })
 
-    // ✅ 3. Table refresh
-    await loadFavorites()
-    
     registerError.value = ''
     closeCreateModal()
   } catch (error) {
@@ -424,6 +415,7 @@ const handleRegister = async () => {
     registerLoading.value = false
   }
 }
+
 
 
 const showUserInfo = (user) => {

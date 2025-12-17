@@ -577,14 +577,13 @@ const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
 
 // 🔥 SCRIPT БАСЫНА (MOCK_API_URL-ден КЕЙІН) қосыңыз
-const userName = ref('')
+
 const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
 
 // 🔥 USER + ROLE state
 
 const userRole = ref('')
 
-const isAdmin = ref(false)  
 
 // 🔥 onMounted-ты осылай өзгерт
 onMounted(async () => {
@@ -628,8 +627,11 @@ const searchQuery = ref('')
 const recipesSection = ref(null)
 const activeLetter = ref(null)
 const userId = ref('')
+const userName = ref('')
+const userEmail = ref('')
 const isAuth = ref(false)
-const favorites = ref([])
+const isAdmin = ref(false)
+
 
 // POPULAR (TheMealDB)
 const topMeals = ref([])
@@ -701,32 +703,43 @@ const fetchRecipes = async () => {
 
 
 
-
 onMounted(async () => {
-  setupUser()
+  if (typeof window !== 'undefined') {
+    // ✅ ПРИОРИТЕТ: userId → userEmail → ''
+    userId.value = localStorage.getItem('userId') || localStorage.getItem('userEmail') || localStorage.getItem('email') || ''
+    userName.value = localStorage.getItem('userName') || localStorage.getItem('username') || 'User'
+    userEmail.value = localStorage.getItem('userEmail') || localStorage.getItem('email') || userId.value
+    isAuth.value = !!userId.value
+    isAdmin.value = localStorage.getItem('role') === 'admin'
+    
+    console.log('User setup:', { userId: userId.value, userName: userName.value }) // DEBUG
+  }
+  
   window.addEventListener('scroll', handleScroll)
   await Promise.all([fetchRecipes(), fetchPopularMeals()])
   if (userId.value) await loadFavorites()
 })
-
 
 // Favorites
 const loadFavorites = async () => {
   if (!userId.value) return
   
   try {
-    // ✅ userId = email бойынша сүзгі
     favorites.value = await $fetch(
-      `${MOCK_API_URL}/favorites?userId=${userId.value}`
+      `${MOCK_API_URL}/favorites?userId=${encodeURIComponent(userId.value)}`
     ) || []
+    console.log('Loaded favorites:', favorites.value) // DEBUG
   } catch (e) {
+    console.error('Load favorites error:', e)
     favorites.value = []
   }
 }
 
 
 const toggleFavorite = async (recipeId) => {
-  if (!userId.value) {
+  // ✅ userId бар екенін DOUBLE CHECK
+  if (!userId.value || !userName.value) {
+    console.error('No userId:', userId.value) // DEBUG
     router.push('/login')
     return
   }
@@ -735,20 +748,20 @@ const toggleFavorite = async (recipeId) => {
     const exists = favorites.value.find((f) => f.recipeId === recipeId)
     
     if (exists) {
-      // Delete
+      // DELETE
       await $fetch(`${MOCK_API_URL}/favorites/${exists.id}`, { method: 'DELETE' })
     } else {
-      // ✅ CREATE: EMAIL + USERNAME + email field
+      // ✅ CREATE: ДҰРЫС userId + email
+      console.log('Saving favorite with userId:', userId.value) // DEBUG
+      
       await $fetch(`${MOCK_API_URL}/favorites`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: {
           recipeId,
-          userId: userId.value,                    // ✅ EMAIL (bvcxz@gmail.com)
-          username: userName.value || 'User',      // ✅ NAME (bvcxz)
-          email: userId.value,                     // ✅ EMAIL дубликат
-          savedAt: new Date().toISOString(),
-          savedCount: 0
+          userId: userId.value,           // ✅ shariphanovva@gmail.com
+          username: userName.value,       // ✅ shariphanovva aqgul  
+          email: userEmail.value,         // ✅ shariphanovva@gmail.com (ДҰРЫС!)
+          savedAt: new Date().toISOString()
         }
       })
     }
@@ -758,6 +771,7 @@ const toggleFavorite = async (recipeId) => {
     console.error('Favorite error:', e)
   }
 }
+
 
 
 const isFavorite = (recipeId) =>
