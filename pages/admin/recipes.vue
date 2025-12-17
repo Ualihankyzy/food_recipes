@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex bg-[#f5f6f1] font-sans">
-    <!-- SIDEBAR (Dashboard сияқты) -->
+    <!-- SIDEBAR -->
     <aside
       :class="[
         'h-screen sticky top-0 flex flex-col text-white shadow-xl transition-all duration-300 border-r border-white/10',
@@ -10,16 +10,13 @@
       <!-- Brand + toggle -->
       <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">
-            Recipes
-          </span>
+          <span v-if="isSidebarOpen" class="text-lg font-semibold tracking-wide">Recipes</span>
         </div>
         <button
           class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
           @click="isSidebarOpen = !isSidebarOpen"
         >
-          <span v-if="isSidebarOpen">⟨</span>
-          <span v-else>⟩</span>
+          <span v-if="isSidebarOpen">⟨</span><span v-else>⟩</span>
         </button>
       </div>
 
@@ -28,19 +25,12 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="() => { 
-            activeMenu = item.key; 
-            item.to && router.push(item.to); 
-          }"
+          @click="() => { activeMenu = item.key; item.to && router.push(item.to); }"
           class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors duration-200"
         >
           <span
             class="absolute inset-y-0 left-0 w-[220px] rounded-r-full bg-[#f5f6f1] shadow-md transition-transform duration-200"
-            :class="[
-              activeMenu === item.key && isSidebarOpen
-                ? 'translate-x-0'
-                : '-translate-x-full'
-            ]"
+            :class="[activeMenu === item.key && isSidebarOpen ? 'translate-x-0' : '-translate-x-full']"
           ></span>
           <span
             class="relative z-10 text-lg flex-shrink-0"
@@ -58,7 +48,7 @@
         </button>
       </nav>
 
-      <!-- Bottom user info -->
+      <!-- User info -->
       <div class="p-4 border-t border-white/10">
         <div v-if="isSidebarOpen" class="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/10">
           <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg">
@@ -73,8 +63,7 @@
           class="w-full flex items-center gap-2 text-xs text-emerald-50 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
           @click="logout"
         >
-          <span>⏻</span>
-          <span v-if="isSidebarOpen">Logout</span>
+          <span>⏻</span><span v-if="isSidebarOpen">Logout</span>
         </button>
       </div>
     </aside>
@@ -85,11 +74,7 @@
       <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
-          <div class="flex items-center gap-3">
-            <div class="text-sm text-slate-500">
-              Total: {{ filteredRecipes.length }}
-            </div>
-          </div>
+          <div class="text-sm text-slate-500">Total: {{ filteredRecipes.length }}</div>
         </div>
         <div class="flex items-center gap-3">
           <button
@@ -105,184 +90,119 @@
       </header>
 
       <!-- Content -->
-      <main class="flex-1 p-8 overflow-y-auto">
+      <main class="flex-1 p-8 overflow-y-auto bg-slate-50">
         <!-- Search -->
-        <div class="max-w-2xl mb-8">
-          <div class="relative">
+        <div class="w-full ml-12 mb-10 max-w-xl">
+          <div class="w-full flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z"/>
+            </svg>
             <input
               v-model="searchQuery"
+              placeholder="Іздеу..."
+              class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
               @input="filterRecipes"
-              placeholder="Search by title, category, area..."
-              class="w-full pl-14 pr-6 py-4 bg-white rounded-2xl shadow-lg border-2 border-[#d0d3c8] text-lg focus:outline-none focus:border-[#588157] focus:ring-4 focus:ring-[#588157]/20 transition-all"
             />
-            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-2xl text-slate-400">🔍</span>
           </div>
         </div>
 
         <!-- Loading -->
         <div v-if="isLoading" class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-[#588157]/20 border-t-[#588157] rounded-full animate-spin"></div>
+          <div class="relative w-20 h-20">
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#588157] animate-spin"></div>
+          </div>
         </div>
 
         <!-- No results -->
         <div v-else-if="filteredRecipes.length === 0" class="text-center py-20 max-w-md mx-auto">
           <div class="w-24 h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center">
-            <span class="text-4xl">book-open</span>
+            <span class="text-4xl">📖</span>
           </div>
           <h3 class="text-2xl font-bold text-[#31572c] mb-2">{{ searchQuery ? 'No recipes found' : 'No recipes yet' }}</h3>
           <p class="text-slate-500 mb-6">{{ searchQuery ? 'Try different keywords' : 'Create your first recipe' }}</p>
-          <button
-            @click="showCreateModal = true"
-            class="px-8 py-3 bg-[#588157] text-white rounded-2xl font-bold hover:bg-[#476747] shadow-lg"
-          >
+          <button @click="showCreateModal = true" class="px-8 py-3 bg-[#588157] text-white rounded-2xl font-bold hover:bg-[#476747] shadow-lg">
             ➕ Create Recipe
           </button>
         </div>
 
-        <!-- Recipes Grid -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Recipes Grid (HOME STYLE) -->
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div
             v-for="recipe in filteredRecipes"
             :key="recipe.id"
-            class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-[#d0d3c8]/50 hover:border-[#588157]/50"
+            class="group relative"
           >
-            <!-- Image + Quick View -->
-            <div class="h-48 relative overflow-hidden bg-gradient-to-br from-[#a3b18a]/50 to-[#588157]/20">
-              <img
-                v-if="recipe.imageUrl"
-                :src="recipe.imageUrl"
-                :alt="recipe.title"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30">
-                <span class="text-4xl opacity-70">book-open</span>
+            <!-- Image -->
+            <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center">
+              <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
+                <img
+                  :src="recipe.imageUrl"
+                  :alt="recipe.title"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
+                  <span class="text-2xl">📖</span>
+                </div>
               </div>
 
               <!-- NEW Badge -->
-              <div v-if="isNewRecipe(recipe)" 
-                   class="absolute top-4 left-4 bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
-                NEW
+              <div class="absolute top-2 left-3 text-[11px] font-semibold text-[#588157]">
+                <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
+                  NEW
+                </span>
               </div>
 
               <!-- Public/Private Badge -->
-              <div class="absolute top-4 right-4 px-2.5 py-1 rounded-full text-xs font-semibold shadow-md"
-                   :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'">
-                {{ recipe.isPublic ? 'Public' : 'Private' }}
+              <div class="absolute top-2 right-3 text-[11px] font-semibold">
+                <span
+                  class="px-2 py-0.5 rounded-full text-xs shadow-md"
+                  :class="recipe.isPublic ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'"
+                >
+                  {{ recipe.isPublic ? 'Public' : 'Private' }}
+                </span>
               </div>
 
-              <!-- Quick View Button (КӨЗ ІКОНКАСЫ) -->
-              <button
-                @click.stop="openQuickView(recipe)"
-                class="absolute bottom-3 right-3 w-12 h-12 bg-white/90 hover:bg-white rounded-2xl shadow-lg flex items-center justify-center text-[#588157] text-xl transition-all group-hover:scale-110"
-                title="Quick view"
-              >
-                👁
-              </button>
-            </div>
-
-            <!-- Content -->
-            <div class="p-6" :class="{ 'border-t border-[#d0d3c8]/50': !expandedRecipe || expandedRecipe.id !== recipe.id }">
-              <div class="flex items-start justify-between mb-3">
-                <div>
-                  <h3 class="font-bold text-xl text-[#31572c] line-clamp-2 leading-tight group-hover:line-clamp-none">
-                    {{ recipe.title }}
-                  </h3>
-                  <p class="text-sm text-slate-600 mt-1 flex items-center gap-2">
-                    <span class="text-[#588157] font-semibold">{{ recipe.area }}</span>
-                    <span>•</span>
-                    <span>{{ recipe.category }}</span>
-                  </p>
-                </div>
-                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
-                  <button
-                    @click.stop="toggleExpand(recipe)"
-                    class="w-10 h-10 bg-[#588157]/80 hover:bg-[#588157] text-white rounded-xl flex items-center justify-center transition-all"
-                    title="Expand"
-                  >
-                    {{ expandedRecipe?.id === recipe.id ? '✕' : '📄' }}
-                  </button>
-                </div>
+              <!-- Content -->
+              <div class="mt-12 w-full text-center flex flex-col gap-2">
+                <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">
+                  {{ recipe.title }}
+                </h3>
+                <p class="text-[11px] text-slate-400">
+                  {{ recipe.category }} • {{ recipe.area }}
+                </p>
               </div>
 
-              <!-- Meta -->
-              <div class="flex items-center justify-between mb-4 text-xs text-slate-500">
-                <span>{{ formatDate(recipe.createdAt) }}</span>
-                <span>#{{ recipe.userId?.slice(-4) || '—' }}</span>
-              </div>
+              <!-- Actions (HOME STYLE + Edit/Delete) -->
+              <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden">
+                <!-- YouTube -->
+                <a
+                  v-if="recipe.youtubeUrl"
+                  :href="recipe.youtubeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex-1 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] transition-colors py-2.5"
+                >
+                  YouTube
+                </a>
+                <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
 
-              <!-- Actions -->
-              <div v-if="expandedRecipe?.id !== recipe.id" class="flex items-center gap-2">
+                <!-- Edit -->
                 <button
                   @click.stop="openEditModal(recipe)"
-                  class="flex-1 px-4 py-2.5 bg-[#588157] text-white text-sm font-semibold rounded-xl hover:bg-[#476747] transition-colors"
+                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#588157] hover:bg-[#476747] border-l border-white/40 transition-colors py-2.5"
+                  title="Edit"
                 >
-                  Edit
+                  ✏️
                 </button>
+
+                <!-- Delete -->
                 <button
                   @click.stop="deleteRecipe(recipe.id)"
-                  class="px-4 py-2.5 bg-[#bc4749] text-white text-sm font-semibold rounded-xl hover:bg-[#a33a3d] transition-colors"
+                  class="w-20 flex items-center justify-center text-xs font-semibold text-white bg-[#bc4749] hover:bg-[#a33a3d] border-l border-white/40 transition-colors py-2.5"
+                  title="Delete"
                 >
-                  Delete
+                  🗑️
                 </button>
-              </div>
-            </div>
-
-            <!-- EXPANDED DETAIL VIEW -->
-            <div v-if="expandedRecipe?.id === recipe.id" class="border-t border-[#d0d3c8]/50 bg-slate-50">
-              <div class="p-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
-                  <div>
-                    <span class="text-slate-500 font-medium">Area:</span>
-                    <p class="font-semibold text-[#31572c] ml-2">{{ recipe.area }}</p>
-                  </div>
-                  <div>
-                    <span class="text-slate-500 font-medium">Category:</span>
-                    <p class="font-semibold text-[#31572c] ml-2">{{ recipe.category }}</p>
-                  </div>
-                  <div>
-                    <span class="text-slate-500 font-medium">Created:</span>
-                    <p class="font-semibold text-[#31572c] ml-2">{{ formatDate(recipe.createdAt) }}</p>
-                  </div>
-                  <div>
-                    <span class="text-slate-500 font-medium">Author:</span>
-                    <p class="font-semibold text-[#31572c] ml-2">#{{ recipe.userId?.slice(-4) }}</p>
-                  </div>
-                </div>
-
-                <div v-if="recipe.instructions" class="space-y-3">
-                  <h4 class="font-semibold text-lg text-[#31572c]">Instructions</h4>
-                  <div class="bg-white p-4 rounded-xl border border-[#d0d3c8]/30">
-                    <p class="text-slate-700 leading-relaxed whitespace-pre-wrap">{{ recipe.instructions }}</p>
-                  </div>
-                </div>
-
-                <div v-if="recipe.youtubeUrl" class="pt-2">
-                  <a :href="recipe.youtubeUrl" target="_blank" rel="noopener" 
-                     class="inline-flex items-center gap-2 px-6 py-3 bg-[#588157] text-white rounded-xl font-semibold hover:bg-[#476747] shadow-md transition-all">
-                    Watch on YouTube
-                  </a>
-                </div>
-
-                <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
-                  <button
-                    @click.stop="openEditModal(recipe)"
-                    class="flex-1 px-6 py-3 bg-[#588157] text-white font-semibold rounded-xl hover:bg-[#476747]"
-                  >
-                    Edit Recipe
-                  </button>
-                  <button
-                    @click.stop="deleteRecipe(recipe.id)"
-                    class="px-6 py-3 bg-[#bc4749] text-white font-semibold rounded-xl hover:bg-[#a33a3d]"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    @click.stop="toggleExpand(recipe)"
-                    class="px-6 py-3 bg-slate-500 text-white font-semibold rounded-xl hover:bg-slate-600"
-                  >
-                    Back
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -290,41 +210,7 @@
       </main>
     </div>
 
-    <!-- QUICK VIEW MODAL -->
-    <div v-if="showQuickViewModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6" @click.self="showQuickViewModal = false">
-      <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-        <div class="p-8 border-b border-[#d0d3c8] flex justify-between items-center">
-          <h2 class="text-3xl font-bold text-[#31572c]">{{ quickViewRecipe?.title }}</h2>
-          <button @click="showQuickViewModal = false" class="text-3xl hover:text-[#588157]">✕</button>
-        </div>
-        <div class="p-8 max-h-[70vh] overflow-y-auto">
-          <img v-if="quickViewRecipe?.imageUrl" :src="quickViewRecipe.imageUrl" class="w-full h-80 object-cover rounded-2xl shadow-xl mb-6" />
-          <div class="grid grid-cols-2 gap-6 mb-6">
-            <div>
-              <span class="text-slate-500 block mb-1">Area</span>
-              <p class="text-2xl font-bold text-[#31572c]">{{ quickViewRecipe?.area }}</p>
-            </div>
-            <div>
-              <span class="text-slate-500 block mb-1">Category</span>
-              <p class="text-2xl font-bold text-[#31572c]">{{ quickViewRecipe?.category }}</p>
-            </div>
-          </div>
-          <div v-if="quickViewRecipe?.instructions" class="mb-6">
-            <h4 class="text-xl font-bold text-[#31572c] mb-4">Instructions</h4>
-            <div class="bg-slate-50 p-6 rounded-2xl border-l-4 border-[#588157]">
-              <p class="text-lg text-slate-700 leading-relaxed">{{ quickViewRecipe.instructions }}</p>
-            </div>
-          </div>
-          <div v-if="quickViewRecipe?.youtubeUrl" class="text-center">
-            <a :href="quickViewRecipe.youtubeUrl" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-[#588157] text-white rounded-2xl font-bold text-lg hover:bg-[#476747] shadow-xl">
-              Watch Video
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ДҰРЫС CREATE/EDIT MODAL (кішігірім стиль) -->
+    <!-- CREATE/EDIT MODAL (Кіші стиль) -->
     <transition name="fade">
       <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeModal">
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -393,11 +279,8 @@ const searchQuery = ref('')
 const isLoading = ref(false)
 const recipes = ref([])
 const filteredRecipes = ref([])
-const expandedRecipe = ref(null)
-const showQuickViewModal = ref(false)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const quickViewRecipe = ref(null)
 const currentForm = ref({})
 
 // User
@@ -413,9 +296,7 @@ const menuItems = [
 ]
 
 const logout = () => {
-  if (process.client) {
-    localStorage.clear()
-  }
+  if (process.client) localStorage.clear()
   router.push('/login')
 }
 
@@ -463,30 +344,6 @@ const isNewRecipe = (recipe) => {
   }
 }
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '—'
-  try {
-    return new Date(dateStr).toLocaleDateString('kk-KZ', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return '—'
-  }
-}
-
-const toggleExpand = (recipe) => {
-  expandedRecipe.value = expandedRecipe.value?.id === recipe.id ? null : recipe
-}
-
-const openQuickView = (recipe) => {
-  quickViewRecipe.value = recipe
-  showQuickViewModal.value = true
-}
-
 const openEditModal = (recipe) => {
   currentForm.value = { ...recipe }
   showEditModal.value = true
@@ -496,7 +353,6 @@ const openEditModal = (recipe) => {
 const closeModal = () => {
   showCreateModal.value = false
   showEditModal.value = false
-  showQuickViewModal.value = false
   currentForm.value = {}
 }
 
@@ -533,19 +389,13 @@ const deleteRecipe = async (id) => {
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
     await loadRecipes()
-    if (expandedRecipe.value?.id === id) {
-      expandedRecipe.value = null
-    }
   } catch (error) {
     console.error('Delete failed:', error)
     alert('Delete failed. Please try again.')
   }
 }
 
-onBeforeMount(() => {
-  initClientData()
-})
-
+onBeforeMount(() => initClientData())
 onMounted(() => {
   if (process.client) {
     const role = localStorage.getItem('role')
@@ -566,21 +416,18 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active, .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>

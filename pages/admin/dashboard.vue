@@ -28,7 +28,10 @@
         <button
           v-for="item in menuItems"
           :key="item.key"
-          @click="activeMenu = item.key"
+  @click="() => { 
+            activeMenu = item.key; 
+            item.to && router.push(item.to); 
+          }"
           class="relative w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium transition-colors"
         >
           <span
