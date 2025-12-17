@@ -124,25 +124,18 @@
     <!-- MAIN -->
     <div class="flex-1 flex flex-col">
       <!-- Top bar -->
-      <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-8">
-        <div class="flex items-center gap-4">
-          <h1 class="text-2xl font-bold text-[#31572c]">Recipes Management</h1>
-          <div class="text-sm text-slate-500">
-            <!-- filteredRecipes жоқ, сондықтан жалпы санды stats.totalRecipes‑тен аламыз -->
-            Total: {{ stats.totalRecipes }}
-          </div>
-        </div>
+    <header class="h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-end px-8">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="w-10 h-10 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold text-sm shadow-md hover:bg-[#476747] transition-colors"
+      @click="router.push('/profile')"
+    >
+      {{ userInitial }}
+    </button>
+  </div>
+</header>
 
-        <div class="flex items-center gap-3">
-          <button
-            type="button"
-            class="w-12 h-12 rounded-full bg-[#588157] flex items-center justify-center text-white font-semibold shadow-md hover:bg-[#476747] transition-colors"
-            @click="router.push('/profile')"
-          >
-            {{ userInitial }}
-          </button>
-        </div>
-      </header>
 
       <!-- Content -->
       <main class="flex-1 p-6 overflow-y-auto">
