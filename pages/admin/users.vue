@@ -434,7 +434,7 @@ const saveUser = async () => {
       })
     } else {
       // signup: админ жаңа user тіркейді
-      await $fetch(`/api/auth/signup`, {
+      await $fetch(`/api/auth/register`, {
         method: 'POST',
         body: {
           name: userForm.value.name,
