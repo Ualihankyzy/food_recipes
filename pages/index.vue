@@ -17,7 +17,7 @@
     >
       <a
         :href="isAdmin ? '/admin/dashboard' : '/dashboard'"
-        class="hidden xs:inline-block sm:inline-block hover:underline font-semibold text-sm sm:text-lg"
+        class=" xs:inline-block sm:inline-block hover:underline font-semibold text-sm sm:text-lg"
       >
         {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
       </a>
