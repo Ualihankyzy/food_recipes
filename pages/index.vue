@@ -191,7 +191,7 @@
 
 
 
-    <div class="w-full ml-12 mb-10">
+    <div class="w-full  mb-10">
   <div
     class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-5 py-3 shadow-md"
   >
@@ -213,7 +213,7 @@
     <input
       v-model="searchQuery"
       type="text"
-      placeholder="Іздеу..."
+      placeholder="search..."
       class="w-full bg-transparent outline-none text-sm text-slate-800 placeholder:text-slate-400"
       @keyup.enter="scrollToRecipes"
     />
