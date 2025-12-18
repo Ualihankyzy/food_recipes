@@ -1,61 +1,135 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <!-- Верх «Назад» -->
-    <div class="max-w-5xl mx-auto px-4 sm:px-8 pt-6">
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-slate-600 hover:text-slate-900 text-sm mb-4"
-      >
-        <span>←</span>
-        <span>Назад</span>
-      </button>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 pt-6">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <button
+          @click="goBack"
+          class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 text-sm transition-all duration-200 hover:scale-105"
+        >
+          <span class="text-lg">←</span>
+          <span class="font-medium">Back</span>
+        </button>
+
+        <nav class="hidden sm:flex items-center gap-1 text-xs text-slate-400">
+          <NuxtLink to="/" class="hover:text-slate-700">Home</NuxtLink>
+          <span>/</span>
+          <NuxtLink to="/" class="hover:text-slate-700">Recipes</NuxtLink>
+          <span>/</span>
+          <span class="text-slate-600 truncate max-w-[140px]">
+            {{ recipe?.title || 'Recipe' }}
+          </span>
+        </nav>
+      </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-8 pb-12">
-      <div v-if="pending" class="py-20 text-center text-slate-500">
-        Loading...
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 pb-12">
+
+      <div v-if="pending" class="py-20 text-center text-slate-500 animate-pulse">
+        Loading recipe...
       </div>
+
 
       <div v-else-if="errorMessage" class="py-20 text-center text-red-500">
         {{ errorMessage }}
       </div>
 
-      <div v-else-if="recipe" class="bg-white rounded-3xl shadow-sm p-6 sm:p-10">
-        <!-- Үлкен сурет -->
-        <div class="w-full h-64 sm:h-80 bg-slate-100 rounded-2xl mb-8 overflow-hidden flex items-center justify-center">
-          <img
-            :src="recipe.imageUrl"
-            :alt="recipe.title"
-            class="max-h-full max-w-full object-contain"
-          />
+
+      <Transition enter-active-class="animate-in slide-in-from-bottom-8 duration-700 ease-out" mode="out-in">
+        <div v-if="recipe" key="content" class="space-y-16">
+
+          <div class="lg:grid lg:grid-cols-12 lg:gap-12 items-start h-[650px]">
+            
+
+            <div class="lg:col-span-6 order-1 animate-in slide-in-from-left-8 duration-700 delay-200 h-full">
+              <div class="relative w-full h-full bg-gradient-to-r from-slate-100 to-slate-200 rounded-3xl overflow-hidden shadow-2xl">
+                <img
+                  :src="recipe.imageUrl"
+                  :alt="recipe.title"
+                  class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+              </div>
+            </div>
+
+       
+            <div class="lg:col-span-6 order-2 animate-in slide-in-from-right-8 duration-700 delay-400 h-full flex flex-col justify-between py-8 lg:py-12 px-4 lg:px-0 space-y-4">
+              
+           
+              <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">
+                  Recipe
+                </p>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-2 leading-tight">
+                  {{ recipe.title }}
+                </h1>
+                <p class="text-lg text-slate-500">
+                  {{ recipe.category }} • {{ recipe.area }}
+                </p>
+              </div>
+
+   
+              <div class="text-sm">
+                <div class="flex items-center gap-3 mb-3 pb-2 border-b border-slate-200">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-base font-bold text-slate-900">Instructions</h3>
+                    <p class="text-xs text-slate-500 inline-block ">• Step-by-step guide</p>
+                  </div>
+                </div>
+                
+                <div class=" max-h-32 overflow-y-auto pr-3 pb-3">
+                  <p class="text-slate-700 text-xs leading-relaxed whitespace-pre-line">
+                    {{ recipe.instructions }}
+                  </p>
+                </div>
+              </div>
+
+   
+              <div class="text-sm">
+                <div class="flex items-center gap-3 mb-3 pb-2 border-b border-slate-200">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-base font-bold text-slate-900">Ingredients</h3>
+                    <p class="text-xs text-slate-500">({{ recipe.ingredients?.length || 0 }} items)</p>
+                  </div>
+                </div>
+                
+  
+                <div class="ml-9 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-28 overflow-y-auto pr-3 pb-3">
+                  <div
+                    v-for="(ing, idx) in recipe.ingredients"
+                    :key="idx"
+                    class="flex items-start gap-2 py-1.5 px-2 bg-[#f0f9f4]/80 rounded-lg border border-[#588157]/30 hover:bg-[#588157]/10 transition-all duration-200"
+                  >
+                    <span class="text-slate-700 font-medium text-xs leading-tight flex-1">{{ ing }}</span>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                <a
+                  v-if="recipe.youtubeUrl"
+                  :href="recipe.youtubeUrl"
+                  target="_blank"
+                  rel="noopener"
+                  class="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex-1"
+                >
+                  <span class="text-lg group-hover:rotate-12 transition-transform">▶</span>
+                  <span>Watch Video</span>
+                </a>
+
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex-1"
+                  @click="goBack"
+                >
+                  ← Back
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <!-- Атауы, категориясы -->
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
-          {{ recipe.title }}
-        </h1>
-        <p class="text-sm text-slate-500 mb-4">
-          {{ recipe.category }} • {{ recipe.area }}
-        </p>
-
-        <!-- Ингредиенттер -->
-        <h2 class="text-lg font-semibold text-slate-900 mb-3">
-          Ингредиенттер
-        </h2>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 text-sm text-slate-700">
-          <li v-for="(ing, idx) in recipe.ingredients" :key="idx">
-            {{ ing }}
-          </li>
-        </ul>
-
-        <!-- Инструкция -->
-        <h2 class="text-lg font-semibold text-slate-900 mb-3">
-          Дайындау жолы
-        </h2>
-        <p class="text-sm leading-relaxed text-slate-700 whitespace-pre-line">
-          {{ recipe.instructions }}
-        </p>
-      </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -80,16 +154,18 @@ const fetchRecipe = async () => {
     const data = await $fetch(`${MOCK_API_URL}/recipes/${id}`)
     recipe.value = data
   } catch (e) {
-    errorMessage.value = 'Рецепт табылмады немесе жүктелмеді'
+    errorMessage.value = 'Recipe not found or failed to load.'
   } finally {
     pending.value = false
   }
 }
 
 const goBack = () => {
-  // Егер history бар болса – алдыңғы бетке, әйтпесе home-қа
-  if (window.history.length > 1) router.back()
-  else router.push('/')
+  if (typeof window !== 'undefined' && window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/')
+  }
 }
 
 onMounted(fetchRecipe)

@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen w-full relative">
-    <!-- ✅ POPULAR RECIPE DETAIL MODAL -->
     <div v-if="showPopularModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showPopularModal = false">
       <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="p-6 border-b border-slate-100">
@@ -12,18 +11,18 @@
           </div>
         </div>
         <div class="p-6 space-y-6">
-          <!-- IMAGE -->
+
           <div v-if="selectedMeal?.strMealThumb" class="relative rounded-2xl overflow-hidden h-64">
             <img :src="selectedMeal.strMealThumb" :alt="selectedMeal.strMeal" class="w-full h-full object-cover" />
           </div>
           
-          <!-- CATEGORY & AREA -->
+
           <div class="flex items-center gap-4 text-sm text-slate-600">
             <span class="px-3 py-1 bg-slate-100 rounded-full">{{ selectedMeal?.strCategory }}</span>
             <span class="px-3 py-1 bg-slate-100 rounded-full">{{ selectedMeal?.strArea }}</span>
           </div>
           
-          <!-- INGREDIENTS -->
+
           <div>
             <h4 class="text-lg font-semibold text-slate-900 mb-4">Ingredients</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -38,7 +37,7 @@
             </div>
           </div>
           
-          <!-- INSTRUCTIONS -->
+
           <div>
             <h4 class="text-lg font-semibold text-slate-900 mb-4">Instructions</h4>
             <div class="text-slate-700 leading-relaxed whitespace-pre-line text-sm" v-html="selectedMeal?.strInstructions?.replace(/\r\n/g, '<br>') || 'No instructions available'"></div>
@@ -48,18 +47,18 @@
           <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
             <a v-if="selectedMeal?.strYoutube" :href="selectedMeal.strYoutube" target="_blank" 
                class="flex-1 bg-red-500 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-red-600 transition">
-              📺 Watch Video
+               Watch Video
             </a>
             <a v-if="selectedMeal?.strSource" :href="selectedMeal.strSource" target="_blank" 
                class="flex-1 bg-slate-900 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-slate-800 transition">
-              🌐 Original Recipe
+               Original Recipe
             </a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- HEADER -->
+
     <header
       class="w-full text-white flex items-center justify-between h-16 px-4 sm:px-8 lg:px-20 absolute top-0 left-0 z-40 mt-4"
     >
@@ -100,7 +99,7 @@
       </nav>
     </header>
 
-    <!-- TOP LIGHTS -->
+
     <div
       class="w-full flex justify-center items-center gap-6 absolute top-0 left-0 z-20 sm:mt-0"
     >
@@ -109,7 +108,7 @@
       <img src="../public/images/light.png" class="w-64 hidden sm:block" />
     </div>
 
-    <!-- HERO -->
+
     <section
       class="relative w-full h-[60vh] md:h-screen flex justify-center items-center overflow-hidden"
     >
@@ -125,7 +124,7 @@
       </div>
     </section>
 
-    <!-- POPULAR RECIPES TOP GRID (КАРТОЧКА БАСҚАНДА DETAIL МОДАЛ) -->
+
     <section class="w-full bg-slate-50 py-10 sm:py-14 px-4 sm:px-8 lg:px-20">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-center justify-between mb-6">
@@ -236,10 +235,11 @@
       </div>
     </section>
 
-    <!-- SLIDER SECTION (БАРЛЫҒЫ ӨЗГЕРМЕЙДІ) -->
-    <div ref="sliderSection" class="w-full bg-white py-10 sm:py-12 px-4 sm:px-6 lg:px-8">
+
+    <div ref="sliderSection" class="w-full bg-white pt-6 pb-12 sm:pt-8 sm:pb-14
+ px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto">
-        <!-- Title + filters -->
+
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <p class="text-xs tracking-[0.35em] text-slate-500 uppercase">
@@ -248,7 +248,7 @@
             <div class="mt-2 h-[3px] w-16 bg-red-500 rounded-full"></div>
           </div>
 
-          <!-- ДИНАМИК ФИЛЬТРЛЕР -->
+
           <div class="flex flex-wrap gap-2 max-w-full overflow-x-auto pb-2">
             <button
               v-for="tag in availableFilters"
@@ -266,10 +266,9 @@
           </div>
         </div>
 
-        <!-- Slider wrapper -->
+
         <div class="relative">
-          <!-- Arrows -->
-          <!-- ← Сол стрелка -->
+
           <button
             type="button"
             class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-2 border-slate-300 bg-white items-center justify-center text-slate-700 shadow-lg hover:bg-slate-50 z-20 transition-all"
@@ -280,7 +279,7 @@
             ‹
           </button>
 
-          <!-- → Оң стрелка -->
+
           <button
             type="button"
             class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-2 border-slate-300 bg-white items-center justify-center text-slate-700 shadow-lg hover:bg-slate-50 z-20 transition-all"
@@ -291,14 +290,14 @@
             ›
           </button>
 
-          <!-- Slider -->
+
           <div class="overflow-hidden">
             <div class="flex gap-6 sm:gap-8 transition-transform duration-500" :style="{ transform: `translateX(-${translateX}px)` }" ref="trackRef">
-            <!-- Slider ішіндегі карточка -->
+      
 <NuxtLink
   v-for="recipe in filteredRecipes"
   :key="recipe.id + '-' + activeFilter"
-  :to="`/recipe/${recipe.id}`"
+ :to="`/recipes/${recipe.id}`"
   class="flex-none w-[260px] sm:w-[280px] lg:w-[300px] cursor-pointer"
 >
   <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
@@ -331,12 +330,12 @@
             </div>
           </div>
 
-          <!-- Mobile pagination -->
+   
           <div class="mt-6 flex items-center justify-center gap-3 text-xs text-slate-600">
             <span>{{ visiblePage }} / {{ totalSliderPages }}</span>
           </div>
 
-          <!-- Loading/Error/Empty сол күйі -->
+      
           <div v-if="pending" class="flex justify-center py-20">...</div>
           <div v-else-if="errorMessage" class="text-center py-16">...</div>
           <div v-else-if="!filteredRecipes.length && !pending" class="text-center py-16">
@@ -347,6 +346,197 @@
       </div>
     </div>
   </div>
+
+
+
+
+<section class="bg-white pt-12 pb-32">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-20 text-center">
+
+    <div>
+      <div class="flex justify-center mb-6">
+        <svg class="w-16 h-16 text-orange-500" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 24h48l-6 28H14L8 24Z"/>
+          <path d="M20 24L32 8l12 16"/>
+        </svg>
+      </div>
+
+      <h4 class="text-sm tracking-[0.35em] text-orange-500 mb-2">
+        OUR STORY
+      </h4>
+
+      <h3 class="text-xl font-medium text-black mb-4">
+        HOME COOKED RECIPES
+      </h3>
+
+      <div class="w-14 h-px bg-orange-500 mx-auto mb-4"></div>
+
+      <p class="text-base text-black/70 leading-relaxed">
+        Simple and delicious recipes made with love for everyday cooking.
+      </p>
+    </div>
+
+
+    <div>
+      <div class="flex justify-center mb-6">
+        <svg class="w-16 h-16 text-orange-500" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 40c8-20 32-20 40 0"/>
+          <path d="M20 40c6-14 18-14 24 0"/>
+        </svg>
+      </div>
+
+      <h4 class="text-sm tracking-[0.35em] text-orange-500 mb-2">
+        OUR RECIPES
+      </h4>
+
+      <h3 class="text-xl font-medium text-black mb-4">
+        FRESH INGREDIENTS
+      </h3>
+
+      <div class="w-14 h-px bg-orange-500 mx-auto mb-4"></div>
+
+      <p class="text-base text-black/70 leading-relaxed">
+        Easy recipes using fresh ingredients you can find anywhere.
+      </p>
+    </div>
+
+
+    <div>
+      <div class="flex justify-center mb-6">
+        <svg class="w-16 h-16 text-orange-500" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="32" cy="32" r="20"/>
+          <path d="M12 32h40"/>
+          <path d="M32 12c6 8 6 32 0 40"/>
+          <path d="M32 12c-6 8-6 32 0 40"/>
+        </svg>
+      </div>
+
+      <h4 class="text-sm tracking-[0.35em] text-orange-500 mb-2">
+        OUR GOAL
+      </h4>
+
+      <h3 class="text-xl font-medium text-black mb-4">
+        HEALTHY & TASTY
+      </h3>
+
+      <div class="w-14 h-px bg-orange-500 mx-auto mb-4"></div>
+
+      <p class="text-base text-black/70 leading-relaxed">
+        Helping you cook healthy, tasty meals without stress.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+ <footer class="bg-black text-gray-200 py-12 px-4 md:px-16 lg:px-24">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex flex-col gap-10">
+
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+        <h2 class="text-3xl md:text-4xl font-semibold leading-tight">
+          Food Recipes
+        </h2>
+
+
+<div class="flex items-center gap-3">
+  <RouterLink
+    to="/login"
+    class="px-4 py-2 text-xs font-medium rounded-full border border-gray-500 text-gray-200 hover:bg-gray-800 transition"
+  >
+    Login
+  </RouterLink>
+
+  <RouterLink
+    to="/signup"
+    class="px-4 py-2 text-xs font-medium rounded-full bg-green-500 text-black hover:bg-green-400 transition"
+  >
+    Sign up
+  </RouterLink>
+</div>
+
+      </div>
+
+
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+
+        <div class="md:w-1/3 space-y-2 text-sm">
+          <p class="font-semibold tracking-wide text-gray-300">
+            CONTACT INFORMATION
+          </p>
+          <div class="flex items-center gap-2 text-gray-400">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-600/10 text-green-400">
+
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 6h16a1 1 0 0 1 .8 1.6l-8 10a1 1 0 0 1-1.6 0l-8-10A1 1 0 0 1 4 6z" />
+              </svg>
+            </span>
+            <span>support@foodrecipes.com</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-400">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-600/10 text-green-400">
+
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 5a2 2 0 0 1 2-2h1.2a1 1 0 0 1 .98.8l.6 3a1 1 0 0 1-.57 1.1l-1.4.7a1 1 0 0 0-.46 1.3 13 13 0 0 0 6.07 6.07 1 1 0 0 0 1.3-.46l.7-1.4a1 1 0 0 1 1.1-.57l3 .6a1 1 0 0 1 .8.98V19a2 2 0 0 1-2 2h-1C9.82 21 3 14.18 3 6V5z" />
+              </svg>
+            </span>
+            <span>+1 (800) 555‑0123</span>
+          </div>
+        </div>
+
+    <div class="md:w-2/3 grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm">
+          <div class="space-y-3">
+            <h4 class="font-semibold text-gray-300 uppercase tracking-wide text-xs">
+              Recipes
+            </h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#" class="hover:text-gray-200">Breakfast</a></li>
+              <li><a href="#" class="hover:text-gray-200">Lunch</a></li>
+              <li><a href="#" class="hover:text-gray-200">Dinner</a></li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="font-semibold text-gray-300 uppercase tracking-wide text-xs">
+              Explore
+            </h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#" class="hover:text-gray-200">Popular recipes</a></li>
+              <li><a href="#" class="hover:text-gray-200">Quick & easy</a></li>
+              <li><a href="#" class="hover:text-gray-200">Healthy meals</a></li>
+            </ul>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="font-semibold text-gray-300 uppercase tracking-wide text-xs">
+              Company
+            </h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#" class="hover:text-gray-200">About</a></li>
+              <li><a href="#" class="hover:text-gray-200">Contact</a></li>
+              <li><a href="#" class="hover:text-gray-200">Blog</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-10 border-t border-gray-700 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <p>© 2025 Food Recipes. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-gray-300">Privacy</a>
+        <a href="#" class="hover:text-gray-300">Terms &amp; Conditions</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
 </template>
 
 <script setup>
@@ -356,32 +546,32 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// ✅ MODAL STATE
+
 const showPopularModal = ref(false)
 const selectedMeal = ref(null)
 
-// User state (сол күйі)
+
 const userId = ref(''), userName = ref(''), userEmail = ref(''), userRole = ref('')
 const isAuth = ref(false), isAdmin = ref(false)
 const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
 
-// Recipes state
+
 const recipes = ref([])
 const pending = ref(true)
 const errorMessage = ref(null)
 const favorites = ref([])
 
-// Popular meals (сол күйі)
+
 const topMeals = ref([])
 
-// SLIDER STATE
+
 const sliderSection = ref(null)
 const trackRef = ref(null)
 const cardWidth = ref(0)
 const gap = 24
 const currentIndex = ref(0)
 
-// Фильтрлер (сол күйі)
+
 const allCategories = [
   { label: 'All', value: 'all' },
   { label: 'Beef', value: 'Beef' },
@@ -404,13 +594,13 @@ const filteredRecipes = computed(() => {
   return recipes.value.filter(r => r.category === activeFilter.value)
 })
 
-// ✅ MEAL DETAIL FUNCTION
+
 const openMealDetail = (meal) => {
   selectedMeal.value = meal
   showPopularModal.value = true
 }
 
-// Фильтр click
+
 const onFilterClick = (tag) => {
   activeFilter.value = tag.value
   currentIndex.value = 0
@@ -419,7 +609,7 @@ const onFilterClick = (tag) => {
   })
 }
 
-// Slider computed (сол күйі)
+
 const visibleCount = computed(() => {
   if (typeof window === 'undefined') return 4
   const w = window.innerWidth
@@ -433,7 +623,7 @@ const totalSliderPages = computed(() => !filteredRecipes.value.length ? 1 : Math
 const visiblePage = computed(() => Math.floor(currentIndex.value / visibleCount.value) + 1)
 const endIndex = computed(() => currentIndex.value + visibleCount.value)
 
-// Slider methods (сол күйі)
+
 const nextSlide = () => { if (endIndex.value < filteredRecipes.value.length) currentIndex.value += visibleCount.value }
 const prevSlide = () => { if (currentIndex.value > 0) currentIndex.value = Math.max(0, currentIndex.value - visibleCount.value) }
 const measureCard = () => { if (trackRef.value?.children[0]) cardWidth.value = trackRef.value.children[0].getBoundingClientRect().width }
@@ -442,7 +632,7 @@ watch(filteredRecipes, () => {
   if (currentIndex.value >= filteredRecipes.value.length) currentIndex.value = 0
 }, { immediate: true })
 
-// API calls (дубликаттармен бірге)
+
 const fetchRecipes = async () => {
   try {
     pending.value = true
@@ -474,7 +664,7 @@ const fetchPopularMeals = async () => {
   } catch (e) { console.error(e) }
 }
 
-// Favorites (сол күйі)
+
 const loadFavorites = async () => {
   if (!userId.value) return
   try {
@@ -501,7 +691,7 @@ const toggleFavorite = async recipeId => {
 
 const isFavorite = recipeId => favorites.value.some(f => f.recipeId === recipeId)
 
-// User setup (сол күйі)
+
 const setupUser = () => {
   if (typeof window === 'undefined') return
   userId.value = localStorage.getItem('userId') || localStorage.getItem('userEmail') || localStorage.getItem('email') || ''
@@ -514,7 +704,7 @@ const setupUser = () => {
 
 const scrollToSlider = () => sliderSection.value?.scrollIntoView({ behavior: 'smooth' })
 
-// Lifecycle
+
 const handleResize = () => measureCard()
 onMounted(async () => {
   setupUser()
@@ -558,4 +748,3 @@ onUnmounted(() => {
   overflow: hidden; 
 }
 </style>
-і
