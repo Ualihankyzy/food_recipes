@@ -2,9 +2,17 @@
   <div class="flex min-h-screen font-sans">
     <div class="hidden md:block w-1/2 h-screen">
       <img src="../public/images/food.jpg" class="w-full h-full object-cover" />
+        <button
+    @click="router.push('/')"
+    class="absolute top-2 right-2 flex items-center gap-2 text-sm font-medium
+           text-gray-600  px-2 py-1 mt-8 mr-8"
+  >
+    ← Back
+  </button>
     </div>
 
     <div class="flex items-center justify-center bg-white md:w-1/2 w-full">
+    
       <div class="w-full max-w-lg px-8 md:px-12">
         <div class="mb-10">
           <div class="flex items-center gap-3 mb-5">
