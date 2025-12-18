@@ -562,6 +562,17 @@
             </div>
 
             <div class="flex flex-wrap gap-2 text-xs">
+                <button
+    v-for="filter in statusFilters"
+    :key="filter.key"
+    @click="statusFilter = filter.key"
+    class="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+    :class="statusFilter === filter.key 
+      ? 'bg-[#588157] text-white shadow-md' 
+      : 'bg-white/50 text-slate-700 hover:bg-white shadow-sm'"
+  >
+    {{ filter.label }} ({{ filter.count }})
+  </button>
               <span
                 class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
               >
@@ -790,12 +801,18 @@ const initClientData = () => {
   }
 }
 
+// loadRecipes функциясын жаңартамыз
 const loadRecipes = async () => {
   isLoading.value = true
   try {
-    const data = await $fetch(
-      `${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`
-    )
+    let url = `${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`
+    
+    // Status бойынша сүзгілеу
+    if (statusFilter.value !== 'all') {
+      url += `&status=${statusFilter.value}`
+    }
+    
+    const data = await $fetch(url)
     recipes.value = Array.isArray(data) ? data : []
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
@@ -807,22 +824,27 @@ const loadRecipes = async () => {
   }
 }
 
+// ✅ filterRecipes жаңарту
 const filterRecipes = () => {
-  if (!recipes.value.length) {
-    filteredRecipes.value = []
-    return
+  let filtered = [...recipes.value]
+  
+  // Search бойынша
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(
+      recipe =>
+        recipe.title?.toLowerCase().includes(q) ||
+        recipe.category?.toLowerCase().includes(q) ||
+        recipe.area?.toLowerCase().includes(q)
+    )
   }
-  if (!searchQuery.value.trim()) {
-    filteredRecipes.value = [...recipes.value]
-    return
+  
+  // Status бойынша
+  if (statusFilter.value !== 'all') {
+    filtered = filtered.filter(r => r.status === statusFilter.value)
   }
-  const q = searchQuery.value.toLowerCase()
-  filteredRecipes.value = recipes.value.filter(
-    recipe =>
-      recipe.title?.toLowerCase().includes(q) ||
-      recipe.category?.toLowerCase().includes(q) ||
-      recipe.area?.toLowerCase().includes(q)
-  )
+  
+  filteredRecipes.value = filtered
 }
 
 const isNewRecipe = recipe => {
@@ -850,14 +872,24 @@ const closeModal = () => {
   currentForm.value = {}
 }
 
+// ✅ saveRecipe валидациямен
 const saveRecipe = async () => {
-  // Form validation
+  // ✅ Күшейтілген валидация
   if (
     !currentForm.value.title?.trim() ||
     !currentForm.value.category?.trim() ||
-    !currentForm.value.area?.trim()
+    !currentForm.value.area?.trim() ||
+    currentForm.value.title.trim().length < 3 ||
+    currentForm.value.category.trim().length < 2 ||
+    currentForm.value.area.trim().length < 2
   ) {
-    alert("Please fill in all required fields: Title, Category, Area.")
+    alert("Title (3+ символ), Category (2+), Area (2+) міндетті!")
+    return
+  }
+
+  if (!currentForm.value.instructions?.trim() || 
+      currentForm.value.instructions.trim().length < 20) {
+    alert("Instructions кемінде 20 символ болуы керек!")
     return
   }
 
@@ -872,33 +904,32 @@ const saveRecipe = async () => {
         ...currentForm.value,
         userId: clientUserId,
         createdAt: new Date().toISOString(),
-        isPublic: currentForm.value.isPublic !== false
+        isPublic: true,
+        status: currentForm.value.status || 'pending' // default pending
       }
       await $fetch(`${MOCK_API_URL}/recipes`, {
         method: 'POST',
         body: newRecipe
       })
-      alert("Recipe created successfully!") 
     } else {
-      await $fetch(
-        `${MOCK_API_URL}/recipes/${currentForm.value.id}`,
-        {
-          method: 'PUT',
-          body: currentForm.value
-        }
-      )
-      alert("Recipe updated successfully!") 
+      await $fetch(`${MOCK_API_URL}/recipes/${currentForm.value.id}`, {
+        method: 'PUT',
+        body: currentForm.value
+      })
     }
 
     await loadRecipes()
     closeModal()
+    alert("✅ Сақталды!")
   } catch (error) {
-    console.error('Save failed:', error)
-    alert("Save failed. Please try again.") 
+    alert("❌ Қате! Қайта көріңіз.")
   } finally {
     isLoading.value = false
   }
 }
+
+// Status filter watch
+watch([searchQuery, statusFilter], filterRecipes)
 
 
 const deleteRecipe = async id => {
@@ -932,6 +963,16 @@ onMounted(() => {
   }
   loadRecipes()
 })
+
+
+// script setup ішінде:
+const statusFilters = computed(() => [
+  { key: 'all', label: 'Бәрі', count: recipes.value.length },
+  { key: 'pending', label: 'Күтемін', count: recipes.value.filter(r => r.status === 'pending').length },
+  { key: 'approved', label: '✅ Одобрено', count: recipes.value.filter(r => r.status === 'approved').length },
+  { key: 'rejected', label: '❌ Режек', count: recipes.value.filter(r => r.status === 'rejected').length }
+])
+
 </script>
 
 <style scoped>
