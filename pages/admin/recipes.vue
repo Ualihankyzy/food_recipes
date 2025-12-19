@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen w-full bg-[#f5f6f1] font-sans">
-    <!-- MOBILE HEADER -->
+
     <header class="md:hidden flex items-center justify-between px-4 h-14 bg-[#588157] text-white">
       <h1 class="text-lg font-bold">Admin</h1>
       <button class="w-9 h-9 flex items-center justify-center rounded-full border border-white/40 hover:bg-white/10" @click="isMobileMenuOpen = true">
@@ -9,7 +9,7 @@
     </header>
 
     <div class="flex flex-col md:flex-row min-h-screen">
-      <!-- SIDEBAR -->
+
       <aside :class="['hidden md:flex h-screen sticky top-0 flex-col text-white shadow-xl transition-all duration-300', isSidebarOpen ? 'w-64 bg-[#588157]' : 'w-20 bg-[#588157]']">
         <div class="h-20 flex items-center justify-between px-4 border-b border-white/10">
           <div class="flex items-center gap-3">
@@ -49,7 +49,7 @@
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+
       <div class="flex-1 flex flex-col bg-slate-50">
         <header class="h-16 md:h-20 bg-white border-b border-[#d0d3c8] flex items-center justify-between px-4 md:px-8">
           <h1 class="text-lg md:text-2xl font-bold text-[#31572c]">Recipes Management</h1>
@@ -59,7 +59,7 @@
         </header>
 
         <main class="flex-1 px-4 md:px-8 py-6 md:py-8 overflow-y-auto">
-          <!-- ✅ HEADER WITH SEARCH + FILTERS + CREATE BUTTON -->
+
           <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-6 mb-6 lg:mb-8">
             <div class="flex-1">
               <div class="w-full max-w-xl flex items-center gap-3 bg-white/90 border border-slate-200 rounded-2xl px-4 md:px-5 py-2.5 md:py-3 shadow-md">
@@ -70,7 +70,6 @@
               </div>
             </div>
 
-            <!-- ✅ STATUS FILTERS -->
             <div class="flex flex-wrap gap-2 order-first lg:order-last">
               <button v-for="filter in statusFilters" :key="filter.key" @click="statusFilter = filter.key"
                       class="px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap"
@@ -86,14 +85,14 @@
             </button>
           </div>
 
-          <!-- LOADING -->
+
           <div v-if="isLoading" class="flex justify-center py-16 md:py-20">
             <div class="relative w-16 h-16 md:w-20 md:h-20">
               <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#588157] animate-spin"></div>
             </div>
           </div>
 
-          <!-- EMPTY STATE -->
+    
           <div v-else-if="filteredRecipes.length === 0" class="text-center py-16 md:py-20 max-w-md mx-auto">
             <div class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 bg-[#588157]/10 rounded-2xl flex items-center justify-center">
               <span class="text-3xl md:text-4xl">📖</span>
@@ -105,12 +104,12 @@
             </button>
           </div>
 
-          <!-- ✅ RECIPES GRID -->
+
           <div v-else class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10 mt-8 md:mt-14">
             <div v-for="recipe in filteredRecipes" :key="recipe.id" class="group relative">
               <div class="relative bg-white rounded-3xl shadow-md pt-10 pb-4 px-4 flex flex-col items-center h-full hover:shadow-xl transition-all duration-300">
                 
-                <!-- IMAGE -->
+ 
                 <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-4 border-[#f5f5f0]">
                   <img v-if="recipe.imageUrl" :src="recipe.imageUrl" :alt="recipe.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
                   <div v-else class="w-full h-full bg-gradient-to-br from-[#a3b18a]/30 to-[#588157]/30 flex items-center justify-center">
@@ -118,30 +117,30 @@
                   </div>
                 </div>
 
-                <!-- ✅ NEW BADGE -->
+
                 <div class="absolute top-2 left-3 text-[11px] font-semibold">
                   <span v-if="isNewRecipe(recipe)" class="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white px-2 py-0.5 rounded-full text-xs shadow-lg">
                     NEW
                   </span>
                 </div>
 
-                <!-- ✅ STATUS BADGE -->
+
                 <div class="absolute top-2 right-3">
                   <span class="px-2 py-0.5 rounded-full text-xs font-semibold shadow-md" :class="getStatusBadge(recipe).color">
                     {{ getStatusBadge(recipe).label }}
                   </span>
                 </div>
 
-                <!-- CONTENT -->
+
                 <div class="mt-12 md:mt-16 w-full text-center flex flex-col gap-2 flex-1">
                   <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2">{{ recipe.title }}</h3>
                   <p class="text-[11px] text-slate-400">{{ recipe.category }} • {{ recipe.area }}</p>
                   <p v-if="recipe.userId" class="text-[10px] text-slate-500">User: {{ recipe.userId.slice(-4) }}</p>
                 </div>
 
-                <!-- ✅ ACTION BUTTONS -->
+
                 <div class="mt-6 w-full flex rounded-b-3xl overflow-hidden bg-[#588157]">
-                  <!-- VIEW -->
+
                   <button @click="openQuickView(recipe)" class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30" title="View">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -149,13 +148,13 @@
                     </svg>
                   </button>
 
-                  <!-- ✅ VALIDATE (тек pending үшін) -->
+            
                   <button v-if="recipe.status === 'pending'" @click="openValidationModal(recipe)" 
                           class="flex-1 flex items-center justify-center py-2.5 bg-yellow-500 hover:bg-yellow-600 transition-colors border-r border-white/30" title="Validate">
                     <span class="text-xs font-bold">⏳</span>
                   </button>
 
-                  <!-- ✅ EDIT (✅ ТҮЗЕТІЛДІ!) -->
+
                   <button @click="openEditModal(recipe)" 
                           class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#476747] transition-colors border-r border-white/30" 
                           title="Edit">
@@ -164,7 +163,7 @@
                     </svg>
                   </button>
 
-                  <!-- DELETE -->
+ 
                   <button @click="deleteRecipe(recipe.id)" class="flex-1 flex items-center justify-center py-2.5 hover:bg-[#a33a3d] transition-colors" title="Delete">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 7h12M9 7V4h6v3m-7 4v7m4-7v7m4-7v7M5 7h14l-1 14H6L5 7z"/>
@@ -178,17 +177,16 @@
       </div>
     </div>
 
-    <!-- MOBILE MENU -->
+
     <transition name="fade">
       <div v-if="isMobileMenuOpen" class="fixed inset-0 z-50 flex md:hidden">
         <div class="flex-1 bg-black/50" @click="isMobileMenuOpen = false"></div>
         <aside class="w-64 max-w-[80vw] bg-[#588157] text-white shadow-2xl h-full flex flex-col">
-          <!-- Mobile menu content... -->
         </aside>
       </div>
     </transition>
 
-    <!-- QUICK VIEW MODAL -->
+
     <transition name="fade">
       <div v-if="showQuickViewModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6" @click.self="showQuickViewModal = false">
         <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
@@ -214,7 +212,7 @@
       </div>
     </transition>
 
-    <!-- CREATE/EDIT MODAL -->
+
     <transition name="fade">
       <div v-if="showCreateModal || showEditModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" @click.self="closeModal">
         <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -258,12 +256,12 @@
       </div>
     </transition>
 
-    <!-- ✅ VALIDATION MODAL -->
+
     <transition name="fade">
       <div v-if="showValidationModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" @click.self="showValidationModal = false">
         <div class="bg-white rounded-3xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
-            <h3 class="text-lg font-semibold text-[#31572c]">Валидация: {{ validationRecipe?.title }}</h3>
+            <h3 class="text-lg font-semibold text-[#31572c]">Validation: {{ validationRecipe?.title }}</h3>
             <button @click="showValidationModal = false" class="text-[#6c757d] hover:text-black text-xl">✕</button>
           </div>
           <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
@@ -274,14 +272,14 @@
             </div>
             
             <div v-if="validationErrors.length" class="space-y-2 p-3 bg-red-50 border border-red-200 rounded-xl">
-              <h4 class="text-sm font-semibold text-red-600">Проблемалар:</h4>
+              <h4 class="text-sm font-semibold text-red-600">Problems</h4>
               <ul class="text-xs text-red-500 space-y-1">
                 <li v-for="error in validationErrors" :key="error">• {{ error }}</li>
               </ul>
             </div>
             
             <div v-else class="p-3 bg-green-50 border border-green-200 rounded-xl">
-              <p class="text-sm text-green-700">✅ Барлық валидациядан өтті!</p>
+              <p class="text-sm text-green-700">All validation passed!</p>
             </div>
           </div>
           <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
@@ -289,7 +287,7 @@
             <button @click="rejectRecipe" class="px-5 py-2 rounded-xl text-sm bg-red-500 text-white font-semibold hover:bg-red-600">❌ Отклонить</button>
             <button @click="approveRecipe" :disabled="hasValidationErrors" 
                     class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747] disabled:opacity-50 disabled:cursor-not-allowed">
-              ✅ Одобрить
+           To approve
             </button>
           </div>
         </div>
@@ -304,7 +302,7 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// ✅ Барлық ref-тер
+
 const isSidebarOpen = ref(true)
 const isMobileMenuOpen = ref(false)
 const activeMenu = ref('recipes')
@@ -393,19 +391,18 @@ const isNewRecipe = recipe => {
   }
 }
 
-// ✅ STATUS BADGE функциясы
 const getStatusBadge = (recipe) => {
   if (!recipe.status) return { label: '—', color: 'bg-slate-100 text-slate-600' }
   
   const badges = {
-    pending: { label: '⏳ Күтемін', color: 'bg-yellow-100 text-yellow-800' },
-    approved: { label: '✅ Одобрено', color: 'bg-emerald-100 text-emerald-700' },
-    rejected: { label: '❌ Отклонено', color: 'bg-red-100 text-red-700' }
+    pending: { label: ' I will wait', color: 'bg-yellow-100 text-yellow-800' },
+    approved: { label: 'Approved', color: 'bg-emerald-100 text-emerald-700' },
+    rejected: { label: 'Rejected', color: 'bg-red-100 text-red-700' }
   }
   return badges[recipe.status] || { label: '—', color: 'bg-slate-100 text-slate-600' }
 }
 
-// ✅ ВАЛИДАЦИЯ CHECK
+
 const validateRecipe = (recipe) => {
   const errors = []
   const requiredFields = ['title', 'category', 'area']
@@ -418,11 +415,11 @@ const validateRecipe = (recipe) => {
   }
   
   if (!recipe.instructions?.trim() || recipe.instructions.trim().length < 20) {
-    errors.push('Инструкция кемінде 20 символ')
+    errors.push('Instructions must be at least 20 characters long.')
   }
   
   if (!recipe.ingredients?.length || recipe.ingredients.length < 3) {
-    errors.push('Кемінде 3 ингредиент')
+    errors.push('At least 3 ingredients')
   }
   
   return errors
@@ -430,17 +427,17 @@ const validateRecipe = (recipe) => {
 
 const hasValidationErrors = computed(() => validationErrors.value.length > 0)
 
-// ✅ Валидация модалын ашу
+
 const openValidationModal = async (recipe) => {
   validationRecipe.value = { ...recipe }
   validationErrors.value = validateRecipe(recipe)
   showValidationModal.value = true
 }
 
-// ✅ ✅ ОДОБРИТЬ
+
 const approveRecipe = async () => {
   if (validationErrors.value.length > 0) {
-    alert('Валидациядан өтпеді!')
+    alert('It did not pass validation!')
     return
   }
   
@@ -448,7 +445,7 @@ const approveRecipe = async () => {
     const approvedData = {
       ...validationRecipe.value,
       status: 'approved',
-      isPublic: true,  // ✅ HOME PAGE-ГЕ ШЫҒУ
+      isPublic: true,  
       approvedAt: new Date().toISOString()
     }
     
@@ -459,16 +456,16 @@ const approveRecipe = async () => {
     
     showValidationModal.value = false
     await loadRecipes()
-    alert('✅ Рецепт одобрено! Home page-ге шықты.')
+    alert('Recipe approved! Posted to the main page.')
   } catch (e) {
     console.error(e)
-    alert('❌ Одобрение қатесі!')
+    alert(' Approval error!')
   }
 }
 
-// ✅ ❌ ОТКЛОНИТЬ (ТОЛЫҚ ӨШІРУ)
+
 const rejectRecipe = async () => {
-  if (!confirm('Рецептті толық жоюды растаңыз? (User-ден де өшіріледі)')) return
+  if (!confirm('Confirm complete deletion of recipe? (Will also be deleted from User)')) return
   
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${validationRecipe.value.id}`, {
@@ -477,14 +474,14 @@ const rejectRecipe = async () => {
     
     showValidationModal.value = false
     await loadRecipes()
-    alert('❌ Рецепт отклонено және жойылды!')
+    alert('The recipe has been rejected and deleted!')
   } catch (e) {
     console.error(e)
-    alert('❌ Отклонение қатесі!')
+    alert('Deviation error!')
   }
 }
 
-// ✅ MODAL функциялары
+
 const openCreateModal = () => {
   currentForm.value = {
     title: '',
@@ -515,11 +512,11 @@ const closeModal = () => {
 
 const saveRecipe = async () => {
   if (!currentForm.value.title?.trim() || currentForm.value.title.length < 3) {
-    alert('Title кемінде 3 символ!')
+    alert('Title at least 3 characters!')
     return
   }
   if (!currentForm.value.instructions?.trim() || currentForm.value.instructions.length < 20) {
-    alert('Instructions кемінде 20 символ!')
+    alert('Instructions at least 20 characters!')
     return
   }
 
@@ -542,10 +539,10 @@ const saveRecipe = async () => {
     }
     await loadRecipes()
     closeModal()
-    alert('✅ Сақталды!')
+    alert(' Saved!')
   } catch (error) {
     console.error('Save failed:', error)
-    alert('❌ Қате! Қайта көріңіз.')
+    alert('Error! Please try again.')
   } finally {
     isLoading.value = false
   }
@@ -556,10 +553,10 @@ const deleteRecipe = async id => {
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
     await loadRecipes()
-    alert('✅ Рецепт жойылды!')
+    alert('Recipe deleted!')
   } catch (error) {
     console.error('Delete failed:', error)
-    alert('❌ Жою сәтсіз!')
+    alert('Delete failed!')
   }
 }
 
@@ -568,7 +565,7 @@ const openQuickView = recipe => {
   showQuickViewModal.value = true
 }
 
-// ✅ Watch-тар
+
 watch([searchQuery, statusFilter], filterRecipes)
 
 onBeforeMount(() => initClientData())

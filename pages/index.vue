@@ -43,7 +43,7 @@
             <div class="text-slate-700 leading-relaxed whitespace-pre-line text-sm" v-html="selectedMeal?.strInstructions?.replace(/\r\n/g, '<br>') || 'No instructions available'"></div>
           </div>
           
-          <!-- YOUTUBE & SOURCE -->
+  
           <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
             <a v-if="selectedMeal?.strYoutube" :href="selectedMeal.strYoutube" target="_blank" 
                class="flex-1 bg-red-500 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-red-600 transition">
