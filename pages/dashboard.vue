@@ -130,7 +130,7 @@
               <p class="text-[#6c7570] mb-6">Create your first recipe to get started!</p>
               <button @click="showCreateModal = true" 
                       class="px-8 py-3 bg-gradient-to-r from-[#588157] to-[#88c17f] text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all">
-                ➕ Create Recipe
+                 Create Recipe
               </button>
             </div>
           </div>
