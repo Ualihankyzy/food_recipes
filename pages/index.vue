@@ -46,12 +46,8 @@
   
           <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
             <a v-if="selectedMeal?.strYoutube" :href="selectedMeal.strYoutube" target="_blank" 
-               class="flex-1 bg-red-500 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-red-600 transition">
+               class="flex-1 bg-[#ff9505] text-white text-center py-3 px-6 rounded-xl font-semibold  transition">
                Watch Video
-            </a>
-            <a v-if="selectedMeal?.strSource" :href="selectedMeal.strSource" target="_blank" 
-               class="flex-1 bg-slate-900 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-slate-800 transition">
-               Original Recipe
             </a>
           </div>
         </div>
