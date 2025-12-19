@@ -120,7 +120,7 @@
 
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg border-2 border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex-1"
+                  class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg  bg-[#ff9505] text-slate-700 text-sm font-semibold  shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex-1"
                   @click="goBack"
                 >
                   ← Back

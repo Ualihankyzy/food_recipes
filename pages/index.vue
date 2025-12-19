@@ -46,7 +46,7 @@
   
           <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
             <a v-if="selectedMeal?.strYoutube" :href="selectedMeal.strYoutube" target="_blank" 
-               class="flex-1 bg-[#ff9505] text-white text-center py-3 px-6 rounded-xl font-semibold  transition">
+               class="flex-1 bg-[#588157] text-white text-center py-3 px-6 rounded-xl font-semibold  transition">
                Watch Video
             </a>
           </div>
@@ -54,72 +54,98 @@
       </div>
     </div>
 
-
-    <header
-      class="w-full text-white flex items-center justify-between h-16 px-4 sm:px-8 lg:px-20 absolute top-0 left-0 z-40 mt-4"
-    >
-      <h1 class="text-lg sm:text-2xl font-bold mr-4 sm:mr-20">
-        Recipes
-      </h1>
-      <nav class="flex items-center gap-3 sm:gap-6 text-sm sm:text-lg relative">
-        <div
-          v-if="isAuth"
-          class="flex items-center gap-2 sm:gap-4 ml-1 sm:ml-4"
-        >
-          <a
-            :href="isAdmin ? '/admin/dashboard' : '/dashboard'"
-            class="xs:inline-block sm:inline-block hover:underline font-semibold text-sm sm:text-lg"
-          >
-            {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
-          </a>
-
-          <button
-            @click="router.push('/profile')"
-            class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
-          >
-            <div
-              class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br  bg-[#cc5803] flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
-            >
-              {{ userInitial }}
-            </div>
-          </button>
-        </div>
-
-        <div
-          v-else
-          class="flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-6 text-xs sm:text-2xl font-semibold"
-        >
-          <a href="/login" class="hover:underline">Login</a>
-          <a href="/signup" class="hover:underline">Register</a>
-        </div>
-      </nav>
-    </header>
-
-
+<header
+  class="w-full text-white flex items-center justify-between h-16 px-4 sm:px-8 lg:px-20 absolute top-0 left-0 z-40 mt-4"
+>
+  <h1 class="text-lg sm:text-2xl font-bold mr-4 sm:mr-20">
+    Recipes
+  </h1>
+  <nav class="flex items-center gap-3 sm:gap-6 text-sm sm:text-lg relative">
     <div
-      class="w-full flex justify-center items-center gap-6 absolute top-0 left-0 z-20 sm:mt-0"
+      v-if="isAuth"
+      class="flex items-center gap-2 sm:gap-4 ml-1 sm:ml-4"
     >
-      <img src="../public/images/light.png" class="w-56 sm:w-64" />
-      <img src="../public/images/light.png" class="w-64 hidden sm:block" />
-      <img src="../public/images/light.png" class="w-64 hidden sm:block" />
+      <a
+        :href="isAdmin ? '/admin/dashboard' : '/dashboard'"
+        class="xs:inline-block sm:inline-block hover:underline font-semibold text-sm sm:text-lg"
+      >
+        {{ isAdmin ? 'Admin Panel' : 'Dashboard' }}
+      </a>
+
+      <button
+        @click="router.push('/profile')"
+        class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
+      >
+        <div
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br  bg-[#cc5803] flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+        >
+          {{ userInitial }}
+        </div>
+      </button>
     </div>
 
-
-    <section
-      class="relative w-full h-[60vh] md:h-screen flex justify-center items-center overflow-hidden"
+    <div
+      v-else
+      class="flex flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-6 text-xs sm:text-2xl font-semibold"
     >
-      <img
-        src="../public/images/pexels-catscoming-1907227 3.jpg"
-        class="absolute inset-0 w-full h-full object-contain bg-black"
-      />
-      <div class="relative z-10 text-center text-white px-4 mb-36 md:mb-56">
-        <h2 class="text-3xl md:text-7xl handwriting leading-tight">
-          Simple and Tasty <br />
-          Recipes
-        </h2>
-      </div>
-    </section>
+      <a href="/login" class="hover:underline">Login</a>
+      <a href="/signup" class="hover:underline">Register</a>
+    </div>
+  </nav>
+</header>
 
+
+
+
+<section class="relative w-full h-[60vh] md:h-screen flex items-center overflow-hidden">
+  <img
+    src="../public/images/A8F69866-59E0-4F31-8020-0B9CB79B1E10.jpeg"
+    class="absolute inset-0 w-full h-full object-cover"
+  />
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <div class="relative z-10 flex w-full px-4 sm:px-8 lg:px-20 items-center justify-between">
+    <div class="text-white max-w-xl">
+      <h2 class="text-3xl md:text-6xl font-bold leading-tight">
+        Simple and Tasty<br>Recipes
+      </h2>
+    <p class="hidden md:block mt-4 text-sm md:text-base text-gray-200">
+  Homemade recipes that bring comfort, flavor, and joy <br> to your kitchen every day.
+   Healthy and tasty food recipes designed to make cooking easy and enjoyable.
+</p>
+
+      
+
+    <button 
+  @click="scrollToSlider"
+  class="
+    mt-5
+    bg-[#f3a330] hover:bg-[#e39010]
+    text-black font-semibold
+    px-5 py-3 text-sm
+    md:px-8 md:py-4 md:text-lg
+    rounded-lg
+    transition-all duration-300
+    transform hover:scale-105
+    shadow-xl
+  "
+>
+  Recipes →
+</button>
+
+    </div>
+
+    <div class="hidden md:flex justify-center items-center flex-1">
+      <div class="w-120 h-120 rounded-full border-[#f3a330] overflow-hidden rotating">
+        <img
+          src="../public/images/9BA539CC-B894-4A19-A64A-ECD47A446641.png"
+          alt="Food"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+</section>
 
     <section class="w-full bg-slate-50 py-10 sm:py-14 px-4 sm:px-8 lg:px-20">
       <div class="max-w-6xl mx-auto">
@@ -253,7 +279,7 @@
               class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium border transition-all duration-200 whitespace-nowrap flex-shrink-0"
               :class="
                 activeFilter === tag.value
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                  ? 'bg-[#ff9505] text-white  shadow-md'
                   : 'bg-slate-100 text-slate-700 border-slate-200'
               "
             >
@@ -716,6 +742,19 @@ onUnmounted(() => {
 </script>
 
 <style>
+
+  .rotating {
+  animation: slow-rotate 30s linear infinite;
+}
+
+@keyframes slow-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 * {
   margin: 0;
   padding: 0;

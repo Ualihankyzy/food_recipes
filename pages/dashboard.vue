@@ -159,7 +159,7 @@
                   <div class="mt-4 w-full h-10 flex rounded-b-3xl overflow-hidden">
                     <a v-if="recipe.youtubeUrl" :href="recipe.youtubeUrl" target="_blank" rel="noopener noreferrer" @click.stop 
                        class="flex-1 flex items-center justify-center text-[11px] md:text-xs font-semibold text-white bg-[#588157] hover:bg-[#476947] transition-colors">
-                      YouTube video
+                      Watch video
                     </a>
                     <div v-else class="flex-1 bg-[#588157] opacity-60"></div>
                     <button @click.stop="removeFromSaved(recipe.id)" 
