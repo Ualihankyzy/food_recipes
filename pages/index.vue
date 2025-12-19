@@ -447,7 +447,7 @@
 
   <RouterLink
     to="/signup"
-    class="px-4 py-2 text-xs font-medium rounded-full bg-green-500 text-black hover:bg-green-400 transition"
+    class="px-4 py-2 text-xs font-medium rounded-full bg-[#588157] text-black hover:bg-green-400 transition"
   >
     Sign up
   </RouterLink>
