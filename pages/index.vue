@@ -111,7 +111,7 @@
       </h2>
     <p class="hidden md:block mt-4 text-sm md:text-base text-gray-200">
   Homemade recipes that bring comfort, flavor, and joy <br> to your kitchen every day.
-   Healthy and tasty food recipes designed to make cooking easy and enjoyable.
+  
 </p>
 
       
