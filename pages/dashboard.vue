@@ -162,6 +162,13 @@
                 >
                   NEW
                 </div>
+                <!-- My Recipes card-ында, NEW badge астында: -->
+<div v-if="getStatusBadge(recipe)" class="absolute top-12 left-3 z-20">
+  <span class="text-[10px] px-2 py-0.5 rounded-full shadow-md bg-yellow-500 text-white font-bold">
+    {{ getStatusBadge(recipe) }}
+  </span>
+</div>
+
 
                 <div class="h-40 bg-[#a3b18a] overflow-hidden pt-2 pl-2">
                   <img
@@ -625,6 +632,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
+// ✅ Барлық ref-тер БАСТАУДА!
 const isSidebarOpen = ref(true)
 const isMobileMenuOpen = ref(false)
 const activeTab = ref('my-recipes')
@@ -636,50 +644,16 @@ const isLoadingSaved = ref(false)
 const myRecipes = ref([])
 const savedRecipes = ref([])
 
-
-
-// ✅ createRecipe - тек админге жібереді (home page-ге ЕШҚАШАН шықпайды!)
-const createRecipe = async () => {
-  if (!form.value.title?.trim() || !userId.value) {
-    alert('Title міндетті!')
-    return
-  }
-
-  isLoading.value = true
-  try {
-    const recipe = {
-      id: Date.now().toString(),
-      userId: userId.value,
-      ...form.value,
-      // ✅ ПАЯНА: pending status + isPublic: false (home page-ге шықпайды!)
-      status: 'pending', 
-      isPublic: false, 
-      createdAt: new Date().toISOString()
-    }
-
-    await $fetch(`${MOCK_API_URL}/recipes`, {
-      method: 'POST',
-      body: recipe
-    })
-
-    // ✅ User-дың myRecipes-не қосамыз
-    myRecipes.value.unshift(recipe)
-    
-    // ✅ АДМИН ПАНЕЛІНЕ АВТОМАТТЫҚ БАРАМЫЗ
-    closeCreateModal()
-    router.push('/admin/recipes')
-    
-    alert('✅ Рецепт админге жіберілді! Одобрения күтіңіз.')
-    
-  } catch (e) {
-    console.error(e)
-    alert('❌ Қате! Қайта көріңіз.')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-
+// ✅ FORM REF-TER (міндетті!)
+const form = ref({
+  title: '',
+  category: '',
+  area: '',
+  imageUrl: '',
+  instructions: '',
+  ingredients: [],
+  youtubeUrl: ''
+})
 
 const editForm = ref({
   id: '',
@@ -689,29 +663,17 @@ const editForm = ref({
   imageUrl: '',
   instructions: '',
   ingredients: [],
-  youtubeUrl: '',
-  isPublic: true
+  youtubeUrl: ''
 })
 
-const ingredientsText = computed({
-  get: () => form.value.ingredients.join('\n'),
-  set: v => {
-    form.value.ingredients = v
-      .split('\n')
-      .map(s => s.trim())
-      .filter(Boolean)
-  }
-})
-
+const ingredientsText = ref('')
 const editIngredientsText = ref('')
 
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const viewedRecipe = ref(null)
 
-const userInitial = computed(() =>
-  userName.value ? userName.value[0]?.toUpperCase() : 'U'
-)
+const userInitial = computed(() => userName.value ? userName.value[0]?.toUpperCase() : 'U')
 
 const menuItems = [
   { key: 'home', label: 'Home', type: 'route', to: '/', icon: '🏠' },
@@ -719,6 +681,18 @@ const menuItems = [
   { key: 'saved', label: 'Saved', type: 'tab', icon: '💾' }
 ]
 
+// ✅ INGREDIENTS COMPUTED (дұрыс!)
+const createIngredientsText = computed({
+  get: () => form.value.ingredients.join('\n'),
+  set: (value) => {
+    form.value.ingredients = value
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean)
+  }
+})
+
+// ✅ setupUser
 const setupUser = () => {
   if (typeof window !== 'undefined') {
     userId.value = localStorage.getItem('userId') || ''
@@ -727,6 +701,7 @@ const setupUser = () => {
   }
 }
 
+// ✅ loadMyRecipes
 const loadMyRecipes = async () => {
   if (!userId.value) {
     myRecipes.value = []
@@ -744,6 +719,7 @@ const loadMyRecipes = async () => {
   }
 }
 
+// ✅ loadSavedRecipes (бірдей)
 const loadSavedRecipes = async () => {
   if (!userId.value) {
     savedRecipes.value = []
@@ -751,15 +727,9 @@ const loadSavedRecipes = async () => {
   }
   isLoadingSaved.value = true
   try {
-    const favorites = await $fetch(
-      `${MOCK_API_URL}/favorites?userId=${userId.value}`
-    ).catch(() => [])
-    const recipesResponse = await $fetch(
-      `${MOCK_API_URL}/recipes`
-    ).catch(() => [])
-    savedRecipes.value = recipesResponse.filter(r =>
-      favorites.some(f => f.recipeId === r.id)
-    )
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}`).catch(() => [])
+    const recipesResponse = await $fetch(`${MOCK_API_URL}/recipes`).catch(() => [])
+    savedRecipes.value = recipesResponse.filter(r => favorites.some(f => f.recipeId === r.id))
   } catch (e) {
     savedRecipes.value = []
   } finally {
@@ -767,13 +737,12 @@ const loadSavedRecipes = async () => {
   }
 }
 
+// ✅ removeFromSaved (бірдей)
 const removeFromSaved = async recipeId => {
   if (!userId.value) return
   isLoadingSaved.value = true
   try {
-    const favorites = await $fetch(
-      `${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`
-    ).catch(() => [])
+    const favorites = await $fetch(`${MOCK_API_URL}/favorites?userId=${userId.value}&recipeId=${recipeId}`).catch(() => [])
     for (const fav of favorites) {
       await $fetch(`${MOCK_API_URL}/favorites/${fav.id}`, { method: 'DELETE' })
     }
@@ -785,9 +754,63 @@ const removeFromSaved = async recipeId => {
   }
 }
 
+// ✅ CREATE RECIPE - ТЕК АДМИНГЕ ЖІБЕРЕДІ!
+const createRecipe = async () => {
+  // ✅ Simple validation
+  if (!form.value.title?.trim()) {
+    alert('Title міндетті!')
+    return
+  }
+  if (!form.value.instructions?.trim()) {
+    alert('Instructions міндетті!')
+    return
+  }
+  if (form.value.ingredients.length < 2) {
+    alert('Кемінде 2 ингредиент қосу керек!')
+    return
+  }
 
+  isLoading.value = true
+  try {
+    const recipeData = {
+      id: Date.now().toString(),
+      userId: userId.value,
+      title: form.value.title,
+      category: form.value.category || '',
+      area: form.value.area || '',
+      imageUrl: form.value.imageUrl || '',
+      instructions: form.value.instructions,
+      ingredients: form.value.ingredients,
+      youtubeUrl: form.value.youtubeUrl || '',
+      // ✅ АДМИНГЕ ЖІБЕРУ ҮШІН:
+      status: 'pending',      // Админ күтеді
+      isPublic: false,        // Home page-ге шықпайды!
+      createdAt: new Date().toISOString()
+    }
 
-// closeCreateModal функциясында form-ды reset етеміз
+    await $fetch(`${MOCK_API_URL}/recipes`, {
+      method: 'POST',
+      body: recipeData
+    })
+
+    // ✅ User-дың тізіміне қосамыз
+    myRecipes.value.unshift(recipeData)
+    
+    // ✅ MODAL ЖҮЗІЛДІРУ + АДМИН ПАНЕЛІНЕ БАРУ
+    closeCreateModal()
+    router.push('/admin/recipes')
+    
+    alert('✅ Рецепт админге жіберілді! Одобрения күтіңіз.')
+    
+  } catch (e) {
+    console.error('Create error:', e)
+    alert('❌ Қате! Қайта көріңіз.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// ✅ closeCreateModal
 const closeCreateModal = () => {
   showCreateModal.value = false
   form.value = {
@@ -799,15 +822,52 @@ const closeCreateModal = () => {
     ingredients: [],
     youtubeUrl: ''
   }
+  ingredientsText.value = ''
 }
 
+// ✅ deleteUserRecipe
 const deleteUserRecipe = async id => {
+  if (!confirm('Рецептті жоюды растаңыз?')) return
   isLoading.value = true
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
     await loadMyRecipes()
+    alert('✅ Рецепт жойылды!')
   } catch (e) {
     console.error(e)
+    alert('❌ Жою сәтсіз!')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// ✅ openEditModal
+const openEditModal = recipe => {
+  editForm.value = { ...recipe }
+  editIngredientsText.value = (recipe.ingredients || []).join('\n')
+  showEditModal.value = true
+}
+
+// ✅ saveEditedRecipe
+const saveEditedRecipe = async () => {
+  editForm.value.ingredients = editIngredientsText.value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean)
+    
+  // ✅ User edit жасаса да status/isPublic өзгермейді (админ басқарады)
+  isLoading.value = true
+  try {
+    await $fetch(`${MOCK_API_URL}/recipes/${editForm.value.id}`, {
+      method: 'PUT',
+      body: editForm.value
+    })
+    showEditModal.value = false
+    await loadMyRecipes()
+    alert('✅ Өзгерістер сақталды!')
+  } catch (e) {
+    console.error(e)
+    alert('❌ Сақтау сәтсіз!')
   } finally {
     isLoading.value = false
   }
@@ -817,8 +877,6 @@ const viewRecipe = recipe => {
   viewedRecipe.value = { ...recipe }
 }
 
-
-
 const logout = () => {
   if (typeof window !== 'undefined') {
     localStorage.clear()
@@ -826,37 +884,22 @@ const logout = () => {
   router.push('/login')
 }
 
-const openEditModal = recipe => {
-  editForm.value = { ...recipe }
-  editIngredientsText.value = (recipe.ingredients || []).join('\n')
-  showEditModal.value = true
-}
-
-const saveEditedRecipe = async () => {
-  editForm.value.ingredients = editIngredientsText.value
-    .split('\n')
-    .map(s => s.trim())
-    .filter(Boolean)
-  isLoading.value = true
-  try {
-    await $fetch(`${MOCK_API_URL}/recipes/${editForm.value.id}`, {
-      method: 'PUT',
-      body: editForm.value
-    })
-    showEditModal.value = false
-    await loadMyRecipes()
-  } catch (e) {
-    console.error(e)
-  } finally {
-    isLoading.value = false
-  }
-}
-
 const isNewRecipe = recipe => {
   if (!recipe.createdAt) return false
   const createdDate = new Date(recipe.createdAt)
   const now = new Date()
   return now - createdDate < 7 * 24 * 60 * 60 * 1000
+}
+
+// ✅ MY RECIPES-те STATUS көрсету (қосымша)
+const getStatusBadge = (recipe) => {
+  if (!recipe.status) return ''
+  const badges = {
+    pending: '⏳ Күтемін',
+    approved: '✅ Одобрено',
+    rejected: '❌ Режек'
+  }
+  return badges[recipe.status] || ''
 }
 
 onMounted(() => {
@@ -868,36 +911,9 @@ onMounted(() => {
     }, 500)
   }
 })
-
-
-
-
-
-// VALIDATION функциясы
-const validateRecipeForHome = (recipe) => {
-  const requiredFields = ['title', 'category', 'area']
-  const minLength = 3
-  
-  // Барлық required field толтырылған ба?
-  for (const field of requiredFields) {
-    if (!recipe[field]?.trim() || recipe[field].trim().length < minLength) {
-      return false
-    }
-  }
-  
-  // Instructions кемінде 20 символ
-  if (!recipe.instructions?.trim() || recipe.instructions.trim().length < 20) {
-    return false
-  }
-  
-  // Ingredients кемінде 3 дана
-  if (!recipe.ingredients?.length || recipe.ingredients.length < 3) {
-    return false
-  }
-  
-  return true
-}
 </script>
+
+
 
 <style scoped>
 .fade-enter-active,
