@@ -744,10 +744,12 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
+// ✅ Барлық ref-тер БАСТАУДА!
 const isSidebarOpen = ref(true)
 const isMobileMenuOpen = ref(false)
 const activeMenu = ref('recipes')
 const searchQuery = ref('')
+const statusFilter = ref('all') // ✅ Мұнда!
 const isLoading = ref(false)
 const recipes = ref([])
 const filteredRecipes = ref([])
@@ -760,25 +762,21 @@ const quickViewRecipe = ref(null)
 
 const userName = ref('Admin')
 const userId = ref('')
-const userInitial = computed(
-  () => userName.value[0]?.toUpperCase() || 'A'
-)
+const userInitial = computed(() => userName.value[0]?.toUpperCase() || 'A')
 
 const menuItems = [
-  {
-    key: 'dashboard',
-    label: 'Dashboard',
-    icon: 'dashboard',
-    to: '/admin/dashboard'
-  },
-  {
-    key: 'recipes',
-    label: 'Recipes',
-    icon: 'recipes',
-    to: '/admin/recipes'
-  },
+  { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', to: '/admin/dashboard' },
+  { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
   { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
+
+// ✅ Status filters computed
+const statusFilters = computed(() => [
+  { key: 'all', label: 'Бәрі', icon: '📋', count: recipes.value.length },
+  { key: 'pending', label: '⏳ Күтемін', icon: '⏳', count: recipes.value.filter(r => r.status === 'pending').length },
+  { key: 'approved', label: '✅ Одобрено', icon: '✅', count: recipes.value.filter(r => r.status === 'approved').length },
+  { key: 'rejected', label: '❌ Режек', icon: '❌', count: recipes.value.filter(r => r.status === 'rejected').length }
+])
 
 const logout = () => {
   if (process.client) localStorage.clear()
@@ -792,7 +790,6 @@ const initClientData = () => {
   }
 }
 
-// ✅ loadRecipes жаңарту
 const loadRecipes = async () => {
   isLoading.value = true
   try {
@@ -804,6 +801,7 @@ const loadRecipes = async () => {
     recipes.value = Array.isArray(data) ? data : []
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
+    console.error('Failed to load recipes:', error)
     recipes.value = []
     filteredRecipes.value = []
   } finally {
@@ -811,22 +809,18 @@ const loadRecipes = async () => {
   }
 }
 
-// ✅ filterRecipes жаңарту
 const filterRecipes = () => {
   let filtered = [...recipes.value]
   
-  // Search бойынша
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(
-      recipe =>
-        recipe.title?.toLowerCase().includes(q) ||
-        recipe.category?.toLowerCase().includes(q) ||
-        recipe.area?.toLowerCase().includes(q)
+    filtered = filtered.filter(recipe =>
+      recipe.title?.toLowerCase().includes(q) ||
+      recipe.category?.toLowerCase().includes(q) ||
+      recipe.area?.toLowerCase().includes(q)
     )
   }
   
-  // Status бойынша
   if (statusFilter.value !== 'all') {
     filtered = filtered.filter(r => r.status === statusFilter.value)
   }
@@ -844,11 +838,31 @@ const isNewRecipe = recipe => {
   }
 }
 
-const openEditModal = recipe => {
-  currentForm.value = {
-    ...recipe,
-    isPublic: recipe.isPublic !== false
+const getStatusLabel = status => {
+  const labels = {
+    pending: '⏳ Күтемін',
+    approved: '✅ Одобрено',
+    rejected: '❌ Режек'
   }
+  return labels[status] || status
+}
+
+const openCreateModal = () => {
+  currentForm.value = {
+    title: '',
+    category: '',
+    area: '',
+    imageUrl: '',
+    instructions: '',
+    youtubeUrl: '',
+    status: 'pending'
+  }
+  showCreateModal.value = true
+  showEditModal.value = false
+}
+
+const openEditModal = recipe => {
+  currentForm.value = { ...recipe }
   showEditModal.value = true
   showCreateModal.value = false
 }
@@ -859,8 +873,6 @@ const closeModal = () => {
   currentForm.value = {}
 }
 
-// ✅ saveRecipe валидациямен
-// ✅ saveRecipe жаңарту
 const saveRecipe = async () => {
   if (!currentForm.value.title?.trim() || currentForm.value.title.length < 3) {
     alert('Title кемінде 3 символ!')
@@ -878,8 +890,7 @@ const saveRecipe = async () => {
         ...currentForm.value,
         userId: localStorage.getItem('userId') || 'admin',
         createdAt: new Date().toISOString(),
-        status: currentForm.value.status || 'pending', // Міндетті!
-        isPublic: currentForm.value.status === 'approved' // ✅ approved = home page
+        isPublic: currentForm.value.status === 'approved'
       }
       await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: newRecipe })
     } else {
@@ -889,27 +900,21 @@ const saveRecipe = async () => {
         body: currentForm.value
       })
     }
-    
     await loadRecipes()
     closeModal()
     alert('✅ Сақталды!')
   } catch (error) {
-    alert('❌ Қате!')
+    console.error('Save failed:', error)
+    alert('❌ Қате! Қайта көріңіз.')
   } finally {
     isLoading.value = false
   }
 }
 
-// Status filter watch
-watch([searchQuery, statusFilter], filterRecipes)
-
-
 const deleteRecipe = async id => {
   if (!confirm('Delete this recipe?')) return
   try {
-    await $fetch(`${MOCK_API_URL}/recipes/${id}`, {
-      method: 'DELETE'
-    })
+    await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
     await loadRecipes()
   } catch (error) {
     console.error('Delete failed:', error)
@@ -922,7 +927,8 @@ const openQuickView = recipe => {
   showQuickViewModal.value = true
 }
 
-watch(searchQuery, filterRecipes)
+// ✅ Watch-тар
+watch([searchQuery, statusFilter], filterRecipes)
 
 onBeforeMount(() => initClientData())
 onMounted(() => {
@@ -935,57 +941,6 @@ onMounted(() => {
   }
   loadRecipes()
 })
-
-
-// ✅ Status filter
-const statusFilter = ref('all')
-
-// ✅ Status filters computed
-const statusFilters = computed(() => [
-  { key: 'all', label: 'Бәрі', icon: '📋', count: recipes.value.length },
-  { key: 'pending', label: '⏳ Күтемін', icon: '⏳', count: recipes.value.filter(r => r.status === 'pending').length },
-  { key: 'approved', label: '✅ Одобрено', icon: '✅', count: recipes.value.filter(r => r.status === 'approved').length },
-  { key: 'rejected', label: '❌ Режек', icon: '❌', count: recipes.value.filter(r => r.status === 'rejected').length }
-])
-
-
-
-
-// ✅ Status label функциясы
-const getStatusLabel = (status) => {
-  const labels = {
-    pending: '⏳ Күтемін',
-    approved: '✅ Одобрено', 
-    rejected: '❌ Режек'
-  }
-  return labels[status] || status
-}
-
-// ✅ Modal ішінде STATUS SELECT қосу
-// Create/Edit modal-да checkbox орнына:
-<div class="pt-2">
-  <label class="block text-xs font-semibold text-[#31572c] mb-1">Status</label>
-  <select 
-    v-model="currentForm.status"
-    class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
-  >
-    <option value="pending">⏳ Күтемін</option>
-    <option value="approved">✅ Одобрено (Home page)</option>
-    <option value="rejected">❌ Режек</option>
-  </select>
-</div>
-
-
-// ✅ watch қосу
-watch([searchQuery, statusFilter], () => {
-  filterRecipes()
-}, { immediate: true })
-
-onMounted(() => {
-  loadRecipes()
-})
-
-
 </script>
 
 <style scoped>
@@ -995,19 +950,15 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active, .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
 }
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 .animate-spin {
   animation: spin 1s linear infinite;
