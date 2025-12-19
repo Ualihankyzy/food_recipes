@@ -136,7 +136,7 @@
     </div>
 
     <div class="hidden md:flex justify-center items-center flex-1">
-      <div class="w-120 h-120 rounded-full border-[#f3a330] overflow-hidden rotating">
+      <div class="w-120 h-120 rounded-full border-[#f3a330] overflow-hidden rotating ml-48">
         <img
           src="../public/images/9BA539CC-B894-4A19-A64A-ECD47A446641.png"
           alt="Food"
