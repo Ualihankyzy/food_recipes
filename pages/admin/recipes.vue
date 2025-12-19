@@ -699,21 +699,75 @@
                 class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
               />
             </div>
-            <div class="flex items-center gap-3 pt-2">
-              <label
-                class="text-xs font-semibold text-[#31572c] flex items-center gap-2"
-              >
-                <input
-                  type="checkbox"
-                  v-model="currentForm.isPublic"
-                  class="w-4 h-4 rounded"
-                />
-                <span>Public (show on Home)</span>
-              </label>
-              <span class="text-xs text-[#6c7570]">
-                (Only You = private)
-              </span>
-            </div>
+         <div class="flex items-center gap-2">
+    <span
+      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold"
+      :class="getStatusBadge(r).color"
+    >
+      {{ getStatusBadge(r).label }}
+    </span>
+    <p class="text-[11px] text-slate-400">
+      {{ formatDate(r.createdAt) }}
+    </p>
+  </div>
+
+  <!-- ✅ ВАЛИДАЦИЯ MODAL (жаңа) -->
+  <transition name="fade">
+    <div
+      v-if="showValidationModal"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      @click.self="showValidationModal = false"
+    >
+      <div class="bg-white rounded-3xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-[#d0d3c8] flex justify-between items-center bg-[#f5f6f1]">
+          <h3 class="text-lg font-semibold text-[#31572c]">
+            Валидация: {{ validationRecipe.title }}
+          </h3>
+          <button @click="showValidationModal = false" class="text-[#6c7570] hover:text-black">
+            ✕
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <!-- ✅ Рецепт ақпараты -->
+          <div class="bg-[#f8f9fa] p-4 rounded-xl">
+            <p class="text-sm font-medium text-slate-900 mb-1">{{ validationRecipe.title }}</p>
+            <p class="text-xs text-slate-500">{{ validationRecipe.area }} • {{ validationRecipe.category }}</p>
+            <p class="text-xs text-slate-600 mt-2 line-clamp-3">{{ validationRecipe.instructions }}</p>
+          </div>
+          
+          <!-- ✅ Валидация ескертулері -->
+          <div v-if="validationErrors.length" class="space-y-2">
+            <h4 class="text-sm font-semibold text-red-600">Проблемалар:</h4>
+            <ul class="text-xs text-red-500 space-y-1">
+              <li v-for="error in validationErrors" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3">
+          <button
+            @click="showValidationModal = false"
+            class="px-4 py-2 rounded-xl text-sm border border-[#d0d3c8] text-[#31572c] hover:bg-white"
+          >
+            Отмена
+          </button>
+          <button
+            @click="rejectRecipe"
+            class="px-5 py-2 rounded-xl text-sm bg-red-500 text-white font-semibold hover:bg-red-600"
+          >
+            ❌ Отклонить
+          </button>
+          <button
+            @click="approveRecipe"
+            :disabled="hasValidationErrors"
+            class="px-5 py-2 rounded-xl text-sm bg-[#588157] text-white font-semibold hover:bg-[#476747] disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="hasValidationErrors ? 'bg-gray-400 cursor-not-allowed' : ''"
+          >
+            ✅ Одобрить
+          </button>
+        </div>
+      </div>
+    </div>
+  </transition>
           </div>
           <div
             class="px-6 py-4 border-t border-[#d0d3c8] bg-[#f5f6f1] flex justify-end gap-3"
@@ -744,21 +798,23 @@ import { useRouter } from '#app'
 const router = useRouter()
 const MOCK_API_URL = 'https://68448e3771eb5d1be033990d.mockapi.io/api/v1'
 
-// ✅ Барлық ref-тер БАСТАУДА!
+// ✅ Барлық ref-тер
 const isSidebarOpen = ref(true)
 const isMobileMenuOpen = ref(false)
 const activeMenu = ref('recipes')
 const searchQuery = ref('')
-const statusFilter = ref('all') // ✅ Мұнда!
+const statusFilter = ref('all')
 const isLoading = ref(false)
 const recipes = ref([])
 const filteredRecipes = ref([])
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const currentForm = ref({})
-
 const showQuickViewModal = ref(false)
 const quickViewRecipe = ref(null)
+const showValidationModal = ref(false)
+const validationRecipe = ref(null)
+const validationErrors = ref([])
 
 const userName = ref('Admin')
 const userId = ref('')
@@ -769,14 +825,6 @@ const menuItems = [
   { key: 'recipes', label: 'Recipes', icon: 'recipes', to: '/admin/recipes' },
   { key: 'users', label: 'Users', icon: 'users', to: '/admin/users' }
 ]
-
-// ✅ Status filters computed
-const statusFilters = computed(() => [
-  { key: 'all', label: 'Бәрі', icon: '📋', count: recipes.value.length },
-  { key: 'pending', label: '⏳ Күтемін', icon: '⏳', count: recipes.value.filter(r => r.status === 'pending').length },
-  { key: 'approved', label: '✅ Одобрено', icon: '✅', count: recipes.value.filter(r => r.status === 'approved').length },
-  { key: 'rejected', label: '❌ Режек', icon: '❌', count: recipes.value.filter(r => r.status === 'rejected').length }
-])
 
 const logout = () => {
   if (process.client) localStorage.clear()
@@ -799,7 +847,7 @@ const loadRecipes = async () => {
     }
     const data = await $fetch(url)
     recipes.value = Array.isArray(data) ? data : []
-    filteredRecipes.value = [...recipes.value]
+    filterRecipes()
   } catch (error) {
     console.error('Failed to load recipes:', error)
     recipes.value = []
@@ -817,7 +865,8 @@ const filterRecipes = () => {
     filtered = filtered.filter(recipe =>
       recipe.title?.toLowerCase().includes(q) ||
       recipe.category?.toLowerCase().includes(q) ||
-      recipe.area?.toLowerCase().includes(q)
+      recipe.area?.toLowerCase().includes(q) ||
+      recipe.userId?.includes(q)
     )
   }
   
@@ -838,15 +887,98 @@ const isNewRecipe = recipe => {
   }
 }
 
-const getStatusLabel = status => {
-  const labels = {
-    pending: '⏳ Күтемін',
-    approved: '✅ Одобрено',
-    rejected: '❌ Режек'
+// ✅ STATUS BADGE функциясы
+const getStatusBadge = (recipe) => {
+  if (!recipe.status) return { label: '—', color: 'bg-slate-100 text-slate-600' }
+  
+  const badges = {
+    pending: { label: '⏳ Күтемін', color: 'bg-yellow-100 text-yellow-800' },
+    approved: { label: '✅ Одобрено', color: 'bg-emerald-100 text-emerald-700' },
+    rejected: { label: '❌ Отклонено', color: 'bg-red-100 text-red-700' }
   }
-  return labels[status] || status
+  return badges[recipe.status] || { label: '—', color: 'bg-slate-100 text-slate-600' }
 }
 
+// ✅ ВАЛИДАЦИЯ CHECK
+const validateRecipe = (recipe) => {
+  const errors = []
+  const requiredFields = ['title', 'category', 'area']
+  const minLength = 3
+  
+  for (const field of requiredFields) {
+    if (!recipe[field]?.trim() || recipe[field].trim().length < minLength) {
+      errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)} кемінде ${minLength} символ`)
+    }
+  }
+  
+  if (!recipe.instructions?.trim() || recipe.instructions.trim().length < 20) {
+    errors.push('Инструкция кемінде 20 символ')
+  }
+  
+  if (!recipe.ingredients?.length || recipe.ingredients.length < 3) {
+    errors.push('Кемінде 3 ингредиент')
+  }
+  
+  return errors
+}
+
+const hasValidationErrors = computed(() => validationErrors.value.length > 0)
+
+// ✅ Валидация модалын ашу
+const openValidationModal = async (recipe) => {
+  validationRecipe.value = { ...recipe }
+  validationErrors.value = validateRecipe(recipe)
+  showValidationModal.value = true
+}
+
+// ✅ ✅ ОДОБРИТЬ
+const approveRecipe = async () => {
+  if (validationErrors.value.length > 0) {
+    alert('Валидациядан өтпеді!')
+    return
+  }
+  
+  try {
+    const approvedData = {
+      ...validationRecipe.value,
+      status: 'approved',
+      isPublic: true,  // ✅ HOME PAGE-ГЕ ШЫҒУ
+      approvedAt: new Date().toISOString()
+    }
+    
+    await $fetch(`${MOCK_API_URL}/recipes/${approvedData.id}`, {
+      method: 'PUT',
+      body: approvedData
+    })
+    
+    showValidationModal.value = false
+    await loadRecipes()
+    alert('✅ Рецепт одобрено! Home page-ге шықты.')
+  } catch (e) {
+    console.error(e)
+    alert('❌ Одобрение қатесі!')
+  }
+}
+
+// ✅ ❌ ОТКЛОНИТЬ (ТОЛЫҚ ӨШІРУ)
+const rejectRecipe = async () => {
+  if (!confirm('Рецептті толық жоюды растаңыз? (User-ден де өшіріледі)')) return
+  
+  try {
+    await $fetch(`${MOCK_API_URL}/recipes/${validationRecipe.value.id}`, {
+      method: 'DELETE'
+    })
+    
+    showValidationModal.value = false
+    await loadRecipes()
+    alert('❌ Рецепт отклонено және жойылды!')
+  } catch (e) {
+    console.error(e)
+    alert('❌ Отклонение қатесі!')
+  }
+}
+
+// ✅ MODAL функциялары
 const openCreateModal = () => {
   currentForm.value = {
     title: '',
@@ -854,6 +986,7 @@ const openCreateModal = () => {
     area: '',
     imageUrl: '',
     instructions: '',
+    ingredients: [],
     youtubeUrl: '',
     status: 'pending'
   }
@@ -870,6 +1003,7 @@ const openEditModal = recipe => {
 const closeModal = () => {
   showCreateModal.value = false
   showEditModal.value = false
+  showValidationModal.value = false
   currentForm.value = {}
 }
 
@@ -888,7 +1022,7 @@ const saveRecipe = async () => {
     if (showCreateModal.value) {
       const newRecipe = {
         ...currentForm.value,
-        userId: localStorage.getItem('userId') || 'admin',
+        userId: userId.value || 'admin',
         createdAt: new Date().toISOString(),
         isPublic: currentForm.value.status === 'approved'
       }
@@ -916,9 +1050,10 @@ const deleteRecipe = async id => {
   try {
     await $fetch(`${MOCK_API_URL}/recipes/${id}`, { method: 'DELETE' })
     await loadRecipes()
+    alert('✅ Рецепт жойылды!')
   } catch (error) {
     console.error('Delete failed:', error)
-    alert('Delete failed. Please try again.')
+    alert('❌ Жою сәтсіз!')
   }
 }
 
@@ -942,6 +1077,7 @@ onMounted(() => {
   loadRecipes()
 })
 </script>
+
 
 <style scoped>
 .line-clamp-2 {
