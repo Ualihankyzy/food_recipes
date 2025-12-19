@@ -290,7 +290,6 @@
 
 
         <div class="relative">
-
           <button
             type="button"
             class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-2 border-slate-300 bg-white items-center justify-center text-slate-700 shadow-lg hover:bg-slate-50 z-20 transition-all"
@@ -314,13 +313,25 @@
 
 
           <div class="overflow-hidden">
-            <div class="flex gap-6 sm:gap-8 transition-transform duration-500" :style="{ transform: `translateX(-${translateX}px)` }" ref="trackRef">
+            <div 
+        ref="trackRef"
+        class="flex gap-6 sm:gap-8 transition-transform duration-500 cursor-grab active:cursor-grabbing overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+        :style="{ transform: `translateX(-${translateX}px)` }"
+        @mousedown="startDrag"
+        @mousemove="drag"
+        @mouseup="endDrag"
+        @mouseleave="endDrag"
+        @touchstart="startDragMobile"
+        @touchmove="dragMobile"
+        @touchend="endDragMobile"
+            
+            >
       
 <NuxtLink
-  v-for="recipe in filteredRecipes"
-  :key="recipe.id + '-' + activeFilter"
- :to="`/recipes/${recipe.id}`"
-  class="flex-none w-[260px] sm:w-[280px] lg:w-[300px] cursor-pointer"
+      v-for="recipe in filteredRecipes"
+          :key="recipe.id + '-' + activeFilter"
+          :to="`/recipes/${recipe.id}`"
+          class="flex-none w-[260px] sm:w-[280px] lg:w-[300px] cursor-pointer snap-center"
 >
   <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
     <div class="h-[260px] sm:h-[280px] w-full overflow-hidden">
@@ -739,6 +750,56 @@ onMounted(async () => {
 onUnmounted(() => {
   if (typeof window !== 'undefined') window.removeEventListener('resize', handleResize)
 })
+
+
+
+const isDragging = ref(false)
+const startX = ref(0)
+const currentTranslateX = ref(0)
+const prevTranslateX = ref(0)
+const isMobileDrag = ref(false)
+
+
+const startDrag = (e) => {
+  isDragging.value = true
+  startX.value = e.pageX - currentTranslateX.value
+  prevTranslateX.value = currentTranslateX.value
+}
+
+const drag = (e) => {
+  if (!isDragging.value) return
+  currentTranslateX.value = e.pageX - startX.value
+  updateTransform()
+}
+
+const endDrag = () => {
+  isDragging.value = false
+  currentTranslateX.value = prevTranslateX.value
+}
+
+
+const startDragMobile = (e) => {
+  isMobileDrag.value = true
+  startX.value = e.touches[0].clientX - currentTranslateX.value
+  prevTranslateX.value = currentTranslateX.value
+}
+
+const dragMobile = (e) => {
+  if (!isMobileDrag.value) return
+  currentTranslateX.value = e.touches[0].clientX - startX.value
+  updateTransform()
+}
+
+const endDragMobile = () => {
+  isMobileDrag.value = false
+  currentTranslateX.value = prevTranslateX.value
+}
+
+const updateTransform = () => {
+
+  const maxTranslate = Math.max(0, (filteredRecipes.value?.length - 4) * 320)
+  currentTranslateX.value = Math.min(Math.max(currentTranslateX.value, 0), maxTranslate)
+}
 </script>
 
 <style>
