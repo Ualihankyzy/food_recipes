@@ -155,7 +155,7 @@ const handleSubmit = async () => {
     })
 
     if (isAdminMode.value) {
-      success.value = `✅ User "${form.value.name}" created successfully!`
+      success.value = ` User "${form.value.name}" created successfully!`
 
       setTimeout(() => {
         router.push(returnUrl.value)

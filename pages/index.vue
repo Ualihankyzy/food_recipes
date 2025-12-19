@@ -121,7 +121,7 @@
   class="
     mt-5
     bg-[#f3a330] hover:bg-[#e39010]
-    text-black font-semibold
+    text-white font-semibold
     px-5 py-3 text-sm
     md:px-8 md:py-4 md:text-lg
     rounded-lg
