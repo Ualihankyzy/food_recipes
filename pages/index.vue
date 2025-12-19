@@ -78,7 +78,7 @@
             class="flex items-center gap-2 p-1 rounded-full hover:bg-white/20 transition"
           >
             <div
-              class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#588157] to-[#6aa56a] flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+              class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br  bg-[#ff9505] flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
             >
               {{ userInitial }}
             </div>
