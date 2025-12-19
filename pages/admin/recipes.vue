@@ -561,34 +561,25 @@
               />
             </div>
 
-            <div class="flex flex-wrap gap-2 text-xs">
-                <button
+        <!-- Header астында, search барынан кейін: -->
+<!-- Header астында, search барынан кейін: -->
+<div class="flex flex-wrap gap-2 mb-6">
+  <button
     v-for="filter in statusFilters"
     :key="filter.key"
     @click="statusFilter = filter.key"
-    class="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+    class="px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1"
     :class="statusFilter === filter.key 
       ? 'bg-[#588157] text-white shadow-md' 
       : 'bg-white/50 text-slate-700 hover:bg-white shadow-sm'"
   >
-    {{ filter.label }} ({{ filter.count }})
+    <span>{{ filter.icon }}</span>
+    {{ filter.label }}
+    <span class="font-bold">({{ filter.count }})</span>
   </button>
-              <span
-                class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold"
-              >
-                {{ quickViewRecipe?.category }}
-              </span>
-              <span
-                class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
-              >
-                {{ quickViewRecipe?.area }}
-              </span>
-              <span
-                class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-semibold"
-              >
-                Public
-              </span>
-            </div>
+</div>
+
+
 
             <div v-if="quickViewRecipe?.instructions">
               <h3
@@ -801,22 +792,18 @@ const initClientData = () => {
   }
 }
 
-// loadRecipes функциясын жаңартамыз
+// ✅ loadRecipes жаңарту
 const loadRecipes = async () => {
   isLoading.value = true
   try {
     let url = `${MOCK_API_URL}/recipes?sortBy=createdAt&order=desc`
-    
-    // Status бойынша сүзгілеу
     if (statusFilter.value !== 'all') {
       url += `&status=${statusFilter.value}`
     }
-    
     const data = await $fetch(url)
     recipes.value = Array.isArray(data) ? data : []
     filteredRecipes.value = [...recipes.value]
   } catch (error) {
-    console.error('Failed to load recipes:', error)
     recipes.value = []
     filteredRecipes.value = []
   } finally {
@@ -873,56 +860,41 @@ const closeModal = () => {
 }
 
 // ✅ saveRecipe валидациямен
+// ✅ saveRecipe жаңарту
 const saveRecipe = async () => {
-  // ✅ Күшейтілген валидация
-  if (
-    !currentForm.value.title?.trim() ||
-    !currentForm.value.category?.trim() ||
-    !currentForm.value.area?.trim() ||
-    currentForm.value.title.trim().length < 3 ||
-    currentForm.value.category.trim().length < 2 ||
-    currentForm.value.area.trim().length < 2
-  ) {
-    alert("Title (3+ символ), Category (2+), Area (2+) міндетті!")
+  if (!currentForm.value.title?.trim() || currentForm.value.title.length < 3) {
+    alert('Title кемінде 3 символ!')
     return
   }
-
-  if (!currentForm.value.instructions?.trim() || 
-      currentForm.value.instructions.trim().length < 20) {
-    alert("Instructions кемінде 20 символ болуы керек!")
+  if (!currentForm.value.instructions?.trim() || currentForm.value.instructions.length < 20) {
+    alert('Instructions кемінде 20 символ!')
     return
   }
 
   isLoading.value = true
   try {
-    const clientUserId = process.client
-      ? localStorage.getItem('userId') || 'admin'
-      : userId.value
-
     if (showCreateModal.value) {
       const newRecipe = {
         ...currentForm.value,
-        userId: clientUserId,
+        userId: localStorage.getItem('userId') || 'admin',
         createdAt: new Date().toISOString(),
-        isPublic: true,
-        status: currentForm.value.status || 'pending' // default pending
+        status: currentForm.value.status || 'pending', // Міндетті!
+        isPublic: currentForm.value.status === 'approved' // ✅ approved = home page
       }
-      await $fetch(`${MOCK_API_URL}/recipes`, {
-        method: 'POST',
-        body: newRecipe
-      })
+      await $fetch(`${MOCK_API_URL}/recipes`, { method: 'POST', body: newRecipe })
     } else {
+      currentForm.value.isPublic = currentForm.value.status === 'approved'
       await $fetch(`${MOCK_API_URL}/recipes/${currentForm.value.id}`, {
         method: 'PUT',
         body: currentForm.value
       })
     }
-
+    
     await loadRecipes()
     closeModal()
-    alert("✅ Сақталды!")
+    alert('✅ Сақталды!')
   } catch (error) {
-    alert("❌ Қате! Қайта көріңіз.")
+    alert('❌ Қате!')
   } finally {
     isLoading.value = false
   }
@@ -965,13 +937,54 @@ onMounted(() => {
 })
 
 
-// script setup ішінде:
+// ✅ Status filter
+const statusFilter = ref('all')
+
+// ✅ Status filters computed
 const statusFilters = computed(() => [
-  { key: 'all', label: 'Бәрі', count: recipes.value.length },
-  { key: 'pending', label: 'Күтемін', count: recipes.value.filter(r => r.status === 'pending').length },
-  { key: 'approved', label: '✅ Одобрено', count: recipes.value.filter(r => r.status === 'approved').length },
-  { key: 'rejected', label: '❌ Режек', count: recipes.value.filter(r => r.status === 'rejected').length }
+  { key: 'all', label: 'Бәрі', icon: '📋', count: recipes.value.length },
+  { key: 'pending', label: '⏳ Күтемін', icon: '⏳', count: recipes.value.filter(r => r.status === 'pending').length },
+  { key: 'approved', label: '✅ Одобрено', icon: '✅', count: recipes.value.filter(r => r.status === 'approved').length },
+  { key: 'rejected', label: '❌ Режек', icon: '❌', count: recipes.value.filter(r => r.status === 'rejected').length }
 ])
+
+
+
+
+// ✅ Status label функциясы
+const getStatusLabel = (status) => {
+  const labels = {
+    pending: '⏳ Күтемін',
+    approved: '✅ Одобрено', 
+    rejected: '❌ Режек'
+  }
+  return labels[status] || status
+}
+
+// ✅ Modal ішінде STATUS SELECT қосу
+// Create/Edit modal-да checkbox орнына:
+<div class="pt-2">
+  <label class="block text-xs font-semibold text-[#31572c] mb-1">Status</label>
+  <select 
+    v-model="currentForm.status"
+    class="w-full px-3 py-2 border border-[#d0d3c8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#588157]"
+  >
+    <option value="pending">⏳ Күтемін</option>
+    <option value="approved">✅ Одобрено (Home page)</option>
+    <option value="rejected">❌ Режек</option>
+  </select>
+</div>
+
+
+// ✅ watch қосу
+watch([searchQuery, statusFilter], () => {
+  filterRecipes()
+}, { immediate: true })
+
+onMounted(() => {
+  loadRecipes()
+})
+
 
 </script>
 
